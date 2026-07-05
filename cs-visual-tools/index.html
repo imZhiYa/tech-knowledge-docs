@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CS 可视化工具合集 · Visual CS Tools</title>
+<meta name="description" content="计算机科学核心知识交互式可视化学习工具合集：树形数据结构、二进制位运算、JVM 垃圾回收等">
+<meta name="author" content="ZhiYa">
+<meta name="keywords" content="计算机科学,数据结构,算法,可视化,交互式学习,树,红黑树,位运算,JVM">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧪</text></svg>">
+<meta property="og:title" content="CS 可视化工具合集 · Visual CS Tools">
+<meta property="og:description" content="计算机科学核心知识交互式可视化学习工具">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#0d1117">
+<style>
+:root{--bg:#0d1117;--sf:#161b22;--bd:#30363d;--tx:#e6edf3;--tx2:#8b949e;--ac:#58a6ff;--gn:#3fb950;--pp:#bc8cff;--yl:#d29922;--or:#f0883e;--rd:#cf222e;--r:12px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI','PingFang SC','Microsoft YaHei',system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;line-height:1.6}
+a{color:var(--ac);text-decoration:none}a:hover{text-decoration:underline}
+:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(88,166,255,.4)}
+
+/* Hero */
+.hero{text-align:center;padding:60px 20px 40px;background:radial-gradient(ellipse at 50% 0%,#1a2a3e,var(--bg) 70%)}
+.hero h1{font-size:2.2rem;margin-bottom:8px;background:linear-gradient(135deg,var(--ac),var(--pp),var(--gn));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{color:var(--tx2);font-size:1rem;max-width:600px;margin:0 auto 16px}
+.hero-badge{display:inline-block;padding:4px 14px;border-radius:20px;font-size:.75rem;font-weight:600;border:1px solid var(--bd);color:var(--tx2);margin:4px}
+.hero-badge span{margin-right:4px}
+
+/* Grid */
+.grid{max-width:1100px;margin:0 auto;padding:20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+
+/* Card */
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:24px;transition:.2s;position:relative;overflow:hidden;display:flex;flex-direction:column}
+.card:hover{border-color:var(--ac);transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,.3)}
+.card:focus-within{box-shadow:0 0 0 3px rgba(88,166,255,.3)}
+.card-icon{font-size:2.2rem;margin-bottom:12px}
+.card h2{font-size:1.1rem;margin-bottom:6px;color:var(--tx)}
+.card p{font-size:.85rem;color:var(--tx2);margin-bottom:16px;flex:1}
+.card-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.tag{padding:2px 8px;border-radius:4px;font-size:.7rem;font-weight:600;background:rgba(88,166,255,.1);color:var(--ac);border:1px solid rgba(88,166,255,.2)}
+.tag-gn{background:rgba(63,185,80,.1);color:var(--gn);border-color:rgba(63,185,80,.2)}
+.tag-pp{background:rgba(188,140,255,.1);color:var(--pp);border-color:rgba(188,140,255,.2)}
+.tag-yl{background:rgba(210,153,34,.1);color:var(--yl);border-color:rgba(210,153,34,.2)}
+.tag-or{background:rgba(240,136,62,.1);color:var(--or);border-color:rgba(240,136,62,.2)}
+.card-link{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;background:var(--ac);color:#fff;border-radius:8px;font-size:.85rem;font-weight:600;transition:.15s;border:none;cursor:pointer;text-decoration:none}
+.card-link:hover{background:#79b8ff;text-decoration:none;transform:scale(1.02)}
+.card-soon{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;background:var(--bd);color:var(--tx2);border-radius:8px;font-size:.85rem;font-weight:600;cursor:default}
+.card-status{position:absolute;top:12px;right:12px;padding:2px 10px;border-radius:10px;font-size:.65rem;font-weight:700}
+.status-live{background:rgba(63,185,80,.15);color:var(--gn);border:1px solid rgba(63,185,80,.3)}
+.status-soon{background:rgba(210,153,34,.15);color:var(--yl);border:1px solid rgba(210,153,34,.3)}
+
+/* Footer */
+footer{text-align:center;padding:40px 20px;color:var(--tx2);font-size:.82rem;border-top:1px solid var(--bd);margin-top:40px}
+footer a{color:var(--ac)}
+
+/* Section title */
+.section-title{max-width:1100px;margin:30px auto 0;padding:0 20px;font-size:.8rem;color:var(--tx2);text-transform:uppercase;letter-spacing:2px;display:flex;align-items:center;gap:10px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--bd)}
+
+/* Responsive */
+@media(max-width:700px){.hero h1{font-size:1.6rem}.grid{grid-template-columns:1fr;padding:12px}.hero{padding:40px 16px 24px}}
+@media(prefers-reduced-motion:reduce){*{transition-duration:0s!important}}
+@media(forced-colors:active){.card{border:2px solid ButtonText}}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>🧪 CS 可视化工具合集</h1>
+  <p>计算机科学核心知识的交互式可视化学习工具。每个工具零依赖、单文件、打开即用。</p>
+  <div>
+    <span class="hero-badge"><span>📦</span> 零依赖</span>
+    <span class="hero-badge"><span>⚡</span> 秒开</span>
+    <span class="hero-badge"><span>♿</span> 无障碍</span>
+    <span class="hero-badge"><span>📱</span> 响应式</span>
+    <span class="hero-badge"><span>🔒</span> 开源 MIT</span>
+  </div>
+</div>
+
+<div class="section-title">已上线</div>
+
+<div class="grid">
+
+  <!-- Tool 1: Tree Lab -->
+  <div class="card">
+    <span class="card-status status-live">✅ 已上线</span>
+    <div class="card-icon">🌳</div>
+    <h2>树结构实验室 · Tree Lab</h2>
+    <p>8 种树形数据结构交互式可视化：BST、AVL、红黑树、最大/最小堆、Trie 字典树、B 树、B+ 树。支持逐步动画演示插入、删除、查找和 4 种遍历。</p>
+    <div class="card-tags">
+      <span class="tag">BST</span>
+      <span class="tag">AVL</span>
+      <span class="tag tag-or">红黑树</span>
+      <span class="tag tag-gn">堆</span>
+      <span class="tag tag-pp">Trie</span>
+      <span class="tag tag-yl">B/B+树</span>
+    </div>
+    <a class="card-link" href="tree-lab.html">▶ 打开工具</a>
+  </div>
+
+  <!-- Tool 2: Bit Operations -->
+  <div class="card">
+    <span class="card-status status-live">✅ 已上线</span>
+    <div class="card-icon">⚡</div>
+    <h2>二进制位运算控制台 · Bit Ops Lab</h2>
+    <p>二进制底层思维与位运算全景控制台。赛博八卦与多进制算盘、补码齿轮、六大位操作 ALU 逻辑控制台、系统级动态特权位图实战、HashMap 扰动与扩容演进。</p>
+    <div class="card-tags">
+      <span class="tag">按位与 &amp;</span>
+      <span class="tag">按位或 |</span>
+      <span class="tag tag-pp">异或 ^</span>
+      <span class="tag tag-gn">移位</span>
+      <span class="tag tag-yl">补码</span>
+    </div>
+    <a class="card-link" href="bit-ops.html">▶ 打开工具</a>
+  </div>
+
+</div>
+
+<div class="section-title">开发中</div>
+
+<div class="grid">
+
+  <!-- Tool 3: JVM GC (Coming Soon) -->
+  <div class="card">
+    <span class="card-status status-soon">🚧 开发中</span>
+    <div class="card-icon">♻️</div>
+    <h2>JVM 垃圾回收可视化 · JVM GC Lab</h2>
+    <p>Java 虚拟机垃圾回收机制的逐步动画演示。堆内存分代结构、对象分配与晋升、GC Roots 可达性分析、标记-清除/复制/整理算法对比。</p>
+    <div class="card-tags">
+      <span class="tag">Young Gen</span>
+      <span class="tag tag-or">Old Gen</span>
+      <span class="tag tag-pp">GC Roots</span>
+      <span class="tag tag-gn">标记清除</span>
+    </div>
+    <span class="card-soon">🚧 即将上线</span>
+  </div>
+
+  <!-- Tool 4: Sort Visualizer (Coming Soon) -->
+  <div class="card">
+    <span class="card-status status-soon">🚧 开发中</span>
+    <div class="card-icon">📊</div>
+    <h2>排序算法擂台 · Sort Arena</h2>
+    <p>十大排序算法逐步动画对比：冒泡、选择、插入、希尔、归并、快排、堆排序、计数、桶、基数排序。支持自定义数据、速度控制和性能统计。</p>
+    <div class="card-tags">
+      <span class="tag">快排</span>
+      <span class="tag tag-or">归并</span>
+      <span class="tag tag-pp">堆排序</span>
+      <span class="tag tag-yl">O(n log n)</span>
+    </div>
+    <span class="card-soon">🚧 即将上线</span>
+  </div>
+
+  <!-- Tool 5: HashMap (Coming Soon) -->
+  <div class="card">
+    <span class="card-status status-soon">🚧 开发中</span>
+    <div class="card-icon">🗺️</div>
+    <h2>HashMap 全景解剖 · HashMap Lab</h2>
+    <p>JDK HashMap 底层机制逐步可视化：哈希计算、数组+链表/红黑树存储、扩容 rehash、树化阈值 8/6 的概率账本推导。</p>
+    <div class="card-tags">
+      <span class="tag">哈希</span>
+      <span class="tag tag-gn">扩容</span>
+      <span class="tag tag-or">树化</span>
+      <span class="tag tag-pp">链表</span>
+    </div>
+    <span class="card-soon">🚧 即将上线</span>
+  </div>
+
+</div>
+
+<footer>
+  <p>
+    MIT License · © 2026
+    <a href="https://github.com/imZhiYa" target="_blank" rel="noopener">ZhiYa</a> ·
+    <a href="https://github.com/imZhiYa/tech-knowledge-docs" target="_blank" rel="noopener">📚 知识库</a> ·
+    <a href="https://github.com/imZhiYa/cs-visual-tools" target="_blank" rel="noopener">⭐ GitHub</a>
+  </p>
+</footer>
+
+</body>
+</html>

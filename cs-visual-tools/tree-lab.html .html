@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>树结构实验室 · Tree Structure Lab</title>
+<meta name="description" content="交互式树形数据结构可视化学习工具：BST、AVL、红黑树、堆、Trie、B树、B+树，支持逐步动画演示插入、删除、查找、遍历操作">
+<meta name="author" content="ZhiYa">
+<meta name="keywords" content="数据结构,树,红黑树,AVL,BST,B树,B+树,Trie,堆,可视化,动画,学习工具">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌳</text></svg>">
+<meta property="og:title" content="树结构实验室 · Tree Structure Lab">
+<meta property="og:description" content="8种树形数据结构交互式可视化：BST/AVL/红黑树/堆/Trie/B树/B+树，逐步动画演示插入、删除、查找、遍历">
+<meta property="og:type" content="website">
+<meta property="og:image" content="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='630' fill='%230d1117'><rect width='1200' height='630'/><text x='600' y='280' text-anchor='middle' fill='%2358a6ff' font-size='80' font-family='system-ui'>🌳 Tree Structure Lab</text><text x='600' y='380' text-anchor='middle' fill='%238b949e' font-size='30' font-family='system-ui'>BST · AVL · Red-Black · Heap · Trie · B-Tree · B+Tree</text></svg>">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="树结构实验室 · Tree Structure Lab">
+<meta name="twitter:description" content="8种树形数据结构交互式可视化学习工具">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Tree Lab">
+<meta name="theme-color" content="#0d1117">
+<style>
+:root{--bg:#0d1117;--sf:#161b22;--sf2:#1c2333;--bd:#30363d;--tx:#e6edf3;--tx2:#8b949e;--tx3:#8a919a;--ac:#58a6ff;--ac2:#1f6feb;--gn:#3fb950;--rd:#cf222e;--yl:#d29922;--pp:#bc8cff;--or:#f0883e;--r:8px;--fr:0 0 0 3px rgba(88,166,255,.4);--fs-xs:.65rem;--fs-sm:.75rem;--fs-base:.85rem;--fs-md:.95rem;--fs-lg:1.1rem;--fs-xl:1.3rem}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI','PingFang SC','Microsoft YaHei',system-ui,sans-serif;background:var(--bg);color:var(--tx);height:100vh;display:flex;flex-direction:column;overflow:hidden;line-height:1.5}
+:focus-visible{outline:none;box-shadow:var(--fr)}
+.skip{position:absolute;top:-100%;left:8px;padding:8px 16px;background:var(--ac);color:#000;border-radius:var(--r);font-weight:700;z-index:9999}.skip:focus{top:8px}
+
+/* Header */
+header{background:var(--sf);border-bottom:1px solid var(--bd);padding:6px 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;z-index:10;min-height:44px}
+header h1{font-size:var(--fs-lg);background:linear-gradient(90deg,var(--ac),var(--pp));-webkit-background-clip:text;-webkit-text-fill-color:transparent;white-space:nowrap}
+select,input[type=text]{padding:4px 8px;border:1px solid var(--bd);border-radius:var(--r);background:var(--sf2);color:var(--tx);font-size:var(--fs-base)}
+select{min-width:120px;cursor:pointer}
+input[type=text]{width:140px}
+.b{padding:8px 14px;border:1px solid var(--bd);border-radius:var(--r);background:var(--sf2);color:var(--tx);font-size:var(--fs-sm);cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:3px;white-space:nowrap;transition:.12s;min-height:36px}
+.b:hover:not(:disabled){background:var(--bd)}.b:active:not(:disabled){transform:scale(.97)}.b:disabled{opacity:.3;cursor:not-allowed}
+.bp{background:var(--ac2);border-color:var(--ac2);color:#fff}.bp:hover:not(:disabled){background:var(--ac)}
+.bd{background:#7a2020;border-color:#7a2020;color:#fff}.bd:hover:not(:disabled){background:var(--rd)}
+.bg{background:#1a5c2a;border-color:#1a5c2a;color:#fff}.bg:hover:not(:disabled){background:var(--gn);color:#000}
+.sep{width:1px;height:18px;background:var(--bd);flex-shrink:0}
+.spd{display:flex;align-items:center;gap:4px;margin-left:auto;font-size:var(--fs-sm);color:var(--tx2)}
+.spd input[type=range]{width:55px;accent-color:var(--ac)}
+
+/* Toggle row for annotations */
+.ann-row{display:flex;gap:10px;align-items:center;font-size:var(--fs-sm);color:var(--tx2);padding:0 4px}
+.ann-row label{display:flex;align-items:center;gap:3px;cursor:pointer}
+.ann-row input[type=checkbox]{accent-color:var(--ac);width:14px;height:14px}
+
+/* Main */
+.main{display:flex;flex:1;overflow:hidden}
+.cw{flex:1;position:relative;overflow:auto;background:radial-gradient(ellipse at 50% 20%,#151f2e,var(--bg) 70%)}
+canvas{display:block}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.tip{position:absolute;background:var(--sf);border:1px solid var(--ac);border-radius:var(--r);padding:5px 9px;font-size:var(--fs-sm);pointer-events:none;z-index:50;display:none;color:var(--tx);box-shadow:0 3px 14px rgba(0,0,0,.5);max-width:220px;line-height:1.4}
+.kbd-h{position:absolute;bottom:4px;left:8px;font-size:var(--fs-xs);color:rgba(255,255,255,.1);pointer-events:none}
+kbd{background:rgba(255,255,255,.06);padding:0 3px;border-radius:2px;font-family:monospace}
+
+/* Side */
+.side{width:360px;min-width:250px;background:var(--sf);border-left:1px solid var(--bd);display:flex;flex-direction:column;overflow:hidden}
+.tabs{display:flex;border-bottom:1px solid var(--bd)}
+.tabs button{flex:1;padding:8px 3px;background:0;color:var(--tx2);border:0;font-size:var(--fs-sm);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:.12s}
+.tabs button[aria-selected=true]{color:var(--ac);border-bottom-color:var(--ac);background:rgba(88,166,255,.04)}
+.tabs button:focus-visible{box-shadow:var(--fr);position:relative;z-index:1}
+.tb{flex:1;overflow-y:auto;padding:10px;scroll-behavior:smooth}
+[role=tabpanel]{display:none}[role=tabpanel].on{display:block}
+
+/* Cards */
+.sc{background:rgba(255,255,255,.03);border-radius:var(--r);padding:8px 10px;margin-bottom:6px;border-left:3px solid var(--bd);cursor:pointer;opacity:.4;transition:.2s;font-size:var(--fs-sm)}
+.sc:hover{opacity:.6}.sc[aria-current=step]{border-left-color:var(--yl);opacity:1;background:rgba(210,153,34,.05)}.sc.done{border-left-color:var(--gn);opacity:.55}
+.sc h4{font-size:var(--fs-base);color:var(--yl);margin-bottom:2px}.sc p{color:var(--tx2);line-height:1.5}
+.sc:focus-visible{box-shadow:var(--fr)}
+.tag{display:inline-block;padding:0 4px;border-radius:3px;font-size:var(--fs-xs);font-weight:600;margin-right:2px;vertical-align:middle}
+.tR{background:var(--rd);color:#fff}.tB{background:#444;color:#fff}.tRot{background:#1a3a6a;color:var(--ac)}.tCol{background:#3a1a50;color:var(--pp)}.tChk{background:#1a4a3a;color:var(--gn)}
+
+.ic{background:rgba(255,255,255,.03);border-radius:var(--r);padding:10px 12px;margin-bottom:7px;border-left:3px solid var(--ac2)}
+.ic h4{color:var(--ac);margin-bottom:3px;font-size:var(--fs-base)}.ic p{color:var(--tx2);font-size:var(--fs-sm);line-height:1.55}
+.ic code{background:rgba(255,255,255,.07);padding:0 3px;border-radius:3px;font-size:.82em;color:var(--gn)}
+
+.pg{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+.pc{background:rgba(255,255,255,.03);border-radius:var(--r);padding:8px 4px;text-align:center;border:1px solid var(--bd)}
+.pc .v{font-size:var(--fs-xl);font-weight:700;color:var(--gn)}.pc .l{font-size:var(--fs-xs);color:var(--tx3);margin-top:1px}
+
+.legend{display:flex;gap:8px;padding:5px 10px;border-top:1px solid var(--bd);font-size:var(--fs-xs);color:var(--tx3);flex-wrap:wrap;background:rgba(0,0,0,.08)}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:50%;border:2px solid var(--bd);vertical-align:middle;margin-right:2px}
+
+/* Traverse dropdown */
+.trav-menu{position:absolute;top:100%;left:0;background:var(--sf2);border:1px solid var(--bd);border-radius:var(--r);padding:4px 0;z-index:20;display:none;min-width:170px;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.trav-menu.open{display:block}
+.trav-menu button{display:block;width:100%;padding:8px 14px;background:none;border:none;color:var(--tx);font-size:var(--fs-sm);text-align:left;cursor:pointer;transition:.1s}
+.trav-menu button:hover{background:rgba(88,166,255,.1);color:var(--ac)}
+.trav-menu button:focus-visible{box-shadow:var(--fr);position:relative;z-index:1}
+
+/* Traversal highlight pulse */
+@keyframes trav-pulse{0%{box-shadow:0 0 0 0 rgba(88,166,255,.5)}70%{box-shadow:0 0 0 12px rgba(88,166,255,0)}100%{box-shadow:0 0 0 0 rgba(88,166,255,0)}}
+
+/* Footer */
+.footer{display:flex;align-items:center;gap:8px;padding:6px 10px;border-top:1px solid var(--bd);background:rgba(0,0,0,.12);flex-wrap:wrap}
+.foot-btn{font-size:var(--fs-xs)!important;padding:4px 10px!important;min-height:28px!important}
+.foot-copy{font-size:var(--fs-xs);color:var(--tx3);margin-left:auto}
+.foot-link{color:var(--ac);text-decoration:none}.foot-link:hover{text-decoration:underline}
+
+/* Toast */
+.toast{position:fixed;top:60px;left:50%;transform:translateX(-50%) translateY(-8px);padding:8px 20px;background:var(--sf2);color:var(--tx);border:1px solid var(--bd);border-radius:var(--r);font-size:var(--fs-base);z-index:999;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;box-shadow:0 4px 20px rgba(0,0,0,.5);max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.err{border-color:var(--rd);color:var(--rd)}
+.toast.ok{border-color:var(--gn);color:var(--gn)}
+
+@media(forced-colors:active){.b,select,input{border:2px solid ButtonText}}
+@media(prefers-reduced-motion:reduce){*{transition-duration:0s!important;animation-duration:0s!important}}
+@media(max-width:900px){.main{flex-direction:column}.side{width:100%;max-height:38vh;border-left:0;border-top:1px solid var(--bd)}.cw{min-height:280px}.kbd-h{display:none}}
+@media(max-width:600px){header{padding:4px 6px;gap:4px}header h1{font-size:var(--fs-md)}.b{padding:6px 8px;font-size:var(--fs-sm);min-height:32px}input[type=text]{width:100px;min-height:32px}.pg{grid-template-columns:1fr 1fr}select{min-height:32px}}
+</style>
+</head>
+<body>
+<a class="skip" href="#cv" tabindex="0">跳到可视化区域</a>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<header role="banner">
+  <h1>🌳 树结构实验室</h1>
+  <label class="sr" for="ds">数据结构</label>
+  <select id="ds" aria-label="选择数据结构">
+    <option value="bst">BST 二叉搜索树</option>
+    <option value="avl">AVL 树</option>
+    <option value="rbt">红黑树</option>
+    <option value="maxheap">最大堆</option>
+    <option value="minheap">最小堆</option>
+    <option value="trie">Trie 字典树</option>
+    <option value="btree">B 树</option>
+    <option value="bplus">B+ 树</option>
+  </select>
+  <select id="bord" aria-label="B树阶数" style="display:none;min-width:60px"><option value="3">阶=3</option><option value="4">阶=4</option><option value="5">阶=5</option></select>
+  <label class="sr" for="inp">输入</label>
+  <input type="text" id="inp" placeholder="整数/逗号分隔" aria-label="输入值"/>
+  <button class="b bp" id="bI" aria-label="插入">➕ 插入</button>
+  <button class="b bd" id="bD" aria-label="删除">➖ 删</button>
+  <button class="b" id="bF" aria-label="查找">🔍</button>
+  <button class="b" id="bR" aria-label="随机5个">🎲</button>
+  <button class="b" id="bC" aria-label="清空">🗑️</button>
+  <div style="position:relative;display:inline-block">
+    <button class="b" id="bTrav" aria-label="遍历动画" aria-haspopup="true" aria-expanded="false">🚶 遍历 ▾</button>
+    <div class="trav-menu" id="travMenu" role="menu" aria-label="选择遍历方式">
+      <button role="menuitem" data-mode="pre">前序 Pre-Order</button>
+      <button role="menuitem" data-mode="in">中序 In-Order</button>
+      <button role="menuitem" data-mode="post">后序 Post-Order</button>
+      <button role="menuitem" data-mode="level">层序 Level-Order</button>
+    </div>
+  </div>
+  <div class="sep"></div>
+  <button class="b bg" id="bP" disabled aria-label="上一步">⏮</button>
+  <button class="b bg" id="bN" disabled aria-label="下一步">⏭</button>
+  <button class="b bg" id="bA" disabled aria-label="播放">▶</button>
+  <button class="b" id="bS" disabled aria-label="跳过">⏩</button>
+  <div class="sep"></div>
+  <div class="ann-row">
+    <label title="在每个节点旁标注深度"><input type="checkbox" id="ckDepth"> 深度</label>
+    <label title="在每个节点旁标注高度"><input type="checkbox" id="ckHeight"> 高度</label>
+    <label title="标注叶子/根/内部节点"><input type="checkbox" id="ckType"> 类型</label>
+    <label title="显示NIL哨兵"><input type="checkbox" id="ckNil"> NIL</label>
+  </div>
+  <div class="spd"><span>速度</span><input type="range" id="spd" min="1" max="10" value="5" aria-label="速度"/><span id="spdV">5</span></div>
+</header>
+
+<main class="main">
+  <div class="cw" id="cw">
+    <canvas id="cv" role="img" aria-label="树可视化" tabindex="0"></canvas>
+    <div id="live" class="sr" aria-live="assertive" aria-atomic="true"></div>
+    <div class="tip" id="tip" role="tooltip"></div>
+    <div class="kbd-h" aria-hidden="true"><kbd>←</kbd><kbd>→</kbd> 步进 <kbd>Space</kbd> 播放 <kbd>Enter</kbd> 插入</div>
+  </div>
+  <aside class="side">
+    <div class="tabs" role="tablist">
+      <button role="tab" id="t0" aria-selected="true" aria-controls="p0">📝 步骤</button>
+      <button role="tab" id="t1" aria-selected="false" aria-controls="p1">📖 说明</button>
+      <button role="tab" id="t2" aria-selected="false" aria-controls="p2">📊 属性</button>
+    </div>
+    <div class="tb">
+      <div role="tabpanel" id="p0" class="on" aria-labelledby="t0"><div id="stC"><div class="sc" aria-current="step"><h4>👋 欢迎</h4><p>选择数据结构，输入值开始。支持逗号分隔批量输入。<br>✅ 新增：B树/B+树、深度/高度/类型标注（顶栏勾选）。</p></div></div></div>
+      <div role="tabpanel" id="p1" aria-labelledby="t1"><div id="infoA"></div></div>
+      <div role="tabpanel" id="p2" aria-labelledby="t2"><div class="pg" id="pG"></div><div class="ic" style="margin-top:8px"><h4>🔍 验证</h4><p id="vT">选择数据结构开始。</p></div></div>
+    </div>
+    <div class="legend"><span><i style="background:var(--rd)"></i>红/高亮</span><span><i style="background:#3a3a4a;border-color:#666"></i>黑/普通</span><span><i style="border-color:var(--yl)"></i>关注</span><span><i style="border-color:var(--gn)"></i>新增</span></div>
+    <div class="footer">
+      <button class="b foot-btn" id="bScreenshot" aria-label="导出截图" title="导出当前树为 PNG 图片">📷 截图</button>
+      <button class="b foot-btn" id="bShare" aria-label="复制分享链接" title="复制当前状态链接到剪贴板">🔗 分享</button>
+      <span class="foot-copy">MIT License · © 2026 <a href="https://github.com/imZhiYa/tech-knowledge-docs" target="_blank" rel="noopener noreferrer" class="foot-link">ZhiYa</a></span>
+    </div>
+  </aside>
+</main>
+
+<script>
+;(function(){"use strict";
+const $=id=>document.getElementById(id),cv=$('cv'),cx=cv.getContext('2d');
+const NR=18,LH=72,HS=52;
+let ds='bst',steps=[],si=-1,snaps=[],autoP=false,autoT=null,dispR=null,hlSet=new Set(),af=null,locked=false;
+let showDepth=false,showHeight=false,showType=false,showNil=false;
+let _nid=0,toastTimer=null,btOrder=3;
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function ann(m){$('live').textContent=m}
+function toast(m,type){let t=$('toast');t.textContent=m;t.className='toast show'+(type==='err'?' err':type==='ok'?' ok':'');if(toastTimer)clearTimeout(toastTimer);toastTimer=setTimeout(()=>{t.classList.remove('show')},2200)}
+
+// ===== Node =====
+class N{constructor(k,c='B'){this.k=k;this.c=c;this.l=null;this.r=null;this.p=null;this.h=1;this.bf=0;this.x=0;this.y=0;this.tx=0;this.ty=0;this.sc=1;this.tsc=1;this.id=_nid++;this._ch=null;this.keys=null}}
+
+// ===== Utils =====
+function cof(n){return n?n.c:'B'}
+function cnt(n){return n?1+cnt(n.l)+cnt(n.r):0}
+function ht(n){return n?1+Math.max(ht(n.l),ht(n.r)):0}
+function dep(n,target,d){if(!n)return-1;if(n===target)return d;let l=dep(n.l,target,d+1);return l>=0?l:dep(n.r,target,d+1)}
+function nodeHt(n){if(!n)return-1;return Math.max(nodeHt(n.l),nodeHt(n.r))+1}
+function updH(n){if(!n)return;n.h=1+Math.max(n.l?n.l.h:0,n.r?n.r.h:0);n.bf=(n.l?n.l.h:0)-(n.r?n.r.h:0)}
+function clon(n){if(!n)return null;let c=new N(n.k,n.c);c.id=n.id;c.x=n.x;c.y=n.y;c.tx=n.tx;c.ty=n.ty;c.sc=n.sc;c.tsc=n.tsc;c.h=n.h;c.bf=n.bf;c.keys=n.keys?[...n.keys]:null;c.l=clon(n.l);c.r=clon(n.r);if(c.l)c.l.p=c;if(c.r)c.r.p=c;c._ch=n._ch?n._ch.map(clon):null;return c}
+
+// ===== Steps =====
+function beginOp(){steps=[];snaps=[];si=-1;locked=true;setB(true)}
+function rec(t,d,hl,tags){snaps.push(clon(getTree()));steps.push({t,d:d||'',hl:(hl||[]).map(n=>n?n.id:-1),tg:tags||[]})}
+function endOp(){snaps.push(clon(getTree()));si=-1;locked=false;if(!steps.length){setB(false);render();updP();return}$('bN').disabled=false;$('bA').disabled=false;$('bS').disabled=false;$('bP').disabled=true;tab(0);renderCards()}
+function setB(o){$('bI').disabled=o;$('bD').disabled=o;$('bF').disabled=o;$('bR').disabled=o;$('bC').disabled=o;if(o){$('bN').disabled=$('bP').disabled=$('bA').disabled=$('bS').disabled=true}}
+function getTree(){let e=engines[ds];if(!e)return null;return e.getRoot()}
+
+// ===== BST =====
+let bstR=null;
+function bstIns(n,p,k){if(!n){let nd=new N(k);nd.p=p;nd.sc=0;nd.tsc=1;rec('插入 '+k,k+(p?' → '+p.k+'的'+(k<p.k?'左':'右'):'根'),[nd],['tChk']);ann('插入'+k);return nd}if(k<n.k){n.l=bstIns(n.l,n,k)}else if(k>n.k){n.r=bstIns(n.r,n,k)}else{rec('重复 '+k,'',[n],[])}updH(n);return n}
+function bstDel(n,k){if(!n){rec('未找到 '+k,'',[],[]);return null}if(k<n.k){n.l=bstDel(n.l,k)}else if(k>n.k){n.r=bstDel(n.r,k)}else{rec('删除 '+k,'',[n],['tR']);ann('删除'+k);if(!n.l)return n.r;if(!n.r)return n.l;let s=n.r;while(s.l)s=s.l;n.k=s.k;n.r=bstDel(n.r,s.k)}updH(n);return n}
+function bstFind(n,k){if(!n){rec('未找到 '+k,'',[],[]);ann('未找到'+k);return}if(k===n.k){rec('✅ 找到 '+k,'',[n],['tChk']);ann('找到'+k)}else if(k<n.k){rec(k+'<'+n.k+' → 左','',[n],[]);bstFind(n.l,k)}else{rec(k+'>'+n.k+' → 右','',[n],[]);bstFind(n.r,k)}}
+
+// ===== AVL =====
+let avlR=null;
+function avlIns(n,p,k){if(!n){let nd=new N(k);nd.p=p;nd.sc=0;nd.tsc=1;rec('插入 '+k,'',[nd],['tChk']);ann('插入'+k);return nd}if(k<n.k)n.l=avlIns(n.l,n,k);else if(k>n.k)n.r=avlIns(n.r,n,k);else{rec('重复 '+k,'',[n],[]);return n}updH(n);return avlBal(n)}
+function avlDel(n,k){if(!n)return null;if(k<n.k)n.l=avlDel(n.l,k);else if(k>n.k)n.r=avlDel(n.r,k);else{rec('删除 '+k,'',[n],['tR']);ann('删除'+k);if(!n.l||!n.r)return n.l||n.r;let s=n.r;while(s.l)s=s.l;n.k=s.k;n.r=avlDel(n.r,s.k)}updH(n);return avlBal(n)}
+function avlBal(n){if(n.bf>1){if(n.l&&n.l.bf<0){rec('LR旋转','',[n],['tRot']);n.l=rotL(n.l)}else rec('LL→右旋','',[n],['tRot']);return rotR(n)}if(n.bf<-1){if(n.r&&n.r.bf>0){rec('RL旋转','',[n],['tRot']);n.r=rotR(n.r)}else rec('RR→左旋','',[n],['tRot']);return rotL(n)}return n}
+function rotL(x){let y=x.r;x.r=y.l;if(y.l)y.l.p=x;y.l=x;y.p=x.p;x.p=y;updH(x);updH(y);return y}
+function rotR(x){let y=x.l;x.l=y.r;if(y.r)y.r.p=x;y.r=x;y.p=x.p;x.p=y;updH(x);updH(y);return y}
+
+// ===== Red-Black Tree =====
+let rbtR=null;
+function rbtIns(k){
+  if(!rbtR){rbtR=new N(k,'B');rbtR.sc=0;rbtR.tsc=1;rec('🔥 插入 '+k+'(红→根染黑)','',[rbtR],['tR']);ann('插入'+k);return}
+  let p=null,c=rbtR;
+  while(c){p=c;if(k<c.k)c=c.l;else if(k>c.k)c=c.r;else{rec('重复 '+k,'',[c],[]);ann(k+'已存在');return}}
+  let x=new N(k,'R');x.p=p;x.sc=0;x.tsc=1;
+  if(k<p.k)p.l=x;else p.r=x;
+  rec('🔥 插入 '+k+'(红)','',[x,p],['tR']);ann('插入'+k);
+  // Fix
+  while(x!==rbtR&&x.p&&x.p.c==='R'){
+    let pa=x.p,gp=pa.p;if(!gp)break;
+    if(pa===gp.l){let u=gp.r;
+      if(cof(u)==='R'){rec('叔红→变色上抛','',[x,pa,u,gp],['tCol']);pa.c='B';if(u)u.c='B';gp.c='R';x=gp}
+      else{if(x===pa.r){rec('LR→左旋父','',[x,pa],['tRot']);x=pa;rbtRotL(x);pa=x.p;gp=pa?pa.p:null;if(!gp)break}
+        rec('LL→右旋爷','',[x,pa,gp],['tRot']);pa.c='B';gp.c='R';rbtRotR(gp)}
+    }else{let u=gp.l;
+      if(cof(u)==='R'){rec('叔红→变色上抛','',[x,pa,u,gp],['tCol']);pa.c='B';if(u)u.c='B';gp.c='R';x=gp}
+      else{if(x===pa.l){rec('RL→右旋父','',[x,pa],['tRot']);x=pa;rbtRotR(x);pa=x.p;gp=pa?pa.p:null;if(!gp)break}
+        rec('RR→左旋爷','',[x,pa,gp],['tRot']);pa.c='B';gp.c='R';rbtRotL(gp)}
+    }
+  }
+  rbtR.c='B';rbtR.p=null;
+  rec('🏁 根染黑','',[rbtR],['tB']);
+}
+function rbtRotL(x){let y=x.r;if(!y)return;x.r=y.l;if(y.l)y.l.p=x;y.p=x.p;if(!x.p)rbtR=y;else if(x===x.p.l)x.p.l=y;else x.p.r=y;y.l=x;x.p=y}
+function rbtRotR(x){let y=x.l;if(!y)return;x.l=y.r;if(y.r)y.r.p=x;y.p=x.p;if(!x.p)rbtR=y;else if(x===x.p.r)x.p.r=y;else x.p.l=y;y.r=x;x.p=y}
+// RBT Delete
+function rbtDel(k){let nd=rbtFindN(rbtR,k);if(!nd){rec('未找到 '+k,'',[],[]);ann('未找到'+k);return}rec('删除 '+k,'',[nd],['tR']);ann('删除'+k);rbtDelNode(nd);if(rbtR)rbtR.c='B'}
+function rbtFindN(n,k){while(n){if(k<n.k)n=n.l;else if(k>n.k)n=n.r;else return n}return null}
+function rbtDelNode(p){
+  if(p.l&&p.r){let s=p.r;while(s.l)s=s.l;rec('后继 '+s.k+' 替换 '+p.k,'',[p,s],[]);p.k=s.k;p=s}
+  let ch=p.l||p.r;
+  if(ch){ch.p=p.p;if(!p.p)rbtR=ch;else if(p===p.p.l)p.p.l=ch;else p.p.r=ch;if(p.c==='B'){rec('修复黑色删除','',[ch],['tCol']);rbtFixDel(ch)}}
+  else if(!p.p){rbtR=null}
+  else{if(p.c==='B'){rec('修复黑色叶子删除','',[p],['tCol']);rbtFixDel(p)}if(p.p){if(p===p.p.l)p.p.l=null;else p.p.r=null;p.p=null}}
+}
+function rbtFixDel(x){
+  while(x!==rbtR&&cof(x)==='B'){
+    if(!x.p)break;
+    if(x===x.p.l){
+      let s=x.p.r;if(!s)break;
+      if(cof(s)==='R'){rec('兄弟 '+s.k+' 红→旋转','',[x,s],['tRot']);s.c='B';x.p.c='R';rbtRotL(x.p);s=x.p.r;if(!s)break}
+      if(cof(s.l)==='B'&&cof(s.r)==='B'){rec('兄弟两子黑→变色上移','',[x,s],['tCol']);s.c='R';x=x.p}
+      else{if(cof(s.r)==='B'){rec('兄弟右孩子黑→右旋兄弟','',[x,s],['tRot']);if(s.l)s.l.c='B';s.c='R';rbtRotR(s);s=x.p.r;if(!s)break}
+        rec('兄弟右孩子红→左旋父','',[x,s],['tRot','tCol']);s.c=x.p.c;x.p.c='B';if(s.r)s.r.c='B';rbtRotL(x.p);x=rbtR}
+    }else{
+      let s=x.p.l;if(!s)break;
+      if(cof(s)==='R'){rec('兄弟 '+s.k+' 红→旋转','',[x,s],['tRot']);s.c='B';x.p.c='R';rbtRotR(x.p);s=x.p.l;if(!s)break}
+      if(cof(s.r)==='B'&&cof(s.l)==='B'){rec('兄弟两子黑→变色上移','',[x,s],['tCol']);s.c='R';x=x.p}
+      else{if(cof(s.l)==='B'){rec('兄弟左孩子黑→左旋兄弟','',[x,s],['tRot']);if(s.r)s.r.c='B';s.c='R';rbtRotL(s);s=x.p.l;if(!s)break}
+        rec('兄弟左孩子红→右旋父','',[x,s],['tRot','tCol']);s.c=x.p.c;x.p.c='B';if(s.l)s.l.c='B';rbtRotR(x.p);x=rbtR}
+    }
+  }
+  x.c='B';
+}
+
+// ===== Heap =====
+let heapA=[];
+function heapIns(k,isMax){heapA.push(k);rec('插入 '+k+' 到末尾','',[],['tChk']);ann('插入'+k);let i=heapA.length-1;while(i>0){let p=Math.floor((i-1)/2);if(isMax?heapA[i]>heapA[p]:heapA[i]<heapA[p]){rec('上浮 '+heapA[i]+'↔'+heapA[p],'',[],['tRot']);[heapA[i],heapA[p]]=[heapA[p],heapA[i]];i=p}else break}}
+function heapDel(isMax){if(!heapA.length)return;rec('删除堆顶 '+heapA[0],'',[],['tR']);ann('删除堆顶'+heapA[0]);if(heapA.length===1){heapA=[];return}heapA[0]=heapA.pop();let i=0,n=heapA.length;while(true){let t=i,l=2*i+1,r=2*i+2;if(isMax){if(l<n&&heapA[l]>heapA[t])t=l;if(r<n&&heapA[r]>heapA[t])t=r}else{if(l<n&&heapA[l]<heapA[t])t=l;if(r<n&&heapA[r]<heapA[t])t=r}if(t!==i){rec('下沉 '+heapA[i]+'↔'+heapA[t],'',[],['tRot']);[heapA[i],heapA[t]]=[heapA[t],heapA[i]];i=t}else break}}
+function heapFind(k){if(!heapA.length){rec('堆为空','',[],[]);ann('堆为空');return}let idx=heapA.indexOf(k);if(idx>=0){rec('✅ 找到 '+k+' 在位置 '+idx,'堆不支持高效查找，需O(n)线性扫描。',[],['tChk']);ann('找到'+k)}else{rec('未找到 '+k,'线性扫描完毕。',[],[]);ann('未找到'+k)}}
+function heapTree(i){if(i>=heapA.length)return null;let n=new N(heapA[i]);n.id=i+90000;n.l=heapTree(2*i+1);n.r=heapTree(2*i+2);if(n.l)n.l.p=n;if(n.r)n.r.p=n;return n}
+
+// ===== Trie =====
+let trieR=null;
+class TrN{constructor(){this.ch={};this.end=false;this.id=_nid++}}
+function trieIns(w){if(!trieR)trieR=new TrN();let n=trieR;for(let c of w){if(!n.ch[c]){n.ch[c]=new TrN();rec('创建 "'+c+'"','',[],['tChk'])}else rec('经过 "'+c+'"','',[],[]);n=n.ch[c]}n.end=true;rec('✅ "'+w+'" 完成','',[],['tChk']);ann('插入'+w)}
+function trieDel(w){if(!trieR){rec('树为空','',[],[]);return}let found=trieHas(trieR,w);if(!found){rec('未找到 "'+w+'"','',[],[]);ann('未找到'+w);return}rec('删除 "'+w+'"','',[],['tR']);ann('删除'+w);trieDelR(trieR,w,0)}
+function trieDelR(n,w,i){if(!n)return false;if(i===w.length){if(n.end){n.end=false;rec('取消 "'+w+'" 结束标记','',[],['tR']);return Object.keys(n.ch).length===0}return false}let c=w[i];if(!n.ch[c])return false;if(trieDelR(n.ch[c],w,i+1)){delete n.ch[c];rec('删除节点 "'+c+'"','',[],['tR']);return!n.end&&Object.keys(n.ch).length===0}return false}
+function trieHas(n,w){for(let c of w){if(!n||!n.ch[c])return false;n=n.ch[c]}return n&&n.end}
+function trieFind(w){if(!trieR){rec('树为空','',[],[]);ann('树为空');return}let n=trieR;for(let i=0;i<w.length;i++){if(!n.ch[w[i]]){rec('未找到 "'+w+'"','在 "'+w[i]+'" 处断开',[],[]);ann('未找到'+w);return}rec('匹配 "'+w[i]+'"','',[],[]);n=n.ch[w[i]]}if(n.end){rec('✅ 找到 "'+w+'"','',[],['tChk']);ann('找到'+w)}else{rec('前缀存在但非完整单词','',[],[]);ann(w+' 不是完整单词')}}
+function trieTree(n,label){if(!n)return null;let t=new N(0);t.k=label;t.id=n.id;t.c=n.end?'R':'B';let keys=Object.keys(n.ch).sort();t._ch=keys.map(c=>trieTree(n.ch[c],c));return t}
+
+// ===== B-Tree (order 3 = 2-3 tree) =====
+let btR=null;
+class BNode{constructor(){this.keys=[];this.children=[];this.id=_nid++}get leaf(){return this.children.length===0}}
+function btIns(k){if(!btR){btR=new BNode();btR.keys=[k];rec('插入 '+k+' 到根','',[],['tChk']);ann('插入'+k);return}rec('插入 '+k,'',[],['tChk']);ann('插入'+k);let r=btInsR(btR,k);if(r){let nr=new BNode();nr.keys=[r.mid];nr.children=[r.left,r.right];btR=nr;rec('根分裂，新根 '+r.mid,'',[],['tRot'])}}
+function btMaxK(){return btOrder-1}
+function btInsR(node,k){let i=0;while(i<node.keys.length&&k>node.keys[i])i++;if(i<node.keys.length&&node.keys[i]===k){rec('重复 '+k,'',[],[]);return null}if(node.leaf){node.keys.splice(i,0,k);if(node.keys.length>btMaxK()){return btSplit(node)}return null}let sp=btInsR(node.children[i],k);if(sp){node.keys.splice(i,0,sp.mid);node.children.splice(i,1,sp.left,sp.right);if(node.keys.length>btMaxK())return btSplit(node)}return null}
+function btSplit(node){let mid=Math.floor(node.keys.length/2);let left=new BNode();left.keys=node.keys.slice(0,mid);let right=new BNode();right.keys=node.keys.slice(mid+1);if(!node.leaf){left.children=node.children.slice(0,mid+1);right.children=node.children.slice(mid+1)}rec('分裂 ['+node.keys+'] → '+node.keys[mid],'',[],['tRot']);return{mid:node.keys[mid],left,right}}
+function btDel(k){if(!btR){rec('树为空','',[],[]);return}rec('删除 '+k,'',[],['tR']);ann('删除'+k);btDelR(btR,k);if(btR&&btR.keys.length===0){btR=btR.leaf?null:btR.children[0]||null;if(btR)rec('根收缩','',[],['tRot'])}}
+function btMinK(){return Math.ceil(btOrder/2)-1}
+function btT(){return Math.ceil(btOrder/2)}
+function btDelR(node,k){let i=0;while(i<node.keys.length&&k>node.keys[i])i++;if(i<node.keys.length&&node.keys[i]===k){if(node.leaf){node.keys.splice(i,1);rec('叶节点删除 '+k,'',[],['tChk'])}else{let lc=node.children[i],rc=node.children[i+1];if(lc.keys.length>=btT()){let pred=lc;while(!pred.leaf)pred=pred.children[pred.children.length-1];let pk=pred.keys[pred.keys.length-1];node.keys[i]=pk;rec('前驱 '+pk+' 替换 '+k,'',[],['tRot']);btDelR(lc,pk)}else if(rc.keys.length>=btT()){let succ=rc;while(!succ.leaf)succ=succ.children[0];let sk=succ.keys[0];node.keys[i]=sk;rec('后继 '+sk+' 替换 '+k,'',[],['tRot']);btDelR(rc,sk)}else{btMerge(node,i);rec('合并子节点','',[],['tRot']);btDelR(node.children[i],k)}}}else{if(node.leaf)return;if(node.children[i].keys.length<btT()){btFill(node,i);i=0;while(i<node.keys.length&&k>node.keys[i])i++;if(i<node.keys.length&&node.keys[i]===k){btDelR(node,k);return}}if(i>=node.children.length)i=node.children.length-1;btDelR(node.children[i],k)}}
+function btFill(node,i){if(i>0&&node.children[i-1].keys.length>=btT()){let c=node.children[i],s=node.children[i-1];c.keys.unshift(node.keys[i-1]);node.keys[i-1]=s.keys.pop();if(!s.leaf)c.children.unshift(s.children.pop());rec('从左兄弟借key','',[],['tRot'])}else if(i<node.children.length-1&&node.children[i+1].keys.length>=btT()){let c=node.children[i],s=node.children[i+1];c.keys.push(node.keys[i]);node.keys[i]=s.keys.shift();if(!s.leaf)c.children.push(s.children.shift());rec('从右兄弟借key','',[],['tRot'])}else{if(i<node.keys.length)btMerge(node,i);else btMerge(node,i-1)}}
+function btMerge(node,i){let l=node.children[i],r=node.children[i+1];l.keys.push(node.keys[i]);l.keys=l.keys.concat(r.keys);l.children=l.children.concat(r.children);node.keys.splice(i,1);node.children.splice(i+1,1);rec('合并 ['+l.keys+']','',[],['tRot'])}
+function btFind(k){if(!btR){rec('树为空','',[],[]);ann('树为空');return}btFindR(btR,k)}
+function btFindR(node,k){rec('搜索节点 ['+node.keys.join(',')+']','',[],[]);let i=0;while(i<node.keys.length&&k>node.keys[i])i++;if(i<node.keys.length&&node.keys[i]===k){rec('✅ 找到 '+k+' 在 ['+node.keys.join(',')+']','',[],['tChk']);ann('找到'+k);return}if(node.leaf){rec('未找到 '+k,'',[],[]);ann('未找到'+k);return}rec('进入子节点 #'+i,'',[],[]);btFindR(node.children[i],k)}
+function btToTree(node){if(!node)return null;let n=new N(0);n.keys=[...node.keys];n.k=node.keys.join(',');n.id=node.id;n._ch=node.children.map(btToTree);return n}
+
+// ===== B+ Tree (order 3) =====
+let bpR=null;
+class BPNode{constructor(leaf=false){this.keys=[];this.children=[];this.leaf=leaf;this.next=null;this.id=_nid++}}
+function bpIns(k){if(!bpR){bpR=new BPNode(true);bpR.keys=[k];rec('插入 '+k,'',[],['tChk']);ann('插入'+k);return}rec('插入 '+k,'',[],['tChk']);ann('插入'+k);let r=bpInsR(bpR,k);if(r){let nr=new BPNode(false);nr.keys=[r.mid];nr.children=[r.left,r.right];bpR=nr;rec('根分裂，新根 '+r.mid,'',[],['tRot'])}}
+function bpInsR(node,k){if(node.leaf){let i=0;while(i<node.keys.length&&k>node.keys[i])i++;if(i<node.keys.length&&node.keys[i]===k)return null;node.keys.splice(i,0,k);if(node.keys.length>btMaxK())return bpSplitLeaf(node);return null}let i=0;while(i<node.keys.length&&k>=node.keys[i])i++;let sp=bpInsR(node.children[i],k);if(sp){node.keys.splice(i,0,sp.mid);node.children.splice(i+1,0,sp.right);if(node.keys.length>btMaxK())return bpSplitInternal(node)}return null}
+function bpSplitLeaf(node){let mid=Math.ceil(node.keys.length/2);let right=new BPNode(true);right.keys=node.keys.slice(mid);right.next=node.next;node.keys=node.keys.slice(0,mid);node.next=right;rec('叶分裂 → 提升 '+right.keys[0],'',[],['tRot']);return{mid:right.keys[0],left:node,right}}
+function bpSplitInternal(node){let mid=Math.floor(node.keys.length/2);let right=new BPNode(false);right.keys=node.keys.slice(mid+1);right.children=node.children.slice(mid+1);let midKey=node.keys[mid];node.keys=node.keys.slice(0,mid);node.children=node.children.slice(0,mid+1);rec('内部分裂 → 提升 '+midKey,'',[],['tRot']);return{mid:midKey,left:node,right}}
+function bpDel(k){if(!bpR){rec('树为空','',[],[]);return}rec('删除 '+k,'',[],['tR']);ann('删除'+k);bpDelR(bpR,k);if(bpR&&!bpR.leaf&&bpR.keys.length===0){bpR=bpR.children.length?bpR.children[0]:null;if(bpR)rec('根收缩','',[],['tRot'])}if(bpR&&bpR.leaf&&bpR.keys.length===0)bpR=null}
+function bpDelR(node,k){if(node.leaf){let i=node.keys.indexOf(k);if(i===-1){rec('未找到 '+k,'',[],[]);return false}node.keys.splice(i,1);rec('叶删除 '+k,'',[],['tChk']);return true}let i=0;while(i<node.keys.length&&k>=node.keys[i])i++;let ch=node.children[i];let ok=bpDelR(ch,k);if(!ok)return false;if(i>0&&ch.keys.length>0){let lm=ch;while(!lm.leaf)lm=lm.children[0];if(lm.keys.length>0)node.keys[i-1]=lm.keys[0]}if(ch.keys.length<1)bpFixCh(node,i);return true}
+function bpFixCh(par,idx){let ch=par.children[idx],ls=idx>0?par.children[idx-1]:null,rs=idx<par.children.length-1?par.children[idx+1]:null;if(ch.leaf){if(ls&&ls.leaf&&ls.keys.length>1){ch.keys.unshift(ls.keys.pop());par.keys[idx-1]=ch.keys[0];rec('叶借左','',[],['tRot'])}else if(rs&&rs.leaf&&rs.keys.length>1){ch.keys.push(rs.keys.shift());par.keys[idx]=rs.keys[0];rec('叶借右','',[],['tRot'])}else if(ls&&ls.leaf){ls.keys=ls.keys.concat(ch.keys);ls.next=ch.next;par.keys.splice(idx-1,1);par.children.splice(idx,1);rec('叶合并左','',[],['tRot'])}else if(rs&&rs.leaf){ch.keys=ch.keys.concat(rs.keys);ch.next=rs.next;par.keys.splice(idx,1);par.children.splice(idx+1,1);rec('叶合并右','',[],['tRot'])}}else{if(ls&&!ls.leaf&&ls.keys.length>1){ch.keys.unshift(par.keys[idx-1]);par.keys[idx-1]=ls.keys.pop();if(ls.children.length)ch.children.unshift(ls.children.pop());rec('内部借左','',[],['tRot'])}else if(rs&&!rs.leaf&&rs.keys.length>1){ch.keys.push(par.keys[idx]);par.keys[idx]=rs.keys.shift();if(rs.children.length)ch.children.push(rs.children.shift());rec('内部借右','',[],['tRot'])}else if(idx<par.keys.length&&rs){ch.keys.push(par.keys[idx]);ch.keys=ch.keys.concat(rs.keys);ch.children=ch.children.concat(rs.children);par.keys.splice(idx,1);par.children.splice(idx+1,1);rec('内部合并右','',[],['tRot'])}else if(idx>0&&ls){ls.keys.push(par.keys[idx-1]);ls.keys=ls.keys.concat(ch.keys);ls.children=ls.children.concat(ch.children);par.keys.splice(idx-1,1);par.children.splice(idx,1);rec('内部合并左','',[],['tRot'])}}}
+function bpFind(k){if(!bpR){rec('树为空','',[],[]);ann('树为空');return}bpFindR(bpR,k)}
+function bpFindR(node,k){rec('搜索 ['+node.keys.join(',')+']'+(node.leaf?' (叶)':''),'',[],[]);if(node.leaf){if(node.keys.includes(k)){rec('✅ 找到 '+k,'',[],['tChk']);ann('找到'+k)}else{rec('未找到 '+k,'',[],[]);ann('未找到'+k)}return}let i=0;while(i<node.keys.length&&k>=node.keys[i])i++;bpFindR(node.children[i],k)}
+function bpToTree(node){if(!node)return null;let n=new N(0);n.keys=[...node.keys];n.k=node.keys.join(',');n.id=node.id;n.c=node.leaf?'R':'B';n._ch=node.leaf?[]:node.children.map(bpToTree);return n}
+
+// ===== Engine Registry =====
+const engines={
+  bst:{name:'BST 二叉搜索树',info:'<div class="ic"><h4>BST性质</h4><p>左 &lt; 根 &lt; 右。中序遍历得到升序序列。</p></div><div class="ic"><h4>⚠️ 退化</h4><p>顺序插入退化为链表→O(n)。这催生了AVL和红黑树。</p></div><div class="ic"><h4>深度 vs 高度</h4><p><b>深度(Depth)</b>：从根到该节点的边数（根深度=0）。<br><b>高度(Height)</b>：从该节点到最远叶子的边数（叶子高度=0）。<br>✅ 勾选顶栏"深度""高度"可在节点旁标注。</p></div>',
+    insert(k){beginOp();bstR=bstIns(bstR,null,k);endOp()},delete(k){beginOp();bstR=bstDel(bstR,k);endOp()},find(k){beginOp();bstFind(bstR,k);endOp()},getRoot(){return bstR},clr(){bstR=null},
+    props(r){let n=cnt(r),h=ht(r);return[['节点',n],['高度',h],['叶子',cntLeaf(r)]]},validate(r){return vBst(r)?'✅ BST性质满足':'❌ BST性质违反'}},
+  avl:{name:'AVL 树',info:'<div class="ic"><h4>AVL性质</h4><p>|BF| ≤ 1（严格平衡）。BF = 左子树高度 - 右子树高度。</p></div><div class="ic"><h4>四种旋转</h4><p>LL→右旋 RR→左旋 LR→左右双旋 RL→右左双旋</p></div>',
+    insert(k){beginOp();avlR=avlIns(avlR,null,k);if(avlR)avlR.p=null;endOp()},delete(k){beginOp();avlR=avlDel(avlR,k);if(avlR)avlR.p=null;endOp()},find(k){beginOp();bstFind(avlR,k);endOp()},getRoot(){return avlR},clr(){avlR=null},
+    props(r){let n=cnt(r),h=ht(r);return[['节点',n],['高度',h],['平衡',isAVL(r)?'✅':'❌']]},validate(r){return isAVL(r)?'✅ AVL满足':'❌ 存在失衡'}},
+  rbt:{name:'红黑树',info:'<div class="ic"><h4>五大规则</h4><p>1.红或黑 2.根黑 3.NIL黑 4.红不相邻 5.黑高守恒</p></div><div class="ic"><h4>四大定律</h4><p>新点必红→父黑不管→父红看叔→根必黑</p></div>',
+    insert(k){beginOp();rbtIns(k);endOp()},delete(k){beginOp();rbtDel(k);endOp()},find(k){beginOp();bstFind(rbtR,k);endOp()},getRoot(){return rbtR},clr(){rbtR=null},
+    props(r){let n=cnt(r),h=ht(r),rc=0,bc=0;cntCol(r,c=>{c==='R'?rc++:bc++});return[['节点',n],['高度',h],['红',rc],['黑',bc],['黑高',rbBH(r)],['合法',rbV(r)?'✅':'❌']]},validate(r){return rbV(r)?'✅ 红黑树合法':'❌ 违规'}},
+  maxheap:{name:'最大堆',info:'<div class="ic"><h4>最大堆</h4><p>完全二叉树，父 ≥ 子。数组存储，O(log n)插入/删除堆顶。</p></div><div class="ic"><h4>应用</h4><p>优先队列、Top-K、堆排序。</p></div>',
+    insert(k){beginOp();heapIns(k,true);endOp()},delete(){beginOp();heapDel(true);endOp()},find(k){beginOp();heapFind(k);endOp()},getRoot(){return heapTree(0)},clr(){heapA=[]},
+    props(){let n=heapA.length;return[['大小',n],['堆顶',n?heapA[0]:'-']]},validate(){return heapV(true)?'✅':'❌'}},
+  minheap:{name:'最小堆',info:'<div class="ic"><h4>最小堆</h4><p>完全二叉树，父 ≤ 子。</p></div>',
+    insert(k){beginOp();heapIns(k,false);endOp()},delete(){beginOp();heapDel(false);endOp()},find(k){beginOp();heapFind(k);endOp()},getRoot(){return heapTree(0)},clr(){heapA=[]},
+    props(){let n=heapA.length;return[['大小',n],['堆顶',n?heapA[0]:'-']]},validate(){return heapV(false)?'✅':'❌'}},
+  trie:{name:'Trie 字典树',info:'<div class="ic"><h4>Trie</h4><p>前缀树，每条边代表字符。O(m)查找，m为串长。</p></div><div class="ic"><h4>应用</h4><p>搜索自动补全、IP路由、拼写检查。</p></div>',
+    insert(k){beginOp();trieIns(k.toLowerCase());endOp()},delete(k){beginOp();trieDel(k.toLowerCase());endOp()},find(k){beginOp();trieFind(k.toLowerCase());endOp()},getRoot(){return trieTree(trieR,'◎')},clr(){trieR=null},
+    props(){return[['单词',trWC(trieR)],['节点',trNC(trieR)]]},validate(){return'✅'}},
+  btree:{name:'B树(阶=3)',info:'<div class="ic"><h4>B树</h4><p>多路平衡搜索树。阶=3时每个节点最多2个key、3个子节点（即2-3树）。</p></div><div class="ic"><h4>为什么需要B树？</h4><p>二叉树太"高"，磁盘IO次数=树高。B树压扁为多路，3层可存百万数据。</p></div><div class="ic"><h4>分裂</h4><p>节点满时中间key上提，分裂为两个节点。</p></div>',
+    insert(k){beginOp();btIns(k);endOp()},delete(k){beginOp();btDel(k);endOp()},find(k){beginOp();btFind(k);endOp()},getRoot(){return btToTree(btR)},clr(){btR=null},
+    props(){let h=btHt(btR);return[['高度',h],['节点',btCnt(btR)]]},validate(){return'✅ B树结构正常'}},
+  bplus:{name:'B+树(阶=3)',info:'<div class="ic"><h4>B+树</h4><p>B树的变体：<b>数据只在叶子</b>，内部节点只存索引。叶子用链表串联，支持高效范围查询。</p></div><div class="ic"><h4>vs B树</h4><p>内部节点更小→单页存更多key→树更矮→IO更少。叶子链表→范围查询无需回溯。</p></div><div class="ic"><h4>应用</h4><p>MySQL InnoDB引擎的核心索引结构。3层B+树(阶=200)可支撑~2000万行数据。</p></div>',
+    insert(k){beginOp();bpIns(k);endOp()},delete(k){beginOp();bpDel(k);endOp()},find(k){beginOp();bpFind(k);endOp()},getRoot(){return bpToTree(bpR)},clr(){bpR=null},
+    props(){let h=bpHt(bpR);return[['高度',h],['节点',bpCnt(bpR)],['叶链',bpLeafChain()]]},validate(){return'✅ B+树结构正常'}}
+};
+function eng(){return engines[ds]}
+function cntLeaf(n){if(!n)return 0;if(!n.l&&!n.r)return 1;return cntLeaf(n.l)+cntLeaf(n.r)}
+function vBst(n,min,max){if(!n)return true;if(min===undefined)min=-Infinity;if(max===undefined)max=Infinity;if(n.k<=min||n.k>=max)return false;return vBst(n.l,min,n.k)&&vBst(n.r,n.k,max)}
+function isAVL(n){if(!n)return true;if(Math.abs(n.bf)>1)return false;return isAVL(n.l)&&isAVL(n.r)}
+function cntCol(n,cb){if(!n)return;cb(n.c);cntCol(n.l,cb);cntCol(n.r,cb)}
+function rbBH(n){if(!n)return 1;return rbBH(n.l)+(n.c==='B'?1:0)}
+function rbV(r){if(!r)return true;if(r.c!=='B')return false;return chkBH(r)!==-1}
+function chkBH(n){if(!n)return 1;if(n.c==='R'&&(cof(n.l)==='R'||cof(n.r)==='R'))return-1;let l=chkBH(n.l),r=chkBH(n.r);if(l===-1||r===-1||l!==r)return-1;return l+(n.c==='B'?1:0)}
+function heapV(isMax){for(let i=0;i<heapA.length;i++){let l=2*i+1,r=2*i+2;if(isMax){if(l<heapA.length&&heapA[l]>heapA[i])return false;if(r<heapA.length&&heapA[r]>heapA[i])return false}else{if(l<heapA.length&&heapA[l]<heapA[i])return false;if(r<heapA.length&&heapA[r]<heapA[i])return false}}return true}
+function trWC(n){if(!n)return 0;let c=n.end?1:0;for(let k in n.ch)c+=trWC(n.ch[k]);return c}
+function trNC(n){if(!n)return 0;let c=1;for(let k in n.ch)c+=trNC(n.ch[k]);return c}
+function btHt(n){if(!n)return 0;if(!n.children.length)return 1;return 1+btHt(n.children[0])}
+function btCnt(n){if(!n)return 0;let c=1;for(let ch of n.children)c+=btCnt(ch);return c}
+function bpHt(n){if(!n)return 0;if(n.leaf)return 1;return 1+bpHt(n.children[0])}
+function bpCnt(n){if(!n)return 0;if(n.leaf)return 1;let c=1;for(let ch of n.children)c+=bpCnt(ch);return c}
+function bpLeafChain(){if(!bpR)return'-';let n=bpR;while(!n.leaf)n=n.children[0];let s=[];while(n){s.push(n.keys.join(','));n=n.next}return s.join(' → ')}
+
+// ===== Precompute annotations (O(n) total, not O(n²)) =====
+function preAnn(n,d,isRoot){if(!n)return-1;n._d=d;let lh=preAnn(n.l,d+1,false),rh=preAnn(n.r,d+1,false);n._h=Math.max(lh,rh)+1;n._tp=(!n.l&&!n.r)?'叶':(isRoot?'根':'内');return n._h}
+function preAnnMulti(n,d,isRoot){if(!n)return;n._d=d;n._tp=isRoot?'根':((n._ch&&n._ch.length)?'内':'叶');if(n._ch)for(let c of n._ch)preAnnMulti(c,d+1,false)}
+
+// ===== Layout =====
+function layoutBin(r,cw){if(!r)return;let rm=[];
+  function lay(n,d){if(!n)return;n.ty=50+d*LH;lay(n.l,d+1);lay(n.r,d+1);
+    if(!n.l&&!n.r){let m=rm[d]!==undefined?rm[d]+HS:0;n.tx=m}
+    else if(n.l&&!n.r){n.tx=n.l.tx+HS/2;let m=rm[d]!==undefined?rm[d]+HS:0;if(n.tx<m){let s=m-n.tx;n.tx=m;shf(n.l,s)}}
+    else if(!n.l){n.tx=n.r.tx-HS/2;let m=rm[d]!==undefined?rm[d]+HS:0;if(n.tx<m){let s=m-n.tx;n.tx=m;shf(n.r,s)}}
+    else{n.tx=(n.l.tx+n.r.tx)/2;let m=rm[d]!==undefined?rm[d]+HS:0;if(n.tx<m){let s=m-n.tx;n.tx=m;shf(n.l,s);shf(n.r,s)}}
+    urm(n,rm)}
+  function shf(n,dx){if(!n)return;n.tx+=dx;shf(n.l,dx);shf(n.r,dx)}
+  function urm(n,rm){if(!n)return;let d=Math.round((n.ty-50)/LH);if(rm[d]===undefined||n.tx>rm[d])rm[d]=n.tx;urm(n.l,rm);urm(n.r,rm)}
+  lay(r,0);let mn=1e9,mx=-1e9;
+  function bd(n){if(!n)return;mn=Math.min(mn,n.tx);mx=Math.max(mx,n.tx);bd(n.l);bd(n.r)}
+  bd(r);let off=(cw-(mx-mn))/2-mn;
+  function ao(n){if(!n)return;n.tx+=off;if(!n.x&&!n.y){n.x=n.tx;n.y=n.ty}ao(n.l);ao(n.r)}
+  ao(r)}
+
+function layoutMulti(r,cw){if(!r)return;let xPos=0;
+  function lay(n,d){n.ty=50+d*LH;if(!n._ch||!n._ch.length){n.tx=xPos;xPos+=HS;return}for(let c of n._ch)lay(c,d+1);n.tx=(n._ch[0].tx+n._ch[n._ch.length-1].tx)/2}
+  lay(r,0);let mn=1e9,mx=-1e9;
+  function bd(n){if(!n)return;mn=Math.min(mn,n.tx);mx=Math.max(mx,n.tx);if(n._ch)n._ch.forEach(bd)}
+  bd(r);let off=(cw-(mx-mn))/2-mn;
+  function ao(n){if(!n)return;n.tx+=off;if(!n.x&&!n.y){n.x=n.tx;n.y=n.ty}if(n._ch)n._ch.forEach(ao)}
+  ao(r)}
+
+// ===== Render =====
+function resizeCv(r){let p=$('cw'),w=p.clientWidth,h=p.clientHeight;let nc=r?cntAll(r):0,th=r?htAll(r):0;let nw=Math.max(w,nc*48+120),nh=Math.max(h,th*LH+(showNil?LH:0)+100);cv.width=nw*devicePixelRatio;cv.height=nh*devicePixelRatio;cv.style.width=nw+'px';cv.style.height=nh+'px';cx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0)}
+function cntAll(n){if(!n)return 0;if(n._ch)return 1+n._ch.reduce((a,c)=>a+cntAll(c),0);return 1+cntAll(n.l)+cntAll(n.r)}
+function htAll(n){if(!n)return 0;if(n._ch)return 1+Math.max(0,...n._ch.map(htAll));return 1+Math.max(htAll(n.l),htAll(n.r))}
+
+function render(r){if(r===undefined)r=getTree();
+  if(ds==='trie'&&!r)r=trieTree(trieR,'◎');
+  if(ds.includes('heap')&&!r)r=heapTree(0);
+  if(ds==='btree'&&!r)r=btToTree(btR);
+  if(ds==='bplus'&&!r)r=bpToTree(bpR);
+  dispR=r;resizeCv(r);if(r){let cw=cv.width/devicePixelRatio;if(r._ch){layoutMulti(r,cw);preAnnMulti(r,0,true)}else{layoutBin(r,cw);preAnn(r,0,true)}}anim(r)}
+
+let animDoneCb=null;
+function anim(r){if(af)cancelAnimationFrame(af);
+  function lp(a,b,t){return a+(b-a)*t}
+  function upd(n){if(!n)return true;let d=true;if(Math.abs(n.tx-n.x)>.3||Math.abs(n.ty-n.y)>.3){n.x=lp(n.x,n.tx,.18);n.y=lp(n.y,n.ty,.18);d=false}else{n.x=n.tx;n.y=n.ty}if(Math.abs(n.tsc-n.sc)>.01){n.sc=lp(n.sc,n.tsc,.15);d=false}else n.sc=n.tsc;if(n._ch)for(let c of n._ch)d=upd(c)&&d;return upd(n.l)&&upd(n.r)&&d}
+  function fr(){let d=r?upd(r):true;draw(r);if(!d)af=requestAnimationFrame(fr);else if(animDoneCb){let cb=animDoneCb;animDoneCb=null;cb()}}fr()}
+
+function draw(r){let W=cv.width/devicePixelRatio,H=cv.height/devicePixelRatio;cx.clearRect(0,0,W,H);
+  if(!r){cx.fillStyle='#444';cx.font='13px sans-serif';cx.textAlign='center';cx.fillText('选择数据结构，输入值开始',W/2,H/2);return}
+  if(r._ch){drawMulti(r);if(ds==='bplus')drawBPLeafLinks()}else{drawE(r);drawN(r,r)}}
+function drawBPLeafLinks(){if(!bpR)return;let n=bpR;while(n&&!n.leaf)n=n.children[0];let leaves=[];while(n){leaves.push(n);n=n.next}
+  // Find the display nodes by matching IDs
+  for(let i=0;i<leaves.length-1;i++){let a=findById(dispR,leaves[i].id),b=findById(dispR,leaves[i+1].id);if(a&&b){let kw=22,slotW=8,pad=6;let aw=(a.keys.length*kw+(a.keys.length+1)*slotW+pad*2)*a.sc/2;let bw=(b.keys.length*kw+(b.keys.length+1)*slotW+pad*2)*b.sc/2;let ax=a.x+aw,bx=b.x-bw;cx.beginPath();cx.moveTo(ax,a.y);cx.lineTo(bx,b.y);cx.strokeStyle='rgba(63,185,80,.4)';cx.lineWidth=2;cx.setLineDash([4,3]);cx.stroke();cx.setLineDash([]);
+    // Arrow
+    cx.beginPath();cx.moveTo(bx-5,b.y-4);cx.lineTo(bx,b.y);cx.lineTo(bx-5,b.y+4);cx.strokeStyle='rgba(63,185,80,.5)';cx.lineWidth=1.5;cx.stroke()}}}
+function findById(n,id){if(!n)return null;if(n.id===id)return n;if(n._ch)for(let c of n._ch){let r=findById(c,id);if(r)return r}return findById(n.l,id)||findById(n.r,id)}
+
+function drawE(n){if(!n)return;
+  function edge(p,c){let x1=p.x,y1=p.y+NR*p.sc,x2=c.x,y2=c.y-NR*c.sc;cx.beginPath();cx.moveTo(x1,y1);let cy=(y1+y2)/2;cx.bezierCurveTo(x1,cy,x2,cy,x2,y2);cx.strokeStyle='rgba(100,120,150,.35)';cx.lineWidth=1.4;cx.stroke()}
+  if(n.l){edge(n,n.l);drawE(n.l)}if(n.r){edge(n,n.r);drawE(n.r)}
+  // NIL
+  if(showNil&&ds==='rbt'){if(!n.l)drawNilAt(n.x-HS*.3,n.y+LH*.7);if(!n.r)drawNilAt(n.x+HS*.3,n.y+LH*.7)}}
+
+function drawNilAt(x,y){cx.fillStyle='rgba(30,35,45,.7)';cx.strokeStyle='rgba(80,90,100,.25)';cx.lineWidth=1;let w=20,h=12;cx.beginPath();cx.rect(x-w/2,y-h/2,w,h);cx.fill();cx.stroke();cx.fillStyle='rgba(120,130,150,.4)';cx.font='bold 6px sans-serif';cx.textAlign='center';cx.textBaseline='middle';cx.fillText('NIL',x,y)}
+
+function drawN(n,root){if(!n)return;drawN(n.l,root);drawN(n.r,root);
+  let kStr=String(n.k);let nr2=NR;if(kStr.length>2)nr2=NR+Math.min((kStr.length-2)*3,8);
+  let r=nr2*n.sc,hl=hlSet.has(n.id);if(r<1)return;
+  if(hl){cx.save();cx.shadowColor='#d29922';cx.shadowBlur=12;cx.beginPath();cx.arc(n.x,n.y,r+3,0,Math.PI*2);cx.strokeStyle='rgba(210,153,34,.45)';cx.lineWidth=2;cx.stroke();cx.restore()}
+  cx.beginPath();cx.arc(n.x,n.y,r,0,Math.PI*2);
+  let isRed=n.c==='R';
+  if(ds==='rbt'){let g=cx.createRadialGradient(n.x-r*.2,n.y-r*.2,r*.1,n.x,n.y,r);if(isRed){g.addColorStop(0,'#ff7b8e');g.addColorStop(1,'#c0392b')}else{g.addColorStop(0,'#556');g.addColorStop(1,'#2a2a3a')}cx.fillStyle=g}
+  else cx.fillStyle=hl?'#2a4a2a':'#1e2636';
+  cx.fill();cx.beginPath();cx.arc(n.x,n.y,r,0,Math.PI*2);cx.strokeStyle=isRed&&ds==='rbt'?'rgba(255,138,158,.4)':'rgba(100,110,130,.3)';cx.lineWidth=1.6;cx.stroke();
+  if(n.sc>.3){
+    cx.globalAlpha=Math.min(1,(n.sc-.3)/.4);
+    cx.fillStyle='#fff';cx.font='bold '+Math.round(11*n.sc)+'px sans-serif';cx.textAlign='center';cx.textBaseline='middle';cx.fillText(n.k,n.x,n.y);
+    // Annotations
+    let annY=n.y+r+8*n.sc;
+    if(ds==='avl'){cx.fillStyle=Math.abs(n.bf)>1?'#f85149':'#6e7681';cx.font=Math.round(7*n.sc)+'px sans-serif';cx.fillText('BF:'+n.bf,n.x,annY);annY+=10*n.sc}
+    if(ds==='rbt'){cx.fillStyle=isRed?'#ff8a9e':'#667';cx.font=Math.round(7*n.sc)+'px sans-serif';cx.fillText(isRed?'R':'B',n.x,annY);annY+=10*n.sc}
+    // Depth/Height/Type annotations (pre-computed in _d, _h, _tp)
+    if(showDepth&&n._d!==undefined){cx.fillStyle='#58a6ff';cx.font=Math.round(7*n.sc)+'px sans-serif';cx.fillText('D:'+n._d,n.x-r-12*n.sc,n.y-4*n.sc)}
+    if(showHeight&&n._h!==undefined){cx.fillStyle='#d29922';cx.font=Math.round(7*n.sc)+'px sans-serif';cx.fillText('H:'+n._h,n.x+r+10*n.sc,n.y-4*n.sc)}
+    if(showType&&n._tp){cx.fillStyle='#bc8cff';cx.font=Math.round(7*n.sc)+'px sans-serif';cx.fillText(n._tp,n.x,n.y-r-6*n.sc)}
+    cx.globalAlpha=1}}
+function depthOf(root,target,d){if(!root)return-1;if(root===target)return d;let l=depthOf(root.l,target,d+1);return l>=0?l:depthOf(root.r,target,d+1)}
+
+// Multi-way tree drawing (Trie, B-Tree, B+Tree)
+function drawMulti(n){if(!n)return;
+  if(n._ch){let isMulti2=n.keys&&n.keys.length>0;for(let ci=0;ci<n._ch.length;ci++){let c=n._ch[ci];
+    // Compute pointer slot x position for B-tree nodes
+    let px=n.x;
+    if(isMulti2){let kw=22,slotW=8,pad=6,nk=n.keys.length;let totalW=(nk*kw+(nk+1)*slotW+pad*2)*n.sc;let startX=n.x-totalW/2+pad*n.sc;px=startX+ci*(kw+slotW)*n.sc+slotW*n.sc/2}
+    let y1=n.y+NR*n.sc,y2=c.y-NR*c.sc,cy2=(y1+y2)/2;
+    cx.beginPath();cx.moveTo(px,y1);cx.bezierCurveTo(px,cy2,c.x,cy2,c.x,y2);cx.strokeStyle='rgba(100,120,150,.4)';cx.lineWidth=1.4;cx.stroke();drawMulti(c)}}
+  let r=NR*n.sc;if(r<1)return;
+  let isEnd=n.c==='R';let isMultiKey=n.keys&&n.keys.length>0;
+  if(isMultiKey){
+    // Draw rectangle for B-tree/B+tree nodes with pointer slots
+    let kw=22,pad=6,slotW=8;// width per key, padding, pointer slot width
+    let nk=n.keys.length;
+    let totalW=(nk*kw+(nk+1)*slotW+pad*2)*n.sc;
+    let th=24*n.sc;
+    // Background
+    cx.fillStyle=isEnd?'#1a3a2a':'#1c2333';cx.strokeStyle=isEnd?'rgba(59,185,80,.4)':'rgba(100,110,130,.3)';cx.lineWidth=1.5;
+    cx.beginPath();cx.roundRect?cx.roundRect(n.x-totalW/2,n.y-th/2,totalW,th,4):cx.rect(n.x-totalW/2,n.y-th/2,totalW,th);cx.fill();cx.stroke();
+    // Draw key cells and pointer slots
+    let startX=n.x-totalW/2+pad*n.sc;
+    for(let ki=0;ki<=nk;ki++){
+      // Pointer slot (small triangle/dot)
+      let slotX=startX+ki*(kw+slotW)*n.sc;
+      if(n._ch&&n._ch.length>ki){
+        // Draw small pointer indicator ▼
+        cx.fillStyle='rgba(88,166,255,.45)';cx.font=Math.round(7*n.sc)+'px sans-serif';cx.textAlign='center';cx.textBaseline='middle';
+        cx.fillText('▼',slotX+slotW*n.sc/2,n.y);
+      }else if(!isEnd){
+        cx.fillStyle='rgba(100,110,130,.2)';cx.font=Math.round(6*n.sc)+'px sans-serif';cx.textAlign='center';cx.textBaseline='middle';
+        cx.fillText('·',slotX+slotW*n.sc/2,n.y);
+      }
+      // Key cell
+      if(ki<nk){
+        let keyX=slotX+slotW*n.sc;
+        // Separator line
+        cx.beginPath();cx.moveTo(keyX,n.y-th/2+2);cx.lineTo(keyX,n.y+th/2-2);cx.strokeStyle='rgba(100,120,150,.2)';cx.lineWidth=1;cx.stroke();
+        // Key text
+        cx.fillStyle=isEnd?'#3fb950':'#e6edf3';cx.font='bold '+Math.round(10*n.sc)+'px sans-serif';cx.textAlign='center';cx.textBaseline='middle';
+        cx.fillText(n.keys[ki],keyX+kw*n.sc/2,n.y);
+        // Right separator
+        let rSepX=keyX+kw*n.sc;
+        cx.beginPath();cx.moveTo(rSepX,n.y-th/2+2);cx.lineTo(rSepX,n.y+th/2-2);cx.strokeStyle='rgba(100,120,150,.2)';cx.lineWidth=1;cx.stroke();
+      }
+    }
+    // Labels
+    if(ds==='bplus'&&isEnd){cx.fillStyle='#3fb950';cx.font=Math.round(6*n.sc)+'px sans-serif';cx.textAlign='center';cx.fillText('叶',n.x,n.y+th/2+8*n.sc)}
+    if(ds==='btree'&&!n._ch.length){cx.fillStyle='#6e7681';cx.font=Math.round(6*n.sc)+'px sans-serif';cx.textAlign='center';cx.fillText('叶',n.x,n.y+th/2+8*n.sc)}
+  }else{
+    // Circle for Trie
+    cx.beginPath();cx.arc(n.x,n.y,r,0,Math.PI*2);cx.fillStyle=isEnd?'#1a3a2a':'#1c2333';cx.fill();
+    cx.beginPath();cx.arc(n.x,n.y,r,0,Math.PI*2);cx.strokeStyle=isEnd?'rgba(59,185,80,.4)':'rgba(100,110,130,.3)';cx.lineWidth=1.5;cx.stroke();
+    cx.fillStyle=isEnd?'#3fb950':'#e6edf3';cx.font='bold '+Math.round(11*n.sc)+'px sans-serif';cx.textAlign='center';cx.textBaseline='middle';
+    cx.fillText(n.k,n.x,n.y);
+    if(isEnd){cx.fillStyle='#3fb950';cx.font=Math.round(6*n.sc)+'px sans-serif';cx.fillText('END',n.x,n.y+r+8*n.sc)}}
+  // Annotations for multi-way nodes
+  if(n.sc>.3){let annOff=r+16*n.sc;
+    if(showDepth&&n._d!==undefined){cx.fillStyle='#58a6ff';cx.font=Math.round(6*n.sc)+'px sans-serif';cx.textAlign='left';cx.fillText('D:'+n._d,n.x+(isMultiKey?Math.max(18,n.keys.length*12+4)*n.sc+4:r+4),n.y-4*n.sc);cx.textAlign='center'}
+    if(showType&&n._tp){cx.fillStyle='#bc8cff';cx.font=Math.round(6*n.sc)+'px sans-serif';cx.fillText(n._tp,n.x,n.y-(isMultiKey?14:r+6)*n.sc)}}}
+
+// ===== Step Nav =====
+function renderCards(){let c=$('stC');c.innerHTML='';steps.forEach((s,i)=>{let cls=i===si?'':i<si?'done':'';let tags=s.tg.map(t=>{let l={tR:'红',tB:'黑',tRot:'旋转',tCol:'变色',tChk:'✓'}[t]||'';return'<span class="tag '+t+'">'+l+'</span>'}).join('');let d=document.createElement('div');d.className='sc '+cls;d.tabIndex=0;d.setAttribute('role','button');if(i===si)d.setAttribute('aria-current','step');d.innerHTML='<div class="sn">'+tags+' '+(i+1)+'/'+steps.length+'</div><h4>'+esc(s.t)+'</h4><p>'+esc(s.d)+'</p>';d.onclick=()=>jumpTo(i);d.onkeydown=e=>{if(e.key==='Enter')jumpTo(i)};c.appendChild(d)});if(si>=0&&c.children[si])c.children[si].scrollIntoView({behavior:'smooth',block:'center'})}
+function showSt(i){if(i<0||i>=snaps.length)return;hlSet=new Set(steps[i]?steps[i].hl:[]);render(snaps[i]);renderCards();if(steps[i])ann(steps[i].t)}
+function jumpTo(i){if(i<0||i>=steps.length)return;si=i;showSt(si);$('bP').disabled=si<=0;$('bN').disabled=si>=steps.length-1;if(si>=steps.length-1)finSt()}
+function stN(){if(si<steps.length-1){si++;showSt(si);$('bP').disabled=si<=0;$('bN').disabled=si>=steps.length-1;if(si>=steps.length-1)finSt()}}
+function stP(){if(si>0){si--;showSt(si);$('bP').disabled=si<=0;$('bN').disabled=false}}
+function finSt(){animDoneCb=()=>{hlSet=new Set();animDoneCb=()=>{updP();setB(false);$('bA').disabled=$('bS').disabled=true;$('bA').textContent='▶';autoP=false;locked=false};render()};render()}
+function skip(){if(autoT)clearTimeout(autoT);autoP=false;$('bA').textContent='▶';si=steps.length-1;showSt(si);$('bP').disabled=si<=0;$('bN').disabled=true;finSt()}
+function togA(){autoP=!autoP;$('bA').textContent=autoP?'⏸':'▶';if(autoP)autoSt();else if(autoT)clearTimeout(autoT)}
+function autoSt(){if(!autoP||si>=steps.length-1){autoP=false;$('bA').textContent='▶';return}stN();autoT=setTimeout(autoSt,(11-parseInt($('spd').value))*240)}
+
+// ===== Traversal =====
+function travCollect(mode){
+  let r=getTree();
+  if(ds==='trie')r=trieTree(trieR,'◎');
+  if(ds.includes('heap'))r=heapTree(0);
+  if(ds==='btree')r=btToTree(btR);
+  if(ds==='bplus')r=bpToTree(bpR);
+  if(!r){toast('树为空，请先插入数据','err');return null}
+  let order=[];
+  if(r._ch){
+    // Multi-way tree traversal
+    switch(mode){
+      case'pre':travMultiPre(r,order);break;
+      case'in':travMultiIn(r,order);break;
+      case'post':travMultiPost(r,order);break;
+      case'level':travMultiLevel(r,order);break;
+    }
+  }else{
+    // Binary tree traversal
+    switch(mode){
+      case'pre':travBinPre(r,order);break;
+      case'in':travBinIn(r,order);break;
+      case'post':travBinPost(r,order);break;
+      case'level':travBinLevel(r,order);break;
+    }
+  }
+  return order;
+}
+// Binary
+function travBinPre(n,o){if(!n)return;o.push(n);travBinPre(n.l,o);travBinPre(n.r,o)}
+function travBinIn(n,o){if(!n)return;travBinIn(n.l,o);o.push(n);travBinIn(n.r,o)}
+function travBinPost(n,o){if(!n)return;travBinPost(n.l,o);travBinPost(n.r,o);o.push(n)}
+function travBinLevel(n,o){if(!n)return;let q=[n];while(q.length){let c=q.shift();o.push(c);if(c.l)q.push(c.l);if(c.r)q.push(c.r)}}
+// Multi-way (Trie / B-tree / B+tree)
+function travMultiPre(n,o){if(!n)return;o.push(n);if(n._ch)for(let c of n._ch)travMultiPre(c,o)}
+function travMultiIn(n,o){
+  if(!n)return;
+  if(!n._ch||!n._ch.length){o.push(n);return}
+  // For multi-way: visit child[0], key[0], child[1], key[1], ... child[n]
+  // We treat the node itself as a single visit after first half of children
+  let mid=Math.floor(n._ch.length/2);
+  for(let i=0;i<mid;i++)travMultiIn(n._ch[i],o);
+  o.push(n);
+  for(let i=mid;i<n._ch.length;i++)travMultiIn(n._ch[i],o);
+}
+function travMultiPost(n,o){if(!n)return;if(n._ch)for(let c of n._ch)travMultiPost(c,o);o.push(n)}
+function travMultiLevel(n,o){if(!n)return;let q=[n];while(q.length){let c=q.shift();o.push(c);if(c._ch)for(let ch of c._ch)q.push(ch);if(c.l)q.push(c.l);if(c.r)q.push(c.r)}}
+
+let travMode=null,travOrder=[],travIdx=-1,travTimer=null,travActive=false;
+function hTrav(mode){
+  if(locked||travActive)return;
+  let modeNames={pre:'前序 Pre-Order',in:'中序 In-Order',post:'后序 Post-Order',level:'层序 Level-Order'};
+  let order=travCollect(mode);
+  if(!order||!order.length)return;
+  travMode=mode;travOrder=order;travIdx=-1;travActive=true;
+  locked=true;setB(true);
+  // Build step cards
+  beginOp();
+  let labels=order.map(n=>n.keys?('['+n.keys.join(',')+']'):String(n.k));
+  rec('🚶 '+modeNames[mode],'共 '+order.length+' 个节点\n序列: '+labels.join(' → '),[],['tChk']);
+  for(let i=0;i<order.length;i++){
+    let n=order[i];
+    let label=n.keys?('['+n.keys.join(',')+']'):String(n.k);
+    rec('第 '+(i+1)+' 步: 访问 '+label,'已访问: '+labels.slice(0,i+1).join(' → '),[n],['tChk']);
+  }
+  rec('✅ 遍历完成','完整序列: '+labels.join(' → '),[],['tChk']);
+  endOp();
+  travActive=false;locked=false;
+  toast('🚶 '+modeNames[mode]+' — 点击 ⏭ 逐步查看','ok');
+  ann(modeNames[mode]+' 遍历，共'+order.length+'个节点');
+}
+
+// Dropdown toggle
+function toggleTravMenu(){
+  let m=$('travMenu'),b=$('bTrav');
+  let open=m.classList.toggle('open');
+  b.setAttribute('aria-expanded',open?'true':'false');
+  if(open){m.querySelector('button').focus()}
+}
+
+// ===== Handlers =====
+function hIns(){if(locked)return;let raw=$('inp').value.trim();if(!raw){toast('请输入值','err');ann('请输入值');return}$('inp').value='';if(ds==='trie'){raw.split(/[,，\s]+/).filter(Boolean).forEach(w=>eng().insert(w));return}let vs=raw.split(/[,，\s]+/).map(v=>parseInt(v)).filter(v=>!isNaN(v)&&v>=-999&&v<=9999);if(!vs.length)return;if(vs.length===1){eng().insert(vs[0]);return}let i=0;toast('批量插入 0/'+vs.length+'...');function nx(){if(i>=vs.length||locked)return;eng().insert(vs[i]);i++;si=steps.length-1;hlSet=new Set();render();updP();setB(false);locked=false;$('bN').disabled=$('bP').disabled=$('bA').disabled=$('bS').disabled=true;if(i<vs.length){toast('批量插入 '+i+'/'+vs.length+'...');setTimeout(nx,250)}else{toast('✅ 批量插入完成 ('+vs.length+'个)','ok')}}nx()}
+function hDel(){if(locked)return;let v=$('inp').value.trim();if(!v){if(ds.includes('heap')){$('inp').value='';eng().delete();return}return}$('inp').value='';if(ds==='trie'){eng().delete(v);return}if(ds.includes('heap')){eng().delete();return}let n=parseInt(v);if(isNaN(n)){toast('请输入有效整数','err');ann('请输入有效整数');return}eng().delete(n)}
+function hFind(){if(locked)return;let v=$('inp').value.trim();if(!v)return;if(ds==='trie'){eng().find(v);return}let n=parseFloat(v);if(!Number.isInteger(n)){toast('请输入整数，不支持小数','err');ann('请输入整数，不支持小数');return}eng().find(n)}
+function hRnd(){if(locked)return;if(ds==='trie'){$('inp').value='cat,car,card,care,dog';hIns();return}let used=new Set();let r=getTree();(function col(n){if(!n)return;used.add(n.k);col(n.l);col(n.r)})(r);if(ds.includes('heap'))heapA.forEach(v=>used.add(v));let vs=[],a=0;while(vs.length<5&&a<200){let v=Math.floor(Math.random()*99)+1;if(!used.has(v)){vs.push(v);used.add(v)}a++}$('inp').value=vs.join(',');hIns()}
+function hClr(){if(locked)return;eng().clr();if(ds.includes('heap'))heapA=[];steps=[];snaps=[];si=-1;hlSet=new Set();autoP=false;if(autoT)clearTimeout(autoT);$('bA').textContent='▶';setB(false);$('bN').disabled=$('bP').disabled=$('bA').disabled=$('bS').disabled=true;locked=false;render();updP();$('stC').innerHTML='<div class=\"sc\" aria-current=\"step\"><h4>🗑️ 已清空</h4><p>输入值开始。</p></div>';ann('已清空')}
+
+// ===== DS Switch =====
+function clearAll(){bstR=null;avlR=null;rbtR=null;heapA=[];trieR=null;btR=null;bpR=null}
+function updDSUI(){$('bD').textContent=ds.includes('heap')?'➖ 删堆顶':'➖ 删';$('inp').placeholder=ds==='trie'?'英文单词/逗号':'整数/逗号分隔';$('infoA').innerHTML=eng().info;$('bord').style.display=(ds==='btree'||ds==='bplus')?'':'none'}
+function switchDS(){ds=$('ds').value;clearAll();steps=[];snaps=[];si=-1;hlSet=new Set();autoP=false;if(autoT)clearTimeout(autoT);$('bA').textContent='▶';setB(false);$('bN').disabled=$('bP').disabled=$('bA').disabled=$('bS').disabled=true;locked=false;render();updP();updDSUI();$('stC').innerHTML='<div class="sc" aria-current="step"><h4>🔄 已切换</h4><p>当前：'+esc(eng().name)+'</p></div>';ann('切换到 '+eng().name)}
+
+// ===== Tabs =====
+function tab(i){document.querySelectorAll('[role=tab]').forEach((t,j)=>{t.setAttribute('aria-selected',j===i?'true':'false');t.tabIndex=j===i?0:-1});document.querySelectorAll('[role=tabpanel]').forEach((p,j)=>p.classList.toggle('on',j===i))}
+$('t0').onclick=()=>tab(0);$('t1').onclick=()=>tab(1);$('t2').onclick=()=>tab(2);
+document.querySelector('.tabs').addEventListener('keydown',e=>{let ts=[...$('t0').parentElement.children];let c=ts.findIndex(t=>t.getAttribute('aria-selected')==='true');if(e.key==='ArrowRight'){e.preventDefault();let n=(c+1)%ts.length;tab(n);ts[n].focus()}if(e.key==='ArrowLeft'){e.preventDefault();let n=(c-1+ts.length)%ts.length;tab(n);ts[n].focus()}});
+
+// ===== Props =====
+function updP(){let r=getTree();if(ds==='trie')r=trieTree(trieR,'◎');if(ds.includes('heap'))r=heapTree(0);if(ds==='btree')r=btToTree(btR);if(ds==='bplus')r=bpToTree(bpR);let props=eng().props(r);$('pG').innerHTML=props.map(([l,v])=>'<div class="pc"><div class="v">'+v+'</div><div class="l">'+l+'</div></div>').join('');$('vT').textContent=eng().validate(r)}
+
+// ===== Tooltip =====
+cv.addEventListener('mousemove',function(e){let rc=cv.getBoundingClientRect(),mx=e.clientX-rc.left,my=e.clientY-rc.top;let f=findAt(dispR,mx,my);let tt=$('tip');if(f){let info='<b>'+f.k+'</b>';if(ds==='avl')info+='<br>BF:'+f.bf+' H:'+f.h;if(ds==='rbt')info+='<br>'+(f.c==='R'?'🔴红':'⚫黑');tt.innerHTML=info;tt.style.display='block';let pr=$('cw').getBoundingClientRect();tt.style.left=Math.min(e.clientX-pr.left+10,pr.width-140)+'px';tt.style.top=(e.clientY-pr.top+10)+'px'}else tt.style.display='none'});
+cv.addEventListener('mouseleave',()=>$('tip').style.display='none');
+cv.addEventListener('touchstart',function(e){let t=e.touches[0],rc=cv.getBoundingClientRect();let f=findAt(dispR,t.clientX-rc.left,t.clientY-rc.top);if(f)ann('节点 '+f.k)},{passive:true});
+function findAt(n,mx,my){if(!n)return null;let dx=mx-n.x,dy=my-n.y;if(n.keys&&n.keys.length){let kw=22,slotW=8,pad=6;let w=(n.keys.length*kw+(n.keys.length+1)*slotW+pad*2)*n.sc/2;if(Math.abs(dx)<w&&Math.abs(dy)<12*n.sc)return n}else if(dx*dx+dy*dy<=NR*NR*n.sc*n.sc)return n;if(n._ch)for(let c of n._ch){let r=findAt(c,mx,my);if(r)return r}return findAt(n.l,mx,my)||findAt(n.r,mx,my)}
+
+// ===== Screenshot Export =====
+function exportPNG(){
+  if(!dispR){toast('树为空，无法截图','err');return}
+  // Redraw without animation artifacts (snap to final positions)
+  let tempCv=document.createElement('canvas');
+  let w=cv.width,h=cv.height;tempCv.width=w;tempCv.height=h;
+  let tc=tempCv.getContext('2d');
+  tc.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+  // Fill background
+  tc.fillStyle='#0d1117';tc.fillRect(0,0,w/devicePixelRatio,h/devicePixelRatio);
+  // Copy current canvas content
+  tc.drawImage(cv,0,0,w,h,0,0,w/devicePixelRatio,h/devicePixelRatio);
+  // Add watermark
+  tc.fillStyle='rgba(138,145,154,.3)';tc.font='12px sans-serif';tc.textAlign='right';
+  tc.fillText('Tree Lab · github.com/imZhiYa/tech-knowledge-docs',w/devicePixelRatio-10,h/devicePixelRatio-8);
+  // Download
+  let link=document.createElement('a');
+  link.download='tree-lab-'+ds+'-'+Date.now()+'.png';
+  link.href=tempCv.toDataURL('image/png');
+  link.click();
+  toast('✅ 截图已保存','ok');ann('截图已导出');
+}
+
+// ===== Share Link (URL state) =====
+function getStateData(){
+  let data={ds};
+  if(ds==='trie'){let words=[];function tw(n,prefix){if(!n)return;if(n.end)words.push(prefix);for(let c in n.ch)tw(n.ch[c],prefix+c)}tw(trieR,'');data.v=words.join(',')}
+  else if(ds.includes('heap')){data.v=heapA.join(',')}
+  else if(ds==='btree'||ds==='bplus'){let keys=[];function bk(n){if(!n)return;for(let k of(n.keys||[]))keys.push(k);for(let c of(n.children||[]))bk(c)}if(ds==='btree')bk(btR);else bk(bpR);data.v=keys.join(',')}
+  else{let keys=[];function ik(n){if(!n)return;ik(n.l);keys.push(n.k);ik(n.r)}ik(getTree());data.v=keys.join(',')}
+  if(ds==='btree'||ds==='bplus')data.ord=btOrder;
+  return data;
+}
+function encodeState(){let d=getStateData();let params=new URLSearchParams();params.set('ds',d.ds);if(d.v)params.set('v',d.v);if(d.ord)params.set('ord',d.ord);return params.toString()}
+function shareLink(){
+  let q=encodeState();
+  let url=location.origin+location.pathname+'?'+q;
+  if(navigator.clipboard){navigator.clipboard.writeText(url).then(()=>{toast('✅ 链接已复制到剪贴板','ok');ann('链接已复制')}).catch(()=>{toast(url);ann('请手动复制链接')})}
+  else{toast(url);ann('请手动复制链接')}
+}
+function loadFromURL(){
+  let params=new URLSearchParams(location.search);
+  let dv=params.get('ds');let vv=params.get('v');let ov=params.get('ord');
+  if(!dv||!vv)return;
+  // Set DS
+  $('ds').value=dv;ds=dv;
+  if(ov)btOrder=parseInt(ov);
+  clearAll();updDSUI();
+  // Insert values
+  if(dv==='trie'){vv.split(',').filter(Boolean).forEach(w=>{if(!trieR)trieR=new TrN();let n=trieR;for(let c of w.toLowerCase()){if(!n.ch[c])n.ch[c]=new TrN();n=n.ch[c]}n.end=true})}
+  else{let vals=vv.split(',').map(v=>parseInt(v)).filter(v=>!isNaN(v));for(let v of vals){eng().insert(v);si=steps.length-1;hlSet=new Set();setB(false);locked=false;$('bN').disabled=$('bP').disabled=$('bA').disabled=$('bS').disabled=true}}
+  render();updP();
+  toast('✅ 从链接恢复了 '+(dv==='trie'?'Trie':eng().name),'ok');
+}
+
+// ===== Events =====
+$('bI').onclick=hIns;$('bD').onclick=hDel;$('bF').onclick=hFind;$('bR').onclick=hRnd;$('bC').onclick=hClr;
+$('bP').onclick=stP;$('bN').onclick=stN;$('bA').onclick=togA;$('bS').onclick=skip;
+// Traverse
+$('bTrav').onclick=function(e){e.stopPropagation();toggleTravMenu()};
+$('travMenu').onclick=function(e){let btn=e.target.closest('[data-mode]');if(btn){$('travMenu').classList.remove('open');$('bTrav').setAttribute('aria-expanded','false');hTrav(btn.dataset.mode)}};
+// Close menu on outside click
+document.addEventListener('click',function(e){if(!e.target.closest('#bTrav')&&!e.target.closest('#travMenu')){$('travMenu').classList.remove('open');$('bTrav').setAttribute('aria-expanded','false')}});
+// Keyboard nav for menu
+$('travMenu').addEventListener('keydown',function(e){
+  let items=[...this.querySelectorAll('button')];
+  let idx=items.indexOf(document.activeElement);
+  if(e.key==='ArrowDown'){e.preventDefault();items[(idx+1)%items.length].focus()}
+  else if(e.key==='ArrowUp'){e.preventDefault();items[(idx-1+items.length)%items.length].focus()}
+  else if(e.key==='Escape'){this.classList.remove('open');$('bTrav').setAttribute('aria-expanded','false');$('bTrav').focus()}
+});
+$('ds').onchange=switchDS;
+$('bord').onchange=function(){btOrder=parseInt(this.value);switchDS()};
+$('spd').oninput=function(){$('spdV').textContent=this.value};
+$('inp').onkeydown=function(e){if(e.key==='Enter'){e.preventDefault();hIns()}};
+$('ckDepth').onchange=function(){showDepth=this.checked;render()};
+$('ckHeight').onchange=function(){showHeight=this.checked;render()};
+$('ckType').onchange=function(){showType=this.checked;render()};
+$('ckNil').onchange=function(){showNil=this.checked;render()};
+
+document.addEventListener('keydown',function(e){if(document.activeElement===$('inp')||document.activeElement===$('ds'))return;if(e.key==='ArrowRight'&&!$('bN').disabled){e.preventDefault();stN()}else if(e.key==='ArrowLeft'&&!$('bP').disabled){e.preventDefault();stP()}else if(e.key===' '&&!$('bA').disabled){e.preventDefault();togA()}else if(e.key==='Escape'){e.preventDefault();hClr()}});
+window.addEventListener('resize',()=>render(dispR));
+
+// roundRect polyfill
+if(!cx.roundRect){CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r){this.moveTo(x+r,y);this.lineTo(x+w-r,y);this.arcTo(x+w,y,x+w,y+r,r);this.lineTo(x+w,y+h-r);this.arcTo(x+w,y+h,x+w-r,y+h,r);this.lineTo(x+r,y+h);this.arcTo(x,y+h,x,y+h-r,r);this.lineTo(x,y+r);this.arcTo(x,y,x+r,y,r)}}
+
+$('bScreenshot').onclick=exportPNG;
+$('bShare').onclick=shareLink;
+
+// Init
+switchDS();
+// Load state from URL if present
+try{loadFromURL()}catch(e){}
+})();
+</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a166a6001e08005d',t:'MTc4MzI1NzQzMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
