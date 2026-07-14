@@ -2073,9 +2073,7 @@ use(x);
 
 **停顿数学**：
 
-\[
-T_{\text{ZGC pause}} \approx O(|\text{GC Roots}|) \ll O(|\text{Heap}|) \text{ 或 } O(|\text{Live set}|)
-\]
+T_ZGC pause ≈ O(GC Roots) ≪ O(Heap) 或 O(Live set)
 
 Roots ≈ 线程栈、寄存器、全局引用、JNI、**虚拟线程 StackChunk** 等——随**线程与栈深度**涨，不随 1TB 堆线性涨。
 → 对照尺上 **停顿模型** 格被真正改写。
