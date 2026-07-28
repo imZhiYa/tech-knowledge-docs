@@ -203,17 +203,6 @@ cd tech-knowledge-docs
 
 ---
 
-## 🗓 规划中 · Roadmap
-
-- [ ] `03-concurrency` · 并发容器（ConcurrentHashMap / CopyOnWrite 系列）
-- [ ] `03-concurrency` · Java 内存模型与 happens-before
-- [ ] `04-network` · TCP / IO 多路复用 / Netty 事件循环
-- [ ] `05-storage` · MySQL InnoDB 事务与 MVCC
-- [ ] `06-distributed` · 一致性协议与分布式事务
-
-> 欢迎通过 [Issue](https://github.com/imZhiYa/tech-knowledge-docs/issues) 投票或提议下一篇主题。
-
----
 
 ## 🤝 参与贡献 · Contributing
 
