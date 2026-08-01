@@ -9,7 +9,7 @@ _Deconstructing the fundamental building blocks of computing from the kernel up,
 [![Stars](https://img.shields.io/github/stars/imZhiYa/tech-knowledge-docs?style=for-the-badge&logo=github&color=yellow)](https://github.com/imZhiYa/tech-knowledge-docs/stargazers)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](./LICENSE)
 ![Active Development](https://img.shields.io/badge/status-🛠_Active_Development-yellow?style=for-the-badge)
-![Docs](https://img.shields.io/badge/docs-7_篇-success?style=for-the-badge)
+![Docs](https://img.shields.io/badge/docs-8_篇-success?style=for-the-badge)
 ![Java](https://img.shields.io/badge/JDK-8%20%7C%2021%20LTS-orange?style=for-the-badge&logo=openjdk)
 ![Last Commit](https://img.shields.io/github/last-commit/imZhiYa/tech-knowledge-docs?style=for-the-badge)
 
@@ -73,8 +73,10 @@ docs/
 ├── 03-concurrency/                 # 🔐 并发与执行引擎
 │   ├── 🔐 AQS 核心机制深度解析.md
 │   └── 🧵 Java 线程池深度解析.md
-└── 04-collections/                 # 🗄️ 集合框架 (NEW)
-    └── 🗄️ Java Collection.md
+├── 04-collections/                 # 🗄️ 集合框架
+│   └── 🗄️ Java Collection.md
+└── 05-database/                    # 🐬 数据库与存储引擎 (NEW)
+    └── 🐬 MySQL-InnoDB-深度解析.md
 ```
 
 ### 已完成 · Completed
@@ -88,11 +90,13 @@ docs/
 | 🔐 **AQS** | [AQS 核心机制](./docs/03-concurrency/) | CLH 隐形队列/前驱接力/dummy head、Condition 双队列、共享传播、与 ObjectMonitor 对照表 | 吃透 ReentrantLock/CountDownLatch 的 |
 | 🧵 **线程池** | [Java 线程池](./docs/03-concurrency/) | ctl 位打包、execute 三道门、Worker 与 AQS 的关系、打烊协议、虚拟线程与响应式对比 | 线上线程池告警/堆积的 |
 | 🗄️ **集合框架** | [Java Collection](./docs/04-collections/) **[NEW]** | HashMap 寻址/扰动/树化阈值8与64推导、TreeMap 为何选红黑树不选AVL、LinkedHashMap LRU、ConcurrentHashMap JDK7->8 演进与 helpTransfer、Fail-Fast/Fail-Safe 本质 | 被 ConcurrentModificationException / HashMap 死循环问住的 |
+| 🐬 **MySQL InnoDB** | [MySQL-InnoDB-深度解析](./docs/05-database/) **[NEW]** | 9层递进：Page/Extent 行格式与行溢出、Buffer Pool 改良LRU、B+ 树容量与最左前缀、事务隔离矩阵、Record/Gap/Next-Key 锁、Read View 版本可见性、Redo/Undo/Binlog 两阶段提交、一条 UPDATE 全链路、EXPLAIN 调优实战；18 坑 + 勘误表 + 5 张生产决策卡 | 被"RR 为什么能防幻读 / UPDATE 加什么锁 / COUNT(*) 为什么慢"问住的 |
 
 ### 🔥 最近更新
 
 | 日期 | 内容 |
 | --- | --- |
+| **2026-08-01** | **新增《🐬 MySQL InnoDB 存储引擎深度解析》** — 9层递进(L1-L9)，Level 1 到 Level 9 覆盖页存储/Buffer Pool/B+树/事务/锁/MVCC/日志三剑客/全链路/调优，18 坑 + 勘误表 + 5 张生产决策卡 + 合书自测，全文唯一比喻「24 小时无人图书馆」 |
 | **2026-07-29** | **新增《🗄️ Java Collection 框架深度解析》** — 8层递进(L1-L8 + 5.5/7.5/7.6扩展)，全家族覆盖 ArrayList/LinkedList/HashMap/TreeMap/LinkedHashMap/ConcurrentHashMap + EnumSet/IdentityHashMap/CopyOnWrite 速查表，Fail-Fast 全链路拆解，10+ 张生产选型决策卡 |
 | 2026-07-28 | 新增《🧵 Java 线程池深度解析》—— 7 层递进 + 13 坑 + 8 张生产决策卡 + 6 个可运行反直觉实验 |
 | 2026-07-24 | 新增《🔐 AQS 核心机制深度解析》—— 从 CLH 接力到生产架构决策，5张决策卡 |
@@ -107,7 +111,7 @@ docs/
 #### 🎯 我要准备面试（60分钟速通版）
 
 ```text
-📐 二进制 → 🌳 数据结构 → 🧠 虚拟内存 → ☕ JVM → 🔐 AQS → 🧵 线程池 → 🗄️ Collection
+📐 二进制 → 🌳 数据结构 → 🧠 虚拟内存 → ☕ JVM → 🔐 AQS → 🧵 线程池 → 🗄️ Collection → 🐬 MySQL InnoDB
 ```
 
 每篇末尾的 🔴 **口诀** 串起来就是电梯版复述稿；每篇的「合书自测」是面试官视角的灵魂拷问。
@@ -117,6 +121,9 @@ docs/
 - `ArrayList` vs `LinkedList` 真的只是数组和链表的区别吗？ → [🗄️ Collection · Level 2]
 - `ConcurrentHashMap` JDK7 和 JDK8 实现有什么区别？ → [🗄️ Collection · Level 6]
 - 线程池用 `submit` 还是 `execute`？ → [🧵 线程池 · Lab 3]
+- InnoDB 的 RR 隔离级别真的完全防幻读吗？ → [🐬 InnoDB · Level 5/坑 2]
+- `UPDATE WHERE 无索引` 为什么会锁全表？ → [🐬 InnoDB · 坑 1]
+- `COUNT(*)` 在 InnoDB 里为什么慢？ → [🐬 InnoDB · 坑 4]
 
 #### 🔧 我在排查线上问题
 
@@ -128,6 +135,7 @@ docs/
 | 锁竞争、P99 突刺、死锁 | [🔐 AQS · 生产决策卡 & P99 决策树](./docs/03-concurrency/) |
 | GC 频繁 / 内存溢出 / Metaspace 飙升 | [☕ JVM 运行时](./docs/02-jvm/) |
 | 缺页、SWAP、内存映射异常 | [🧠 虚拟内存](./docs/01-cs-foundation/os-memory/) |
+| 慢 SQL / `Waiting for table metadata lock` / 死锁 / 磁盘空间不释放 | [🐬 InnoDB · 坑与调优](./docs/05-database/) |
 
 #### 🏗️ 我在做架构评审
 
@@ -136,6 +144,7 @@ docs/
 - 🗄️ **Collection**：10+ 张决策卡（List 选型 / Map 选型 / LRU 实现 / 并发容器选型 / 遍历与删除 / Queue 替代 Stack / Enum 优化 / 容量治理 / 避坑清单）
 - 🧵 **线程池**：8 张决策卡（核心链路 / 埋点 / 批处理 / P99 排障 / @Async 避坑 / 虚拟线程迁移 / 动态线程池 / 舱壁隔离）
 - 🔐 **AQS**：5 张决策卡（分片锁 / Semaphore 限流 / 生产者消费者 / P99 决策树 / Virtual Threads 迁移）
+- 🐬 **InnoDB**：5 张决策卡（隔离级别选型 / Buffer Pool 容量规划 / 索引设计 / 日志与持久性配置 / 慢查询排查 SOP）
 
 每张卡都包含「**不能做的错误决策**」与「**验收指标/埋点**」两栏，可直接贴到 RFC 里。
 
@@ -230,7 +239,7 @@ chore: xxx                         # 构建 / 配置
 
 ---
 
-**从二进制到线程池到集合框架，构建不可动摇的计算机知识体系**
+**从二进制到集合框架再到数据库存储引擎，构建不可动摇的计算机知识体系**
 
 如果这些文档帮到了你，欢迎点一个 ⭐ **Star**，这会让更多人看到这份硬核知识库。
 
