@@ -57,10 +57,6 @@
 
 `InnoDB` `Buffer Pool` `B+ Tree` `MVCC` `Row Lock` `Gap Lock` `Redo Log` `Undo Log` `Binlog` `Transaction Isolation` `MySQL 5.7 vs 8.0`
 
-## 🧵 主线进度条
-
-【① 已合】Page 与磁盘存储 → 【② 已合】Buffer Pool → 【③ 已合】B+ 树索引 → 【④ 已合】事务与 ACID → 【⑤ 已合】锁机制 → 【⑥ 已合】MVCC → 【⑦ 已合】日志体系 → 【⑧ 已合】全链路穿透 → 【⑨-SQL 调优实战专题】
-
 ---
 
 ## ⚠️ 版本与证据边界
