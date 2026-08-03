@@ -75,8 +75,10 @@ docs/
 │   └── 🧵 Java 线程池深度解析.md
 ├── 04-collections/                 # 🗄️ 集合框架
 │   └── 🗄️ Java Collection.md
-└── 05-database/                    # 🐬 数据库与存储引擎 (NEW)
-    └── 🐬 MySQL-InnoDB-深度解析.md
+├── 05-database/                    # 🐬 数据库与存储引擎
+│   └── 🐬MySQL-InnoDB-深度解析.md
+└── 06-redis/                       # ⚡ Redis 与缓存系统 (NEW)
+    └── ⚡Redis深度解析.md
 ```
 
 ### 已完成 · Completed
@@ -91,11 +93,13 @@ docs/
 | 🧵 **线程池** | [Java 线程池](./docs/03-concurrency/) | ctl 位打包、execute 三道门、Worker 与 AQS 的关系、打烊协议、虚拟线程与响应式对比 | 线上线程池告警/堆积的 |
 | 🗄️ **集合框架** | [Java Collection](./docs/04-collections/) **[NEW]** | HashMap 寻址/扰动/树化阈值8与64推导、TreeMap 为何选红黑树不选AVL、LinkedHashMap LRU、ConcurrentHashMap JDK7->8 演进与 helpTransfer、Fail-Fast/Fail-Safe 本质 | 被 ConcurrentModificationException / HashMap 死循环问住的 |
 | 🐬 **MySQL InnoDB** | [MySQL-InnoDB-深度解析](./docs/05-database/) **[NEW]** | 9层递进：Page/Extent 行格式与行溢出、Buffer Pool 改良LRU、B+ 树容量与最左前缀、事务隔离矩阵、Record/Gap/Next-Key 锁、Read View 版本可见性、Redo/Undo/Binlog 两阶段提交、一条 UPDATE 全链路、EXPLAIN 调优实战；18 坑 + 勘误表 + 5 张生产决策卡 | 被"RR 为什么能防幻读 / UPDATE 加什么锁 / COUNT(*) 为什么慢"问住的 |
+| ⚡ **Redis** | [Redis 深度解析](./docs/06-redis/⚡Redis深度解析.md) **[NEW]** | 9层递进：内存与事件循环、type×encoding、过期与淘汰、RDB/AOF、复制与 Sentinel、Cluster 槽位与自治协议、Stream/HLL 场景总装；分布式锁、缓存治理、跨机房与 10 张生产决策卡 | 被“Redis 单线程为什么快 / 主从为什么丢写 / Cluster 为什么 CROSSSLOT / 锁为什么还要 fencing”问住的 |
 
 ### 🔥 最近更新
 
 | 日期 | 内容 |
 | --- | --- |
+| **2026-08-03** | **新增《⚡ Redis 深度解析》** — 9层递进(L1-L9)，从事件循环、内存编码一路推导到过期淘汰、持久化、高可用、Cluster、Stream/HLL 与生产架构评审；含分布式锁、缓存治理、勘误表、合书自测与 10 张生产决策卡 |
 | **2026-08-01** | **新增《🐬 MySQL InnoDB 存储引擎深度解析》** — 9层递进(L1-L9)，Level 1 到 Level 9 覆盖页存储/Buffer Pool/B+树/事务/锁/MVCC/日志三剑客/全链路/调优，18 坑 + 勘误表 + 5 张生产决策卡 + 合书自测，全文唯一比喻「24 小时无人图书馆」 |
 | **2026-07-29** | **新增《🗄️ Java Collection 框架深度解析》** — 8层递进(L1-L8 + 5.5/7.5/7.6扩展)，全家族覆盖 ArrayList/LinkedList/HashMap/TreeMap/LinkedHashMap/ConcurrentHashMap + EnumSet/IdentityHashMap/CopyOnWrite 速查表，Fail-Fast 全链路拆解，10+ 张生产选型决策卡 |
 | 2026-07-28 | 新增《🧵 Java 线程池深度解析》—— 7 层递进 + 13 坑 + 8 张生产决策卡 + 6 个可运行反直觉实验 |
@@ -111,7 +115,7 @@ docs/
 #### 🎯 我要准备面试（60分钟速通版）
 
 ```text
-📐 二进制 → 🌳 数据结构 → 🧠 虚拟内存 → ☕ JVM → 🔐 AQS → 🧵 线程池 → 🗄️ Collection → 🐬 MySQL InnoDB
+📐 二进制 → 🌳 数据结构 → 🧠 虚拟内存 → ☕ JVM → 🔐 AQS → 🧵 线程池 → 🗄️ Collection → 🐬 MySQL InnoDB → ⚡ Redis
 ```
 
 每篇末尾的 🔴 **口诀** 串起来就是电梯版复述稿；每篇的「合书自测」是面试官视角的灵魂拷问。
@@ -124,6 +128,9 @@ docs/
 - InnoDB 的 RR 隔离级别真的完全防幻读吗？ → [🐬 InnoDB · Level 5/坑 2]
 - `UPDATE WHERE 无索引` 为什么会锁全表？ → [🐬 InnoDB · 坑 1]
 - `COUNT(*)` 在 InnoDB 里为什么慢？ → [🐬 InnoDB · 坑 4]
+- Redis 为什么单线程却能支撑高并发？→ [⚡ Redis · Level 2：事件循环与线性化点](./docs/06-redis/⚡Redis深度解析.md)
+- Redis 的 `TTL` 为什么不是业务定时器？大 key / 热 key 怎么治理？→ [⚡ Redis · Level 4：过期、淘汰与生产治理](./docs/06-redis/⚡Redis深度解析.md)
+- `SET NX PX + Lua` 为什么仍需要 fencing token？→ [⚡ Redis · 分布式锁与生产决策卡](./docs/06-redis/⚡Redis深度解析.md)
 
 #### 🔧 我在排查线上问题
 
@@ -136,6 +143,9 @@ docs/
 | GC 频繁 / 内存溢出 / Metaspace 飙升 | [☕ JVM 运行时](./docs/02-jvm/) |
 | 缺页、SWAP、内存映射异常 | [🧠 虚拟内存](./docs/01-cs-foundation/os-memory/) |
 | 慢 SQL / `Waiting for table metadata lock` / 死锁 / 磁盘空间不释放 | [🐬 InnoDB · 坑与调优](./docs/05-database/) |
+| Redis P99 突刺 / `blocked_clients` / 大 key 阻塞 | [⚡ Redis · 事件循环、阻塞半径与大 key 治理](./docs/06-redis/⚡Redis深度解析.md) |
+| 缓存命中率断崖 / DB 回源暴增 / 雪崩击穿 | [⚡ Redis · 缓存三兄弟与生产闭环](./docs/06-redis/⚡Redis深度解析.md) |
+| `MOVED` / `ASK` / `CROSSSLOT` / 主从切换异常 | [⚡ Redis · Cluster、复制与高可用](./docs/06-redis/⚡Redis深度解析.md) |
 
 #### 🏗️ 我在做架构评审
 
@@ -145,6 +155,7 @@ docs/
 - 🧵 **线程池**：8 张决策卡（核心链路 / 埋点 / 批处理 / P99 排障 / @Async 避坑 / 虚拟线程迁移 / 动态线程池 / 舱壁隔离）
 - 🔐 **AQS**：5 张决策卡（分片锁 / Semaphore 限流 / 生产者消费者 / P99 决策树 / Virtual Threads 迁移）
 - 🐬 **InnoDB**：5 张决策卡（隔离级别选型 / Buffer Pool 容量规划 / 索引设计 / 日志与持久性配置 / 慢查询排查 SOP）
+- ⚡ **Redis**：10 张决策卡（Cache-Aside / 淘汰与容量 / RDB-AOF / Sentinel / Cluster / 分布式锁 / Lua 与 Function / Cluster 配置 / 跨机房容灾 / RESP3 Tracking）
 
 每张卡都包含「**不能做的错误决策**」与「**验收指标/埋点**」两栏，可直接贴到 RFC 里。
 
@@ -157,6 +168,7 @@ docs/
 - **线程池** 6 大反直觉实验：幽灵 Worker(`poolSize=0`) / 无界队列废掉 `max` / `submit` 吞异常 / `workStealingPool` 守护线程导致任务丢失 / 五种提交方式阻塞点对比 / `InheritableThreadLocal` 在池化场景天然失效
 - **AQS** 实验：Condition `await/signal` 时 `firstWaiter` 到 `lastWaiter` 的节点迁移、共享锁传播的 `setHeadAndPropagate` 边界
 - **Collection** 实验：HashMap 扰动函数碰撞率对比、树化阈值8在不同负载因子下的实测、Fail-Fast 的 `modCount` 竞态窗口、ConcurrentHashMap 扩容 `helpTransfer` 加速效果
+- **Redis** 验证边界：事件循环线性化点、编码阈值、过期/淘汰、RDB/AOF、复制切换、Cluster 重定向、Stream PEL 与 HLL 误差；性能数字始终绑定版本、硬件与压测方法
 
 > 文档中引用的所有实验输出 **均为真实运行结果**，非手写示意。以 OpenJDK 21 LTS `jdk21u` 为基线。
 
