@@ -9,10 +9,6 @@
 > 说明一点：从 Level 6 开始会出现另一批角色（周期任务 P、分治任务 F、响应式流元素 E）。他们各自演示定时池、ForkJoinPool 和 Reactor 的场景，**和主线的 T 不是同一条因果链**，只是借用同一座厨房的舞台。看到陌生字母不必往主线上套，文中会明确提示。
 
 > 🏷️ `ThreadPoolExecutor` `ctl` `Worker` `AQS` `getTask` `RejectedExecutionHandler` `ScheduledThreadPoolExecutor` `ForkJoinPool` `work-stealing` `CompletableFuture` `Virtual Threads` `Reactor Schedulers` `背压`
->
-> 🧵 主线 · ⑥-线程池/7 · 任务执行与容量治理协议
->
-> ①已合 ②已合 ③已合 ④已合 ⑤-AQS 已合 【⑥-线程池 专题】 ⑦
 
 > ⚠️ **版本与证据边界**
 >
