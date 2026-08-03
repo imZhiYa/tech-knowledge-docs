@@ -16,13 +16,6 @@
 
 **关键词**：`Collection` `List` `Set` `Map` `Iterator` `Fail-Fast` `Fail-Safe` `HashMap` `ConcurrentHashMap` `红黑树` `哈希冲突` `扩容` `负载因子`
 
-**主线进度条**：
-```
-①已合 → ②已合 → ③已合 → ④已合 → ⑤已合 → ⑥已合 → ⑦已合 → 【⑧-Collection框架专题】
-         ↑          ↑          ↑          ↑          ↑          ↑
-       内存布局   哈希本质   HashMap   TreeMap  ConcurrentHashMap  生产决策
-```
-
 ---
 
 ## ⚠️ 版本与证据边界
