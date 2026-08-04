@@ -9,7 +9,7 @@ _Deconstructing the fundamental building blocks of computing from the kernel up,
 [![Stars](https://img.shields.io/github/stars/imZhiYa/tech-knowledge-docs?style=for-the-badge&logo=github&color=yellow)](https://github.com/imZhiYa/tech-knowledge-docs/stargazers)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](./LICENSE)
 ![Active Development](https://img.shields.io/badge/status-🛠_Active_Development-yellow?style=for-the-badge)
-![Docs](https://img.shields.io/badge/docs-8_篇-success?style=for-the-badge)
+![Docs](https://img.shields.io/badge/docs-10_篇-success?style=for-the-badge)
 ![Java](https://img.shields.io/badge/JDK-8%20%7C%2021%20LTS-orange?style=for-the-badge&logo=openjdk)
 ![Last Commit](https://img.shields.io/github/last-commit/imZhiYa/tech-knowledge-docs?style=for-the-badge)
 
@@ -62,12 +62,14 @@ Transfer → 能迁移到哪些别的设计问题？
 ```text
 docs/
 ├── 01-cs-foundation/               # 📐 计算机科学基石
-│   ├── binary/                     # 01-二进制底层思维与位运算
-│   │   └── 01-二进制底层思维与位运算.md
+│   ├── binary/                     # 二进制底层思维与位运算
+│   │   └── 二进制底层思维与位运算.md
 │   ├── data-structures/            # 🌳 树形数据结构
 │   │   └── 🌳 树形数据结构.md
-│   └── os-memory/                  # 🧠 虚拟内存
-│       └── 🧠 虚拟内存.md
+│   ├── os-memory/                  # 🧠 虚拟内存
+│   │   └── 🧠 虚拟内存.md
+│   └── networking/                  # 🌐 网络与 I/O 模型
+│       └── 🌐 高性能网络编程原理.md
 ├── 02-jvm/                         # ☕ JVM 运行时
 │   └── ☕ JVM 运行时机制深度解析.md
 ├── 03-concurrency/                 # 🔐 并发与执行引擎
@@ -85,9 +87,10 @@ docs/
 
 | 模块 | 文档 | 核心硬核点 | 适合谁 |
 | --- | --- | --- | --- |
-| 📐 **二进制** | [01-二进制底层思维与位运算](./docs/01-cs-foundation/binary/) | 原码/反码/补码的数学推导、布尔代数、位运算 hack、ALU 电路推导 | 想打穿位运算黑盒的 |
+| 📐 **二进制** | [二进制底层思维与位运算](./docs/01-cs-foundation/binary/) | 原码/反码/补码的数学推导、布尔代数、位运算 hack、ALU 电路推导 | 想打穿位运算黑盒的 |
 | 🌳 **数据结构** | [树形数据结构](./docs/01-cs-foundation/data-structures/) | 递归/非递归/Morris 三种遍历、BST/AVL/红黑树的旋转不变量推导 | 面试被问红黑树就慌的 |
 | 🧠 **虚拟内存** | [虚拟内存](./docs/01-cs-foundation/os-memory/) | 分页/多级页表/TLB/缺页中断/页面置换/MMU 全流程地址翻译 | 被问到“为什么 mmap 快”的 |
+| 🌐 **网络编程** | [高性能网络编程原理](./docs/01-cs-foundation/networking/🌐%20高性能网络编程原理.md) **[NEW]** | 从 I/O、BIO、NIO、多路复用、AIO 一路推导到 Reactor 的状态所有权；覆盖 framing、TLS、backlog、半开连接、部分写、背压、ack、drain 与模型选择 | 被“Selector 为什么不等于 Reactor / `write()` 成功算不算完成 / Netty 为什么不能阻塞”问住的 |
 | ☕ **JVM** | [JVM 运行时机制](./docs/02-jvm/) | 类加载双亲委派的破与立、对象布局、GC 算法与收集器、JMM Happens-Before | 排查 OOM/GC 问题的 |
 | 🔐 **AQS** | [AQS 核心机制](./docs/03-concurrency/) | CLH 隐形队列/前驱接力/dummy head、Condition 双队列、共享传播、与 ObjectMonitor 对照表 | 吃透 ReentrantLock/CountDownLatch 的 |
 | 🧵 **线程池** | [Java 线程池](./docs/03-concurrency/) | ctl 位打包、execute 三道门、Worker 与 AQS 的关系、打烊协议、虚拟线程与响应式对比 | 线上线程池告警/堆积的 |
@@ -99,6 +102,7 @@ docs/
 
 | 日期 | 内容 |
 | --- | --- |
+| **2026-08-03** | **新增《🌐 高性能网络编程原理》** — 从 I/O 的等待分类出发，经 BIO 陪等、NIO 空转、多路复用/AIO 的事件语义，推导 Reactor 的状态所有权；覆盖背压、业务 ack、drain 与 4 张生产决策卡。 |
 | **2026-08-03** | **新增《⚡ Redis 深度解析》** — 9层递进(L1-L9)，从事件循环、内存编码一路推导到过期淘汰、持久化、高可用、Cluster、Stream/HLL 与生产架构评审；含分布式锁、缓存治理、勘误表、合书自测与 10 张生产决策卡 |
 | **2026-08-01** | **新增《🐬 MySQL InnoDB 存储引擎深度解析》** — 9层递进(L1-L9)，Level 1 到 Level 9 覆盖页存储/Buffer Pool/B+树/事务/锁/MVCC/日志三剑客/全链路/调优，18 坑 + 勘误表 + 5 张生产决策卡 + 合书自测，全文唯一比喻「24 小时无人图书馆」 |
 | **2026-07-29** | **新增《🗄️ Java Collection 框架深度解析》** — 8层递进(L1-L8 + 5.5/7.5/7.6扩展)，全家族覆盖 ArrayList/LinkedList/HashMap/TreeMap/LinkedHashMap/ConcurrentHashMap + EnumSet/IdentityHashMap/CopyOnWrite 速查表，Fail-Fast 全链路拆解，10+ 张生产选型决策卡 |
@@ -115,7 +119,7 @@ docs/
 #### 🎯 我要准备面试（60分钟速通版）
 
 ```text
-📐 二进制 → 🌳 数据结构 → 🧠 虚拟内存 → ☕ JVM → 🔐 AQS → 🧵 线程池 → 🗄️ Collection → 🐬 MySQL InnoDB → ⚡ Redis
+📐 二进制 → 🌳 数据结构 → 🧠 虚拟内存 → 🌐 高性能网络编程 → ☕ JVM → 🔐 AQS → 🧵 线程池 → 🗄️ Collection → 🐬 MySQL InnoDB → ⚡ Redis
 ```
 
 每篇末尾的 🔴 **口诀** 串起来就是电梯版复述稿；每篇的「合书自测」是面试官视角的灵魂拷问。
@@ -125,6 +129,9 @@ docs/
 - `ArrayList` vs `LinkedList` 真的只是数组和链表的区别吗？ → [🗄️ Collection · Level 2]
 - `ConcurrentHashMap` JDK7 和 JDK8 实现有什么区别？ → [🗄️ Collection · Level 6]
 - 线程池用 `submit` 还是 `execute`？ → [🧵 线程池 · Lab 3]
+- BIO、NIO、AIO 是性能等级还是不同的等待/通知模型？→ [🌐 网络编程 · 全局认知地图](./docs/01-cs-foundation/networking/🌐%20高性能网络编程原理.md)
+- `Selector` / `epoll` 通知可读后，为什么不能直接处理一条完整请求？→ [🌐 网络编程 · NIO 与多路复用](./docs/01-cs-foundation/networking/🌐%20高性能网络编程原理.md)
+- 本地 `write()` 返回成功，为什么还不能标记业务完成？→ [🌐 网络编程 · Reactor 状态所有权](./docs/01-cs-foundation/networking/🌐%20高性能网络编程原理.md)
 - InnoDB 的 RR 隔离级别真的完全防幻读吗？ → [🐬 InnoDB · Level 5/坑 2]
 - `UPDATE WHERE 无索引` 为什么会锁全表？ → [🐬 InnoDB · 坑 1]
 - `COUNT(*)` 在 InnoDB 里为什么慢？ → [🐬 InnoDB · 坑 4]
@@ -142,6 +149,9 @@ docs/
 | 锁竞争、P99 突刺、死锁 | [🔐 AQS · 生产决策卡 & P99 决策树](./docs/03-concurrency/) |
 | GC 频繁 / 内存溢出 / Metaspace 飙升 | [☕ JVM 运行时](./docs/02-jvm/) |
 | 缺页、SWAP、内存映射异常 | [🧠 虚拟内存](./docs/01-cs-foundation/os-memory/) |
+| `connect timeout` / `TcpExtListenOverflows` / 半开连接 / FD 持续增长 | [🌐 网络编程 · BIO 与建连生命周期](./docs/01-cs-foundation/networking/🌐%20高性能网络编程原理.md) |
+| event loop CPU 高 / `OP_WRITE` 空转 / 半包粘包 / Selector 行为异常 | [🌐 网络编程 · NIO 与多路复用](./docs/01-cs-foundation/networking/🌐%20高性能网络编程原理.md) |
+| outbound queue 堆积 / 慢客户端 / drain 重试 / ack 超时 | [🌐 网络编程 · 背压、ack、drain](./docs/01-cs-foundation/networking/🌐%20高性能网络编程原理.md) |
 | 慢 SQL / `Waiting for table metadata lock` / 死锁 / 磁盘空间不释放 | [🐬 InnoDB · 坑与调优](./docs/05-database/) |
 | Redis P99 突刺 / `blocked_clients` / 大 key 阻塞 | [⚡ Redis · 事件循环、阻塞半径与大 key 治理](./docs/06-redis/⚡Redis深度解析.md) |
 | 缓存命中率断崖 / DB 回源暴增 / 雪崩击穿 | [⚡ Redis · 缓存三兄弟与生产闭环](./docs/06-redis/⚡Redis深度解析.md) |
@@ -153,6 +163,7 @@ docs/
 
 - 🗄️ **Collection**：10+ 张决策卡（List 选型 / Map 选型 / LRU 实现 / 并发容器选型 / 遍历与删除 / Queue 替代 Stack / Enum 优化 / 容量治理 / 避坑清单）
 - 🧵 **线程池**：8 张决策卡（核心链路 / 埋点 / 批处理 / P99 排障 / @Async 避坑 / 虚拟线程迁移 / 动态线程池 / 舱壁隔离）
+- 🌐 **网络编程**：4 张决策卡（长连接事件循环 / 慢下游隔离 / 慢客户端与大响应 / 低并发或虚拟线程模型）；覆盖连接准入、背压、ack、drain 验收指标
 - 🔐 **AQS**：5 张决策卡（分片锁 / Semaphore 限流 / 生产者消费者 / P99 决策树 / Virtual Threads 迁移）
 - 🐬 **InnoDB**：5 张决策卡（隔离级别选型 / Buffer Pool 容量规划 / 索引设计 / 日志与持久性配置 / 慢查询排查 SOP）
 - ⚡ **Redis**：10 张决策卡（Cache-Aside / 淘汰与容量 / RDB-AOF / Sentinel / Cluster / 分布式锁 / Lua 与 Function / Cluster 配置 / 跨机房容灾 / RESP3 Tracking）
