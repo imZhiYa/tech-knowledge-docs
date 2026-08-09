@@ -115,7 +115,7 @@
 ### 1.2 代码实证：手写 45 行迷你容器
 
 先别看 Spring，我们用手写一个"注册表 + 反射 + 单例池"三件套，亲眼确认这三样东西够不够用。
-完整代码：`experiments/code/src/demo01/MyMiniIoC.java`，核心逻辑：
+完整代码：`springboot-demo/src/main/java/demo01/MyMiniIoC.java`，核心逻辑：
 
 ```java
 public class MyMiniIoC {
@@ -146,7 +146,7 @@ public class MyMiniIoC {
 ### 1.3 代码实证：DefaultListableBeanFactory 原始用法
 
 绕过注解、绕过 Boot，直接操作 Spring 容器的最底层。
-完整代码：`experiments/code/src/demo01/DefaultListableBeanFactoryApp.java`：
+完整代码：`springboot-demo/src/main/java/demo01/DefaultListableBeanFactoryApp.java`：
 
 ```java
 DefaultListableBeanFactory factory = new DefaultListableBeanFactory();
@@ -231,7 +231,7 @@ AnnotationConfigApplicationContext 构造
 
 ### 1.6 深挖：getBean 决策树（四分支实测）
 
-`getBean` 是容器的**唯一出口**，`doGetBean` 内部是一棵决策树。完整代码：`experiments/code/src/demo01/GetBeanTreeApp.java`。
+`getBean` 是容器的**唯一出口**，`doGetBean` 内部是一棵决策树。完整代码：`springboot-demo/src/main/java/demo01/GetBeanTreeApp.java`。
 
 实测输出（`./run.sh demo01.GetBeanTreeApp`）：
 
@@ -274,7 +274,7 @@ getBean(name) / getBean(Class)
 
 ### 1.7 深挖：父子容器（五事实实测）
 
-容器不是只能有一个——**子容器可以委派父容器**。这是 SSM 时代 Spring MVC 双容器（Root WebApplicationContext 为父、DispatcherServlet 的 WebApplicationContext 为子）的机制底座；Boot 时代默认单容器（SpringApplication 只建一个 context），但理解父子容器才能看懂遗留项目事故。完整代码：`experiments/code/src/demo01/ParentChildContextApp.java`。
+容器不是只能有一个——**子容器可以委派父容器**。这是 SSM 时代 Spring MVC 双容器（Root WebApplicationContext 为父、DispatcherServlet 的 WebApplicationContext 为子）的机制底座；Boot 时代默认单容器（SpringApplication 只建一个 context），但理解父子容器才能看懂遗留项目事故。完整代码：`springboot-demo/src/main/java/demo01/ParentChildContextApp.java`。
 
 实测输出（`./run.sh demo01.ParentChildContextApp`）：
 
@@ -404,7 +404,7 @@ getBean(name) / getBean(Class)
 
 ### 2.2 代码实证：一个 Bean 的一生（11 个钩子全打印）
 
-完整代码：`experiments/code/src/demo02/LifecycleApp.java`。
+完整代码：`springboot-demo/src/main/java/demo02/LifecycleApp.java`。
 把主线角色一生能实现的钩子全实现一遍，容器按什么顺序调用，全打出来。
 
 实测输出（`./run.sh demo02.LifecycleApp`）：
@@ -505,7 +505,7 @@ context.close() / JVM shutdown hook
 ### 2.5 代码实证：Full 模式 vs Lite 模式（@Bean 方法级单例的真相）
 
 `@Bean` 方法在 `@Configuration` 类里（Full 模式）调用多次返回同一实例；在普通 `@Component` 里（Lite 模式）呢？
-完整代码：`experiments/code/src/demo02/FullVsLiteApp.java`。
+完整代码：`springboot-demo/src/main/java/demo02/FullVsLiteApp.java`。
 
 实测输出（`./run.sh demo02.FullVsLiteApp`）：
 
@@ -527,7 +527,7 @@ Lite 模式：调用两次 @Bean 方法，同一实例? false  ← 每次调用�
 
 ### 2.6 代码实证：Aware 家族——"populateBean 先于 Aware"的铁证
 
-完整代码：`experiments/code/src/demo02/AwareFamilyApp.java`。
+完整代码：`springboot-demo/src/main/java/demo02/AwareFamilyApp.java`。
 让一个 Bean 同时实现 Aware 家族并持有 @Value 字段，在**每个回调里读这个字段**——如果 populateBean 真的先于 initializeBean，那么从 BeanNameAware 起字段就应该已经有值。
 
 实测输出（`./run.sh demo02.AwareFamilyApp`）：
@@ -636,7 +636,7 @@ ApplicationListenerDetector
 
 ### 3.2 代码实证：解析链五场景
 
-完整代码：`experiments/code/src/demo03/ResolutionChainApp.java`。
+完整代码：`springboot-demo/src/main/java/demo03/ResolutionChainApp.java`。
 同一个接口 `Greeter`，五个容器分别制造五种命运。
 
 实测输出（`./run.sh demo03.ResolutionChainApp`）：
@@ -727,7 +727,7 @@ ApplicationListenerDetector
 
 ### 3.4 代码实证：三种注入姿势与"注入时机"
 
-完整代码：`experiments/code/src/demo03/InjectionStylesApp.java`。
+完整代码：`springboot-demo/src/main/java/demo03/InjectionStylesApp.java`。
 
 实测输出（`./run.sh demo03.InjectionStylesApp`）：
 
@@ -752,7 +752,7 @@ ApplicationListenerDetector
 
 ### 3.5 深挖：`@Value("${...}")` 到底是谁解析的（四场景实证）
 
-完整代码：`experiments/code/src/demo03/ValueApp.java`，资源 `src/demo03/app.properties`。
+完整代码：`springboot-demo/src/main/java/demo03/ValueApp.java`，资源 `springboot-demo/src/main/resources/demo03/app.properties`。
 
 实测输出（`./run.sh demo03.ValueApp`）：
 
@@ -778,7 +778,7 @@ ApplicationListenerDetector
 ### 3.6 专题：@Value 为什么是 NULL（六场景实测，对应生产"排查 NULL"）
 
 > 你在生产遇到过 `@Value` 字段是 null 对吧？这不是运气问题，是六个确定场景之一。全部实测，逐一对号。
-> 完整代码：`experiments/code/src/demo03/ValueNullApp.java`。
+> 完整代码：`springboot-demo/src/main/java/demo03/ValueNullApp.java`。
 
 实测输出（`./run.sh demo03.ValueNullApp`）：
 
@@ -881,7 +881,7 @@ ApplicationListenerDetector
 
 ### 4.2 代码实证：字段注入的环，能跑通吗？
 
-完整代码：`experiments/code/src/demo04/FieldCircularApp.java`。
+完整代码：`springboot-demo/src/main/java/demo04/FieldCircularApp.java`。
 A 依赖 B、B 依赖 A（全部字段/setter 注入），并验证"B 在属性填充阶段拿到的 A 与最终 A 是同一引用"。
 
 实测输出（`./run.sh demo04.FieldCircularApp`）：
@@ -955,7 +955,7 @@ B 手里的 A 与容器最终暴露的 A 是同一引用: true
 
 ### 4.4 代码实证：三种"救不了"的环
 
-完整代码：`experiments/code/src/demo04/` 下三个 App。
+完整代码：`springboot-demo/src/main/java/demo04/` 下三个 App。
 
 **① 构造器注入的环**（`CtorCircularApp`）——构造器注入发生在实例化阶段，此时**还没有任何对象可以提前暴露**，三级缓存无从救起：
 

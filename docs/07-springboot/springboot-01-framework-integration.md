@@ -110,7 +110,7 @@ starter | 自动装配 | AutoConfiguration.imports | @Conditional | Registrar | 
 
 ### 1.2 代码实证：SPI 发现 ≠ 管理（demo01.ServiceLoaderApp）
 
-完整代码：`experiments/code/src/demo01/ServiceLoaderApp.java` + `src/demo01/spi/`（接口 + 两个实现）+ `src/META-INF/services/demo01.spi.Greeter`。
+完整代码：`springboot-demo/src/main/java/demo01/ServiceLoaderApp.java` + `springboot-demo/src/main/java/demo01/spi/`（接口 + 两个实现）+ `springboot-demo/src/main/resources/META-INF/services/demo01.spi.Greeter`。
 
 实测输出（`./run.sh demo01.ServiceLoaderApp`）：
 
@@ -184,7 +184,7 @@ ServiceLoader.load(Greeter.class)
 
 ### 2.2 代码实证：最小 Boot 工程（demo06.MinimalBootApp）
 
-完整代码：`experiments/code/src/demo06/MinimalBootApp.java` + `src/autoconfig/DemoAutoConfiguration.java` + `src/META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports` + `src/application.properties`。
+完整代码：`springboot-demo/src/main/java/demo06/MinimalBootApp.java` + `springboot-demo/src/main/java/autoconfig/DemoAutoConfiguration.java` + `springboot-demo/src/main/resources/META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports` + `springboot-demo/src/main/resources/application.properties`。
 
 这个"最小工程"模拟了一个 starter 的全部要素：
 - **自动配置类放在扫描包之外**（`autoconfig` 包）——它只能靠 imports 白名单加载，证明"加依赖就能用"不是组件扫描；
@@ -303,7 +303,7 @@ classpath 上的每个 starter 提供：
 
 ### 3.2 代码实证：仿 MyBatis 最小翻译（demo07.TranslatorApp）
 
-完整代码：`experiments/code/src/demo07/TranslatorApp.java`。这个 demo 是 **MyBatis 的同构最小实现**——三个扩展点全部走一遍：
+完整代码：`springboot-demo/src/main/java/demo07/TranslatorApp.java`。这个 demo 是 **MyBatis 的同构最小实现**——三个扩展点全部走一遍：
 
 - `@EnableMapperScan`（@Import(MapperScannerRegistrar.class)）→ Registrar 批量注册两个 MapperFactoryBean；
 - `MapperFactoryBean implements FactoryBean` → getObject() 返回 JDK 动态代理，方法调用被 `SqlInvocationHandler` 拦截并"翻译"成 SQL 执行（MapperProxy 的同构）；
@@ -442,7 +442,7 @@ Environment
 
 ### 4.3 代码实证：来源列表、优先级、addFirst 刷新（demo05.EnvironmentSourcesApp）
 
-完整代码：`experiments/code/src/demo05/EnvironmentSourcesApp.java`。
+完整代码：`springboot-demo/src/main/java/demo05/EnvironmentSourcesApp.java`。
 
 实测输出（`./run.sh demo05.EnvironmentSourcesApp`）：
 
@@ -464,7 +464,7 @@ Environment
 
 ### 4.4 代码实证：Binder 绑定（demo05.BinderApp）
 
-完整代码：`experiments/code/src/demo05/BinderApp.java`（spring-boot 的 `org.springframework.boot.context.properties.bind.Binder`，就是 `@ConfigurationProperties` 底层的绑定器）。
+完整代码：`springboot-demo/src/main/java/demo05/BinderApp.java`（spring-boot 的 `org.springframework.boot.context.properties.bind.Binder`，就是 `@ConfigurationProperties` 底层的绑定器）。
 
 实测输出（`./run.sh demo05.BinderApp`）：
 
@@ -483,7 +483,7 @@ Environment
 
 ### 4.5 代码实证：profile 维度（demo05.ProfileApp）
 
-完整代码：`experiments/code/src/demo05/ProfileApp.java`。
+完整代码：`springboot-demo/src/main/java/demo05/ProfileApp.java`。
 
 实测输出（`./run.sh demo05.ProfileApp`）：
 

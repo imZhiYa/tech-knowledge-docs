@@ -163,7 +163,7 @@ publishEvent(event)
 
 ### 2.2 代码实证：同步广播三件事（demo08.EventSyncApp）
 
-完整代码：`experiments/code/src/demo08/EventSyncApp.java`。
+完整代码：`springboot-demo/src/main/java/demo08/EventSyncApp.java`。
 
 实测输出（`./run.sh demo08.EventSyncApp`）：
 
@@ -312,7 +312,7 @@ multicastEvent：for (listener : listeners) {
 
 ### 3.2 代码实证：@Async + @EventListener（demo08.AsyncEventApp）
 
-完整代码：`experiments/code/src/demo08/AsyncEventApp.java`。
+完整代码：`springboot-demo/src/main/java/demo08/AsyncEventApp.java`。
 
 实测输出（`./run.sh demo08.AsyncEventApp`）：
 
@@ -378,7 +378,7 @@ multicastEvent：for (listener : listeners) {
 
 ### 4.2 代码实证：earlyApplicationEvents 缓存与回放（demo08.EarlyEventApp）
 
-完整代码：`experiments/code/src/demo08/EarlyEventApp.java`。
+完整代码：`springboot-demo/src/main/java/demo08/EarlyEventApp.java`。
 
 实测输出（`./run.sh demo08.EarlyEventApp`）：
 
@@ -397,7 +397,7 @@ multicastEvent：for (listener : listeners) {
 
 ### 4.3 代码实证：Boot 启动事件全景（demo09.BootEventsApp）
 
-完整代码：`experiments/code/src/demo09/BootEventsApp.java`。
+完整代码：`springboot-demo/src/main/java/demo09/BootEventsApp.java`。
 
 实测输出（`./run.sh demo09.BootEventsApp`）：
 
@@ -494,7 +494,7 @@ finishBeanFactoryInitialization：单例全部创建完 → SmartInitializingSin
 
 ### 5.2 代码实证：AFTER_COMMIT 的完整机制（demo08.TransactionalEventApp）
 
-完整代码：`experiments/code/src/demo08/TransactionalEventApp.java`。
+完整代码：`springboot-demo/src/main/java/demo08/TransactionalEventApp.java`。
 
 实测输出（`./run.sh demo08.TransactionalEventApp`）：
 

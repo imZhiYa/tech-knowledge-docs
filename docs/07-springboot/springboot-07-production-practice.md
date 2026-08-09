@@ -611,7 +611,7 @@ compile success ≠ start success ≠ Ready success ≠ DB/MQ success ≠ Trace/
 
 ## 8.2 实测：immediate vs graceful（3.3.5，demo16.GracefulShutdownApp）
 
-完整代码：`experiments/code/src/demo16/GracefulShutdownApp.java`；慢接口 sleep 6s，SIGTERM 时请求已跑 1s（剩余 ~5s）。
+完整代码：`springboot-demo/src/main/java/demo16/GracefulShutdownApp.java`；慢接口 sleep 6s，SIGTERM 时请求已跑 1s（剩余 ~5s）。
 
 | 场景 | SIGTERM 后新请求 | 在途 6s 请求 | 进程退出耗时 | 实测依据 |
 | ---- | ---- | ---- | ---- | ---- |

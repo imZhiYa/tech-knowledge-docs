@@ -224,7 +224,7 @@ refresh()（AbstractApplicationContext，6.1.14 反编译调用序列）
 
 ## refresh 失败会发生什么：半初始化 Context 的自清理（实测）
 
-完整代码：`experiments/code/src/demo15/RefreshFailApp.java`（6.1.14 实测，2026-08-06）。
+完整代码：`springboot-demo/src/main/java/demo15/RefreshFailApp.java`（6.1.14 实测，2026-08-06）。
 
 场景：单例实例化阶段（第 11 步 finishBeanFactoryInitialization）一个 Bean 的 `@PostConstruct` 抛异常。真实输出：
 

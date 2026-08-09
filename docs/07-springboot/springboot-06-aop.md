@@ -803,13 +803,13 @@ Validation: 自研权限切面 starter 端到端实证（demo17，双跑法：�
 **结构**（单 classpath 模拟独立 artifact——permcheck 包不在任何 scanBasePackages 内，类完全靠自动配置注册，与真实 starter jar"类在依赖里、不参与业务扫描"同构）：
 
 ```
-src/META-INF/spring/...AutoConfiguration.imports   ← demo17 贡献一行（"每个 jar 贡献一行"的第三个 jar）
-src/demo17/permcheck/                                ← "starter jar"的类
+springboot-demo/src/main/resources/META-INF/spring/...AutoConfiguration.imports   ← demo17 贡献一行（"每个 jar 贡献一行"的第三个 jar）
+springboot-demo/src/main/java/demo17/permcheck/                                ← "starter jar"的类
   RequireRole                业务注解（@Target(METHOD) @Retention(RUNTIME)）
   RoleContext                ThreadLocal 角色上下文（与 TransactionSynchronizationManager 同构）
   PermissionAspect           @Aspect @Around("@annotation(requireRole)")——绑定参数正确写法
   PermissionAutoConfiguration @AutoConfiguration + @ConditionalOnClass + @ConditionalOnProperty + @Bean
-src/demo17/app/OrderService                           ← 业务方：adminOnly() 标 @RequireRole("ADMIN")
+springboot-demo/src/main/java/demo17/app/OrderService                           ← 业务方：adminOnly() 标 @RequireRole("ADMIN")
 ```
 
 **链路**（本文全部机制的串联）：imports 收录 → 条件链 → `@Bean` 注册 @Aspect → AnnotationAwareAspectJAutoProxyCreator 收集（aspectjweaver 分支）→ OrderService 变 CGLIB 代理 → 调用被切面校验。
