@@ -79,8 +79,17 @@ docs/
 │   └── 🗄️ Java Collection.md
 ├── 05-database/                    # 🐬 数据库与存储引擎
 │   └── 🐬MySQL-InnoDB-深度解析.md
-└── 06-redis/                       # ⚡ Redis 与缓存系统 (NEW)
-    └── ⚡Redis深度解析.md
+├── 06-redis/                       # ⚡ Redis 与缓存系统
+│   └── ⚡Redis深度解析.md
+└── 07-springboot/                  # 🚀 Spring 与 SpringBoot（8 篇系列）
+    ├── springboot-00-backbone.md
+    ├── springboot-01-framework-integration.md
+    ├── springboot-02-events.md
+    ├── springboot-03-auto-configuration.md
+    ├── springboot-04-web-request-and-runtime.md
+    ├── springboot-05-transaction-and-data-layer.md
+    ├── springboot-06-aop.md
+    └── springboot-07-production-practice.md
 ```
 
 ### 已完成 · Completed
@@ -97,11 +106,13 @@ docs/
 | 🗄️ **集合框架** | [Java Collection](./docs/04-collections/) **[NEW]** | HashMap 寻址/扰动/树化阈值8与64推导、TreeMap 为何选红黑树不选AVL、LinkedHashMap LRU、ConcurrentHashMap JDK7->8 演进与 helpTransfer、Fail-Fast/Fail-Safe 本质 | 被 ConcurrentModificationException / HashMap 死循环问住的 |
 | 🐬 **MySQL InnoDB** | [MySQL-InnoDB-深度解析](./docs/05-database/) **[NEW]** | 9层递进：Page/Extent 行格式与行溢出、Buffer Pool 改良LRU、B+ 树容量与最左前缀、事务隔离矩阵、Record/Gap/Next-Key 锁、Read View 版本可见性、Redo/Undo/Binlog 两阶段提交、一条 UPDATE 全链路、EXPLAIN 调优实战；18 坑 + 勘误表 + 5 张生产决策卡 | 被"RR 为什么能防幻读 / UPDATE 加什么锁 / COUNT(*) 为什么慢"问住的 |
 | ⚡ **Redis** | [Redis 深度解析](./docs/06-redis/⚡Redis深度解析.md) **[NEW]** | 9层递进：内存与事件循环、type×encoding、过期与淘汰、RDB/AOF、复制与 Sentinel、Cluster 槽位与自治协议、Stream/HLL 场景总装；分布式锁、缓存治理、跨机房与 10 张生产决策卡 | 被“Redis 单线程为什么快 / 主从为什么丢写 / Cluster 为什么 CROSSSLOT / 锁为什么还要 fencing”问住的 |
+| 🚀 **SpringBoot** | [SpringBoot 全链路 8 篇系列](./docs/07-springboot/) **[NEW]** | IoC 创建链→框架整合→事件→自动配置→Web 运行时→事务→AOP→生产实践（启动慢排查/AOT/优雅停机）；全部结论由 demo01–demo19 本机实测背书（actuator startup 端点 353 步、JFR 6138 事件、AOT 引擎生成 170 hints）；实验代码存于本地知识库未随仓发布 | 被"事务为什么没回滚 / 启动为什么慢 / kill 为什么丢请求"问住的 |
 
 ### 🔥 最近更新
 
 | 日期 | 内容 |
 | --- | --- |
+| **2026-08-09** | **新增《🚀 SpringBoot 全链路》系列 8 篇** — 从 IoC 创建链（ConfigurationClassPostProcessor→BeanDefinition→实例化→销毁）到事件/自动配置/Web 运行时/事务/AOP/生产实践（慢发布与 AOT 实测、优雅停机）；每个机制结论均由 demo01–demo19 可运行实验背书：事务失效双案例、AOT 引擎端到端（生成 5 源码 + CGLIB 代理字节码 + 170 RuntimeHints）、启动慢排查四方法（actuator startup 端点 353 步 / JFR 6138 事件）、immediate vs graceful 停机对照 |
 | **2026-08-03** | **新增《🌐 高性能网络编程原理》** — 从 I/O 的等待分类出发，经 BIO 陪等、NIO 空转、多路复用/AIO 的事件语义，推导 Reactor 的状态所有权；覆盖背压、业务 ack、drain 与 4 张生产决策卡。 |
 | **2026-08-03** | **新增《⚡ Redis 深度解析》** — 9层递进(L1-L9)，从事件循环、内存编码一路推导到过期淘汰、持久化、高可用、Cluster、Stream/HLL 与生产架构评审；含分布式锁、缓存治理、勘误表、合书自测与 10 张生产决策卡 |
 | **2026-08-01** | **新增《🐬 MySQL InnoDB 存储引擎深度解析》** — 9层递进(L1-L9)，Level 1 到 Level 9 覆盖页存储/Buffer Pool/B+树/事务/锁/MVCC/日志三剑客/全链路/调优，18 坑 + 勘误表 + 5 张生产决策卡 + 合书自测，全文唯一比喻「24 小时无人图书馆」 |
@@ -156,6 +167,10 @@ docs/
 | Redis P99 突刺 / `blocked_clients` / 大 key 阻塞 | [⚡ Redis · 事件循环、阻塞半径与大 key 治理](./docs/06-redis/⚡Redis深度解析.md) |
 | 缓存命中率断崖 / DB 回源暴增 / 雪崩击穿 | [⚡ Redis · 缓存三兄弟与生产闭环](./docs/06-redis/⚡Redis深度解析.md) |
 | `MOVED` / `ASK` / `CROSSSLOT` / 主从切换异常 | [⚡ Redis · Cluster、复制与高可用](./docs/06-redis/⚡Redis深度解析.md) |
+| `@Transactional` 没生效 / 自调用 / 事务没回滚 | [🚀 SpringBoot · 05 事务篇：急诊检查单 7 项](./docs/07-springboot/springboot-05-transaction-and-data-layer.md) |
+| 启动慢 / 发布回滚 10 分钟 / 想上 AOT | [🚀 SpringBoot · 07 生产篇 7.2/7.4：指纹先行 + AOT 实测](./docs/07-springboot/springboot-07-production-practice.md) |
+| 停机丢请求 / SIGTERM 后流量中断 | [🚀 SpringBoot · 07 生产篇 Level 8：先拒新、再排空、后关资源](./docs/07-springboot/springboot-07-production-practice.md) |
+| 代理失效 / 切面没生效 / CGLIB vs JDK | [🚀 SpringBoot · 06 AOP 篇：代理机制与决策卡](./docs/07-springboot/springboot-06-aop.md) |
 
 #### 🏗️ 我在做架构评审
 
