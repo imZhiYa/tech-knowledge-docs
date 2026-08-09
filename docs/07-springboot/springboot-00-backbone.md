@@ -1,7 +1,7 @@
 # 🚆 SpringBoot 骨干：Spring 如何创建对象（系列入口 00）
 
 > 本篇文章只回答一个问题：**Spring 把一个"类"变成"可用对象"，全程做了什么？为什么必须这么做？**
-> 事件机制、自动装配、运行时刻不在本篇（见系列索引的去向），它们建立在"创建"之上——先把地基挖到底。
+> 事件机制、自动装配、运行时刻不在本篇，它们建立在"创建"之上——先把地基挖到底。
 
 ---
 
@@ -11,7 +11,6 @@
 | ---- | ---- |
 | 代码实证 | 全部来自 `knowledge/springboot/experiments/code/` 下的 15 个可运行 demo，本机实测输出原样引用 |
 | 实测环境 | macOS + JDK 21.0.11（Azul Zulu）+ spring-context **6.1.14**（对应 Boot 3.3.x / Framework 6.1） |
-| 运行方式 | `cd knowledge/springboot/experiments/code && ./build.sh && ./run.sh demo0X.XXXApp` |
 | Specification | 生命周期钩子顺序、注入解析链的语义（@Primary/@Qualifier）、父子容器委派语义 |
 | Implementation | 三级缓存、Full 模式 CGLIB 子类化、Lite 模式行为、Aware 处理器内部顺序、static 注入点忽略（版本间可变，标注 6.1.14）；循环依赖默认值：裸容器 allowCircularReferences=true、Boot 3.3.5 默认 false（demo04.DisableCircularApp + demo15.BootCircularApp 实测对照） |
 | 未覆盖 | 不承诺任何性能数字；不涉及自动装配细节（01 篇/03 篇）；Environment 机制只留结论（完整展开在 01 篇配置体系） |
@@ -36,7 +35,6 @@
 - 坑与细节（10 个）
 - 版本勘误表
 - 生产决策卡（3 张）
-- 系列索引
 
 ---
 
@@ -1258,33 +1256,3 @@ public class OrderProps {
 
 - **禁止决策**：禁止用 @Value 管理超过 3 个同组配置（配置治理成灾）。
 - **验收指标**：配置中心改值 → 热更新生效（@Value 场景验证不生效、@ConfigurationProperties 场景验证生效）。
-
----
-
-<a id="series-index"></a>
-
-## 🧭 系列索引（00 篇为入口）
-
-| 篇 | 主题 | 主线角色 | 比喻 | 本系列位置 |
-| ---- | ---- | ---- | ---- | ---- |
-| **00（本篇）** | 容器如何创建对象 | 一个 Bean 的一生 | 地铁线路图 | 地基：创建链因果全通 |
-| 01 | 第三方框架整合（MyBatis/Dubbo/Redis/MQ/Apollo）+ 配置体系 | 待接入的框架 | 海关通关 | 在 00 的创建链上开扩展点；Level 4 完整展开配置体系（Environment/PropertySource/Binder/Apollo 刷新） |
-| 02 | 事件机制与容器通信 | 一次业务事件 | 公告栏广播 | 原 00 篇 Level 5 移入扩写（早期事件/事务事件/启动全景，demo08×5 + demo09 实测） |
-| **03（已完成）** | 自动装配深挖 | 一个 starter 的生效过程 | 免签通道 | 候选收集/排除/排序/条件家族/覆盖通道/评估报告（demo10×6 实测） |
-| 04（已完成） | Web 请求链路与运行时刻 | 一次 HTTP 请求 | 外卖配送 | 原 00 篇 Level 7 移入扩写：run 全流程/内嵌容器/请求链路/Actuator 探针（demo11×4 实测（含 WebFlux 双跑法）） |
-| 05（已完成：demo12×4 实测） | 事务与数据层 | 一笔数据库事务 | 记账员 | — |
-| 06（已完成：demo13×8 实测） | 横切面与 AOP | 一次方法调用 | 关卡哨兵 | 代理机制本体与切面体系（JDK/CGLIB 双分支实测） |
-| 07（规划） | 生产实践 | 线上一次故障 | 急诊室 | 收束 |
-
----
-
-# ✅ Final Review Checklist
-
-- [ ] 是否解释了为什么存在？（new 死三账 → 容器；裸对象空 → 钩子板；歧义/找不到 → 解析链；环 → 三级缓存）
-- [ ] 是否说明旧方案为什么失败？（工厂死因、字段注入温床、二级缓存引用不一致）
-- [ ] 是否形成完整因果链？（类 → 说明书 → 注册表 → 生产线 → 钩子 → 注入 → 缓存 → 可用）
-- [ ] 是否区分规范和实现？（Specification：钩子顺序、注入语义；Implementation：三级缓存、CGLIB、Lite 行为）
-- [ ] 代码实例是否全部实测？（15 个 demo，输出原样引用，可复跑）
-- [ ] 是否包含 Trade-off？（Boot 2.6 禁环、同步 vs 异步、@Value vs @ConfigurationProperties、父子容器委派 vs 双容器重复实例）
-- [ ] 是否能指导生产决策？（3 张决策卡 + 4 个线上案例）
-- [ ] 随机抽查断言：三级缓存结构（实测 demo04 + 6.1.14 源码）、Lite 模式行为（实测 demo02）、@Value 解析（实测 demo03）、static 注入点被忽略与 Environment 优先级（实测 demo03.ValueNullApp）、Aware 顺序（实测 demo02.AwareFamilyApp）、循环依赖默认值（实测 demo04 vs demo15.BootCircularApp，含放行开关生效）——均有证据来源。

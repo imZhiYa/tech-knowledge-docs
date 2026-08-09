@@ -14,7 +14,6 @@
 | ---- | ---- |
 | 代码实证 | `knowledge/springboot/experiments/code/` 下的 demo08×5 与 demo09，本机实测输出原样引用 |
 | 实测环境 | macOS + JDK 21.0.11（Azul Zulu）+ spring-context **6.1.14** + spring-tx 6.1.14 + spring-boot **3.3.5** |
-| 运行方式 | `cd knowledge/springboot/experiments/code && ./build.sh && ./run.sh demo08.XXXApp` |
 | Specification | 观察者模式语义、@EventListener/@TransactionalEventListener 契约、发布-订阅时机（提交后执行） |
 | Implementation | 广播器结构、earlyApplicationEvents 缓存回放、@EventListener 注册链、AFTER_COMMIT 触发点（6.1 反编译 `TransactionalApplicationListenerSynchronization`）、Boot 启动事件时序（标注 3.3.5/6.1.14） |
 | 待验证 | 真实生产框架的异步/事务事件组合细节（如 RocketMQ 事务消息的 Spring 集成）、跨版本 5.3 与 6.x 的事务事件触发点差异细节 |
@@ -43,7 +42,6 @@
 - 版本勘误表
 - 生产决策卡（3 张）
 - 跨语言视角
-- 系列索引
 
 ---
 
@@ -888,36 +886,3 @@ public void onPaid(OrderPaidEvent e) {
 
 - **事务绑定是 Spring 的独有能力**：事件与事务提交绑定（@TransactionalEventListener）在 Go/Rust/前端都不存在——它们要么手动推迟，要么根本没有"事务"概念。
 - **自动化的代价**：Spring 注解把注册/匹配全自动化，代价是调用链不可见；Go/Rust 显式注册回调，代价是样板代码。
-
----
-
-<a id="series-index"></a>
-
-## 🧭 系列索引（00 篇为入口）
-
-| 篇 | 主题 | 主线角色 | 比喻 | 本系列位置 |
-| ---- | ---- | ---- | ---- | ---- |
-| 00 | 容器如何创建对象 | 一个 Bean 的一生 | 地铁线路图 | 地基：创建链因果全通（15 demo 实测） |
-| 01 | 框架整合 + 配置体系 | 待接入的框架 | 海关通关 | 在 00 的创建链上开扩展点；Level 4 完整展开配置体系 |
-| **02（本篇）** | 事件机制与容器通信 | 一次业务事件 | 公告栏广播 | 发布-订阅通信机制；早期事件/事务事件/启动全景（demo08×5 + demo09 实测） |
-| **03（已完成）** | 自动装配深挖 | 一个 starter 的生效过程 | 免签通道 | 候选收集/排除/排序/条件家族/覆盖通道/评估报告（demo10×6 实测） |
-| 04（已完成） | Web 请求链路与运行时刻 | 一次 HTTP 请求 | 外卖配送 | 原 00 篇 Level 7 移入扩写（demo11×4 实测（含 WebFlux 双跑法）） |
-| 05（已完成：demo12×4 实测） | 事务与数据层 | 一笔数据库事务 | 记账员 | 事务边界与数据层（含事务消息衔接） |
-| 06（已完成：demo13×8 实测） | 横切面与 AOP | 一次方法调用 | 关卡哨兵 | 代理机制本体与切面体系（JDK/CGLIB 双分支实测） |
-| 07（规划） | 生产实践 | 线上一次故障 | 急诊室 | 收束 |
-
----
-
-# ✅ Final Review Checklist
-
-- [ ] 是否解释了为什么存在？（直接调用三笔账 → 事件；同步阻塞账 → 异步；事务回滚连坐账 → 事务事件）
-- [ ] 是否说明旧方案为什么失败？（直接调用耦合/连坐、轮询延迟/空转、事务内同步监听读到未提交/回滚无法撤回）
-- [ ] 是否形成完整因果链？（发布 → 缓存/多播 → 匹配排序 → 同步/异步执行 → 事务绑定 → 排查四问）
-- [ ] 是否区分规范和实现？（@EventListener/@TransactionalEventListener 契约、提交后执行语义为 Specification；广播器结构、缓存回放、注册链、afterCompletion 触发点为 6.1.14 Implementation）
-- [ ] 是否区分语义变化与代码组织变化？（6.x 事务事件类名重构为代码组织变化，行为契约不变）
-- [ ] 代码实例是否全部实测？（demo08×5、demo09 输出原样引用，可复跑；6.1 事务事件触发点经 javap 反编译验证）
-- [ ] 是否包含 Trade-off？（同步穿透 vs 异步静默；事件 vs MQ；事务事件 vs 事务消息；fallback 兜底 vs 静默丢弃）
-- [ ] 是否能指导生产决策？（3 张决策卡：事件 vs MQ / 同步 vs 异步 / 事务事件边界）
-- [ ] 是否存在未经证明的数字？（无编造 benchmark；Boot 3 的 spring.factories 加载 ApplicationListener 路径标注待验证）
-- [ ] 是否只有一个比喻？（公告栏广播）是否只有一个主线角色？（一次业务事件）
-- [ ] 随机抽查断言：同步穿透（demo08 实测）、异步线程（demo08 实测）、早期事件回放（demo08 实测）、Boot 事件顺序与 Runner 位点（demo09 实测）、AFTER_COMMIT 触发点（javap 反编译 6.1.14）、泛型事件全收误收（demo08.GenericEventApp 实测）、EventListenerMethodProcessor 是 SmartInitializingSingleton（javap 验证 6.1.14）——均有证据来源。

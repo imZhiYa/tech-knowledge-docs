@@ -15,7 +15,6 @@
 | ---- | ---- |
 | 代码实证 | `knowledge/springboot/experiments/code/` 下 demo13×8（aspect.ProxyKindApp / AdviceOrderApp / PointcutApp / AspectOrderApp / ProxyInternalsApp / UnwrapApp / VisibilityApp / TxVisibilityApp）+ demo17 自研权限切面 starter（permcheck + PermissionStarterApp），本机实测输出原样引用 |
 | 实测环境 | macOS + JDK 21.0.11（Azul Zulu）+ spring-boot **3.3.5** + spring-aop **6.1.14** + aspectjweaver **1.9.22.1**（版本出自 spring-boot-dependencies-3.3.5.pom BOM） |
-| 运行方式 | `cd knowledge/springboot/experiments/code && ./build.sh && ./run.sh demo13.aspect.XXX`（lib/ 43 个 jar；ProxyKindApp 三种跑法见实验复现节） |
 | Specification | AspectJ 切点表达式语法（execution/within/@annotation 语义）、`@Transactional` 回滚与传播语义（05 篇）、Spring AOP 注解语义（@Aspect/@Before/@Around/@After/@Order）、AspectJ 绑定参数规则（@annotation(参数) 参数类型须与注解类型匹配） |
 | Implementation | Boot 3.3.5 AopAutoConfiguration 双分支行为（实测：有 aspectjweaver → AnnotationAwareAspectJAutoProxyCreator 收集全部 Advisor；无 aspectjweaver → InfrastructureAdvisorAutoProxyCreator 只收 ROLE_INFRASTRUCTURE advisor，用户 Advisor 被过滤，javap 反编译 isEligibleAdvisorBean 实证）、Boot 3 默认 proxyTargetClass=true 走 CGLIB（实测：有 aspectjweaver 也 CGLIB）、JDK 动态代理类名 demo13.aspect.$Proxy76（实测）、CGLIB 类名 $$SpringCGLIB$$N（实测）、五种通知触发顺序（实测）、@Order 洋葱模型（实测）、代理字段注入只填目标实例（实测）、CGLIB 代理 toString 转发目标对象（实测）、ProxyFactory 无 advisor 也出代理（实测）、static/private/final 方法不可被代理覆写（VisibilityApp 实测：final 匹配=true 但拦不住、static/private 匹配=false）、@Transactional 在 protected/包可见方法上 CGLIB 外部调用生效（TxVisibilityApp 实测 + AbstractFallbackTransactionAttributeSource.allowPublicMethodsOnly()=false javap 实证）、自调用失效与四种修复（05 篇 SelfInvocationApp 实测回看：跨 bean / @Lazy 自注入 / context.getBean / @EnableAspectJAutoProxy(exposeProxy=true)+AopContext.currentProxy，含链外 IllegalStateException 实测） |
 | 待验证 | 无 @Order 时多切面顺序的真实不确定性（机制推导，未做多轮实验统计）；AspectJ 编译期织入（LTW）的真实表现（本文只讲运行时代理路线，前置条件矩阵中 ajc/LTW 能力为 AspectJ 文档语义未实测）；不同 JDK 版本动态代理类名格式差异 |
@@ -45,7 +44,6 @@ AOP | 横切关注点 | 切点 Pointcut | 通知 Advice | 切面 Aspect | @Befor
 - 版本勘误表
 - 生产决策卡（3 张）
 - 跨语言视角
-- 系列索引
 
 ---
 
@@ -856,58 +854,3 @@ src/demo17/app/OrderService                           ← 业务方：adminOnly(
 - **Go**：**无动态代理**（无反射代理生成机制）——横切要么手写包装（装饰器模式，静态转发），要么用中间件模式（net/http 的 handler 链，请求级）。Go 社区用"中间件链"弥补，但**方法级 AOP 在 Go 没有语言级答案**——这解释了为什么 Go 生态的"切面"都收敛到 HTTP/函数边界。
 - **Java 生态**：AspectJ 织入（编译期）提供比 Spring AOP 更彻底的能力（final/private/构造器），代价是构建期侵入——"机制强度 vs 部署复杂度"的经典取舍。
 - **通用方法论**：**"声明式横切"（AOP）vs "显式封装"（装饰器/中间件）**是所有语言面对横切关注点的两条路；声明式的共同代价是**透明性失效静默**（拦截点不可见）——任何声明式方案都要回答"绕过它会发生什么"（自调用/缺依赖/表达式不命中）。
-
----
-
-# 系列索引
-
-```
-00 容器如何创建对象（已重写：四层创建链 + 15 个实测 demo）
-01 框架整合 + 配置体系（已重写：6 Level，配置体系独立 Level 4，6 个实测 demo）
-02 事件机制与容器通信（已重写：6 Level，5 个实测 demo + 启动事件全景）
-03 自动装配深挖（已重写：6 Level，6 个实测 demo：demo10×6）
-04 Web 请求链路与运行时刻（已重写：6 Level，4 个实测 demo：demo11.RunTraceApp / WebTraceApp / ActuatorApp / WebFluxApp（双跑法））
-05 事务与数据层（已重写：6 Level，4 个实测 demo：demo12.ds.DataSourceApp / tx.TxBasicsApp / tx.PropagationApp / tx.SelfInvocationApp）
-06 横切面与 AOP（本篇：6 Level，8 个实测 demo：demo13.aspect.ProxyKindApp / AdviceOrderApp / PointcutApp / AspectOrderApp / ProxyInternalsApp / UnwrapApp / VisibilityApp / TxVisibilityApp + demo17 权限切面 starter 端到端实证）
-07 生产实践（已完成：急诊室比喻 + 检查单 7 项 + Level 7 慢发布（指纹测量/三层优化/AOT 选型 + 24 章交叉补充）+ Level 8 优雅停机（demo16 实测 immediate/graceful）+ 决策卡 5 张；实测 demo14×2 + demo15×2 + demo16；与 Boot 4.1 对照线交叉校验）
-```
-
----
-
-# 实验复现
-
-```
-cd knowledge/springboot/experiments/code
-./build.sh
-./run.sh demo13.aspect.ProxyKindApp        # JDK/CGLIB + creator 双分支（跑法 1）
-./run.sh demo13.aspect.AdviceOrderApp      # 五种通知正常/异常双路径
-./run.sh demo13.aspect.PointcutApp         # 切点命中矩阵（execution/@annotation/within）
-./run.sh demo13.aspect.AspectOrderApp      # 多切面 @Order 洋葱模型
-./run.sh demo13.aspect.ProxyInternalsApp   # creator 是 BPP / ProxyFactory / Advised
-./run.sh demo13.aspect.UnwrapApp           # 代理 vs 目标（字段/toString 差异）
-./run.sh demo13.aspect.VisibilityApp        # 代理边界：static/private/final/可见性命中矩阵
-./run.sh demo13.aspect.TxVisibilityApp      # 框架注解可见性：@Transactional 在 protected/包可见方法上的实测
-./run.sh demo17.PermissionStarterApp        # 权限切面 starter 端到端（装配 → 拦截 → 放行/拒绝）
-./run.sh demo17.PermissionStarterApp --demo17.permission.enabled=false   # 对照：条件关闭 → 切面静默失效
-# ProxyKindApp 其他两种跑法：
-java -Dapp.proxyTargetClass=false -cp "out:$(find lib -name '*.jar' | tr '\n' ':')" demo13.aspect.ProxyKindApp   # 跑法 2：JDK 分支
-java -cp "out:$(find lib -name '*.jar' ! -name 'aspectjweaver*' | tr '\n' ':')" demo13.aspect.ProxyKindApp      # 跑法 3：无 weaver → 用户切面失效
-```
-
-六个 App 的关键输出都已固化在各自源文件头部注释，与本文引用一致。
-
----
-
-# ✅ Final Review Checklist
-
-- [ ] 是否解释了为什么存在？（横切关注点散落 + 三波失败方案 → AOP 的切点/通知/切面抽象）
-- [ ] 是否说明旧方案为什么失败？（继承耦合横切点、装饰器手工转发、过滤器粒度错）
-- [ ] 是否形成完整因果链？（横切问题 → 抽象 → 运行时代理 → 语法体系 → 装配链 → 框架家族 → 生产实践，总图在文中）
-- [ ] 是否区分规范和实现？（AspectJ 表达式/绑定规则、通知语义为 Specification；AopAutoConfiguration 双分支行为、creator 类型差异、类名、默认 CGLIB 为 3.3.5 Implementation）
-- [ ] 是否区分语义变化与代码组织变化？（Boot 2→3 默认代理类型变化 = 语义变化；creator 类名/分支归属 = 代码组织；jdk 动态代理类名格式差异标注待验证）
-- [ ] 代码实例是否全部实测？（demo13×8 输出原样引用，可复跑；InfrastructureAdvisorAutoProxyCreator.isEligibleAdvisorBean 的 role 过滤、AbstractFallbackTransactionAttributeSource.allowPublicMethodsOnly()=false 均经 javap 反编译实证）
-- [ ] 是否包含 Trade-off？（运行时代理 vs 编译期织入；CGLIB vs JDK；注解驱动 vs 通配；自定义切面 vs 框架能力）
-- [ ] 是否能指导生产决策？（3 张决策卡：代理类型 / 切点驱动 / 自定义横切 + 失效排查六条清单）
-- [ ] 是否存在未经证明的数字？（无编造 benchmark；无 @Order 时顺序不确定性、非 public 方法行为、AspectJ LTW 均标注待验证）
-- [ ] 是否只有一个比喻？（关卡哨兵）是否只有一个主线角色？（一次方法调用穿越层层关卡）
-- [ ] 随机抽查断言：Boot3 默认 CGLIB 且 aspectjweaver 存在也 CGLIB（跑法 1）、proxyTargetClass=false 时接口→JDK $Proxy76 / 无接口→CGLIB（跑法 2）、无 weaver 时用户 Advisor 被 role 过滤（跑法 3 + javap）、五种通知双路径顺序（AdviceOrderApp）、命中矩阵（PointcutApp）、洋葱模型（AspectOrderApp）、creator 是 BPP（ProxyInternalsApp）、代理字段 null 且 toString 转发（UnwrapApp）、@Aspect 注解类型来自 aspectjweaver（ClassNotFoundException 实测）——均有证据来源。

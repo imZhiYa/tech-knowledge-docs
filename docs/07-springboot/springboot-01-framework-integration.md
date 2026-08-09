@@ -14,7 +14,6 @@
 | ---- | ---- |
 | 代码实证 | `knowledge/springboot/experiments/code/` 下的 demo（demo05×3、demo06、demo07、demo01.ServiceLoaderApp），本机实测输出原样引用 |
 | 实测环境 | macOS + JDK 21.0.11（Azul Zulu）+ spring-context **6.1.14** + spring-boot **3.3.5**（Boot 3.3.x） |
-| 运行方式 | `cd knowledge/springboot/experiments/code && ./build.sh && ./run.sh demo0X.XXXApp` |
 | Specification | @Import 语义、BeanPostProcessor 回调时机、FactoryBean 契约、@Conditional 语义、Environment 抽象、宽松绑定规则 |
 | Implementation | AutoConfiguration.imports 加载链、FactoryBean 类型预测机制、config data 加载、Binder 行为、条件评估报告（标注 3.3.5/6.1.14） |
 | 待验证 | 真实 MyBatis/Dubbo/Kafka/Apollo starter 的源码细节与类名（本机未下载真实 starter，以官方文档/源码路径标注**待验证**）；demo07 是其同构最小实现 |
@@ -43,7 +42,6 @@ starter | 自动装配 | AutoConfiguration.imports | @Conditional | Registrar | 
 - 版本勘误表
 - 生产决策卡（3 张）
 - 跨语言视角
-- 系列索引
 
 ---
 
@@ -990,36 +988,3 @@ java -jar app.jar --debug
 
 - **自动化的代价**：Spring 用"运行时魔法"换开发效率，代价是可观测性必须跟上；Go/Rust 用"显式代码"换确定性，代价是整合代码多、改造成本高。
 - **判断力**：选型问的不是"谁更强"，而是"你的团队能承受哪种账"——**"注册/翻译/配置"三件套在任何语言都成立，这就是跨语言仍成立的判断力。**
-
----
-
-<a id="series-index"></a>
-
-## 🧭 系列索引（00 篇为入口）
-
-| 篇 | 主题 | 主线角色 | 比喻 | 本系列位置 |
-| ---- | ---- | ---- | ---- | ---- |
-| 00 | 容器如何创建对象 | 一个 Bean 的一生 | 地铁线路图 | 地基：创建链因果全通（15 demo 实测） |
-| **01（本篇）** | 框架整合 + 配置体系 | 待接入的框架 | 海关通关 | 在 00 的创建链上开扩展点；Level 4 完整展开配置体系 |
-| 02 | 事件机制与容器通信 | 一次业务事件 | 公告栏广播 | 原 00 篇 Level 5 移入扩写（早期事件/事务事件/启动全景，demo08×5 + demo09 实测） |
-| **03（已完成）** | 自动装配深挖 | 一个 starter 的生效过程 | 免签通道 | 候选收集/排除/排序/条件家族/覆盖通道/评估报告（demo10×6 实测） |
-| 04（已完成） | Web 请求链路与运行时刻 | 一次 HTTP 请求 | 外卖配送 | 原 00 篇 Level 7 移入扩写（demo11×4 实测（含 WebFlux 双跑法）） |
-| 05（已完成：demo12×4 实测） | 事务与数据层 | 一笔数据库事务 | 记账员 | — |
-| 06（已完成：demo13×8 实测） | 横切面与 AOP | 一次方法调用 | 关卡哨兵 | 代理机制本体与切面体系（JDK/CGLIB 双分支实测） |
-| 07（规划） | 生产实践 | 线上一次故障 | 急诊室 | 收束 |
-
----
-
-# ✅ Final Review Checklist
-
-- [ ] 是否解释了为什么存在？（new 三账 → 容器翻译；配置散落账 → Environment 统一视图）
-- [ ] 是否说明旧方案为什么失败？（SPI 只发现不管理、手写胶水散落、各模块自己读文件）
-- [ ] 是否形成完整因果链？（报关 → 验货 → 登记 → 贴标 → 参数 → 放行 → 排查；文件 → PropertySource 队列 → 消费 → 刷新）
-- [ ] 是否区分规范和实现？（imports 路径/类型预测/config data 标注 Implementation；@Import/BPP/FactoryBean/Environment 语义为 Specification）
-- [ ] 是否区分语义变化与代码组织变化？（spring.factories 移除、spring.*→spring.data.* 为语义变化）
-- [ ] 代码实例是否全部实测？（demo01.ServiceLoaderApp、demo05×3、demo06、demo07 输出原样引用，可复跑）
-- [ ] 是否包含 Trade-off？（运行时魔法 vs 显式代码；自动化的可观测性账；@Value vs @ConfigurationProperties）
-- [ ] 是否能指导生产决策？（3 张决策卡：接入评审/自定义 starter/排障流程）
-- [ ] 是否存在未经证明的数字？（无编造 benchmark；Dubbo/Apollo 类名与真实 starter 细节标注待验证）
-- [ ] 是否只有一个比喻？（海关通关）是否只有一个主线角色？（Mapper 接口；配置体系是"报关参数"支线）
-- [ ] 随机抽查断言：SPI 行为（demo01 实测）、类型预测（6.1.14 反编译 + demo07 实测）、Environment 优先级（demo05 实测）、条件否决（demo06 实测）、Binder 宽松绑定（demo05 实测）——均有证据来源。

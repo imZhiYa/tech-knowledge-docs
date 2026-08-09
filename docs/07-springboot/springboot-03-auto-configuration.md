@@ -14,7 +14,6 @@
 | ---- | ---- |
 | 代码实证 | `knowledge/springboot/experiments/code/` 下的 demo10×8，本机实测输出原样引用 |
 | 实测环境 | macOS + JDK 21.0.11（Azul Zulu）+ spring-context **6.1.14** + spring-boot **3.3.5** + spring-boot-autoconfigure 3.3.5 |
-| 运行方式 | `cd knowledge/springboot/experiments/code && ./build.sh && ./run.sh demo10.XXXApp` |
 | Specification | `@ConditionalOn*` 注解语义、@ConditionalOnMissingBean 让位契约、@AutoConfiguration 注解属性（before/after）、排除通道语义、EnableAutoConfiguration 开关属性 |
 | Implementation | ImportCandidates 加载路径、AutoConfigurationSorter 排序算法（getOrder 元数据表优先/注解兜底 + before/after 拓扑）、OnClassCondition/OnBeanCondition 的类继承差异、OnPropertyCondition 的匹配实现、报告 source 粒度（类名#方法名）与 Exclusions List 语义、@AutoConfigureOrder 默认值 0（3.3.5 反编译/反射） |
 | 待验证 | 非 3.3.5 版本的 imports 候选数量与内置自动配置类清单细节；actuator conditions 端点在自定义 Actuator 端口下的 JSON 结构细节 |
@@ -44,7 +43,6 @@
 - 版本勘误表
 - 生产决策卡（3 张）
 - 跨语言视角
-- 系列索引
 
 ---
 
@@ -877,36 +875,3 @@ public class ServiceAutoConfig {
 
 - **Spring 的两段式过滤**（导入前类条件 + 注册时 bean 条件）是"先减后决"的独特设计——编译期生态没有"运行时让位"，前端没有集中裁决记录。
 - **评估报告是 Spring 的独有资产**：Go/Rust 的条件在编译期，失败即编译错误；Spring 运行期静默降级，必须靠报告补可观测性——**静默 + 可观测是一对设计**，不能只取一半。
-
----
-
-<a id="series-index"></a>
-
-## 🧭 系列索引（00 篇为入口）
-
-| 篇 | 主题 | 主线角色 | 比喻 | 本系列位置 |
-| ---- | ---- | ---- | ---- | ---- |
-| 00 | 容器如何创建对象 | 一个 Bean 的一生 | 地铁线路图 | 地基：创建链因果全通（15 demo 实测） |
-| 01 | 框架整合 + 配置体系 | 待接入的框架 | 海关通关 | 在 00 的创建链上开扩展点；Level 4 完整展开配置体系 |
-| 02 | 事件机制与容器通信 | 一次业务事件 | 公告栏广播 | 发布-订阅通信机制；早期事件/事务事件/启动全景（demo08×5 + demo09 实测） |
-| **03（本篇）** | 自动装配深挖 | 一个 starter 的生效过程 | 免签通道 | 候选收集/排除/排序/条件家族/覆盖通道/评估报告（demo10×8 实测） |
-| 04（已完成） | Web 请求链路与运行时刻 | 一次 HTTP 请求 | 外卖配送 | 原 00 篇 Level 7 移入扩写（demo11×4 实测（含 WebFlux 双跑法）） |
-| 05（已完成：demo12×4 实测） | 事务与数据层 | 一笔数据库事务 | 记账员 | 事务边界与数据层（含事务消息衔接） |
-| 06（已完成：demo13×8 实测） | 横切面与 AOP | 一次方法调用 | 关卡哨兵 | 代理机制本体与切面体系（JDK/CGLIB 双分支实测） |
-| 07（规划） | 生产实践 | 线上一次故障 | 急诊室 | 收束 |
-
----
-
-# ✅ Final Review Checklist
-
-- [ ] 是否解释了为什么存在？（免签名单免去手工配置 → 自动装配；两段式过滤先减后决；延迟导入保证用户优先）
-- [ ] 是否说明旧方案为什么失败？（手工 @Configuration 每服务重复配置；XML 时代框架整合靠手工 import）
-- [ ] 是否形成完整因果链？（名单 → 排除 → 类条件预过滤 → 拓扑排序 → 延迟导入 → 注册裁决 → 评估报告可观测）
-- [ ] 是否区分规范和实现？（@ConditionalOn* 语义、让位契约、@AutoConfiguration 属性为 Specification；ImportCandidates 路径、排序器结构、OnClassCondition/OnBeanCondition 类继承、OnPropertyCondition 匹配实现为 3.3.5 Implementation）
-- [ ] 是否区分语义变化与代码组织变化？（Boot 3 属性条件去宽松匹配 = 语义变化；@AutoConfiguration 注解引入 = 新契约 + 代码组织）
-- [ ] 代码实例是否全部实测？（demo10×8 输出原样引用，可复跑；条件匹配实现、注解结构经 javap/反射验证）
-- [ ] 是否包含 Trade-off？（静默降级 vs 报错失败——靠评估报告补偿；类条件预过滤省开销 vs 二阶段语义复杂度；自动配置 vs 手工配置的维护成本）
-- [ ] 是否能指导生产决策？（3 张决策卡：何时写 starter / 覆盖通道选择 / 条件设计三问）
-- [ ] 是否存在未经证明的数字？（无编造 benchmark；2.x 宽松匹配细节与内置白名单行数标注待实测）
-- [ ] 是否只有一个比喻？（免签通道）是否只有一个主线角色？（一个 starter 的生效过程）
-- [ ] 随机抽查断言：@ConditionalOnProperty 无宽松匹配（javap 反编译 + demo10 场景 3）、OnBeanCondition REGISTER_BEAN（javap）、ASM 不加载类（demo10.ClassConditionApp）、before 拓扑排序（demo10.OrderingApp）、让位契约（demo10.OverrideApp）、@EnableAutoConfiguration 注解组合（反射实测）、AopAutoConfiguration 双层对称条件（demo10.ReportApp）、@AutoConfigureOrder 默认值 0（反射实测）、配置通道 spring.autoconfigure.exclude 与注解通道合并（实测）、报告 source 粒度与 Exclusions List 重复（实测）——均有证据来源。

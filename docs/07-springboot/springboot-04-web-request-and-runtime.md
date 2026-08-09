@@ -14,7 +14,6 @@
 | ---- | ---- |
 | 代码实证 | `knowledge/springboot/experiments/code/` 下 demo11×3（RunTraceApp / web.WebTraceApp / actuator.ActuatorApp），本机实测输出原样引用 |
 | 实测环境 | macOS + JDK 21.0.11（Azul Zulu）+ spring-boot **3.3.5** + spring-web/-webmvc/-webflux **6.1.14** + tomcat-embed-core **10.1.31** + spring-boot-actuator(-autoconfigure) 3.3.5 + micrometer 1.13.6 + jackson **2.17.2** + reactor-core **3.6.11** + reactor-netty **1.1.23** + netty **4.1.114.Final**（版本均出自 spring-boot-dependencies-3.3.5.pom BOM 与 reactor-bom 2023.0.11） |
-| 运行方式 | `cd knowledge/springboot/experiments/code && ./build.sh && ./run.sh demo11.XXX`（lib/ 38 个 jar，全部本地下载；WebFlux 双跑法见实验复现节） |
 | Specification | Servlet 规范（jakarta.servlet 6.0：Filter/生命周期）、DispatcherServlet 的 MVC 处理链语义、WebFilter 链语义（响应式栈）、Reactive Streams 背压语义、health 端点组语义（readiness/liveness）、K8s 探针语义 |
 | Implementation | SpringApplication.run 字节码调用序列（3.3.5 反编译，16 条）、AbstractApplicationContext.refresh 12 步（6.1.14 反编译）、WebApplicationType 探测（含"两个栈 jar 都在时 MVC 优先"实测）、ServletWebServerApplicationContext.onRefresh → createWebServer、EmbeddedTomcat 实例化时机（BPP 首个经过的 bean，实测）、Tomcat 线程名 http-nio-8080-exec-1（实测）、Netty EventLoop 线程名 reactor-http-nio-N（实测）、probes.enabled 开关行为（404→200 实测）、startup 端点默认 404 且开 probes 后仍 404（2026-08-06 实测）、refresh 失败自清理（demo15.RefreshFailApp 实测：自动销毁已创建单例 + getBean 拒绝 + 不支持二次 refresh）、conditions 端点 JSON 结构 notMatched/matched（实测）、扩展点全景时序（EnvironmentPostProcessor 位点：3.3.5 spring.factories + EnvironmentPostProcessorApplicationListener 反编译；ApplicationContextInitializer/CommandLineRunner 位点：demo11 实测） |
 | 待验证 | 不同硬件/负载下 Tomcat 线程池真实吞吐（本文不承诺任何性能数字）；非 macOS 环境端口占用行为细节；Boot 2.x 的 probes 默认行为差异；去掉 web jar 后 WebApplicationType 回退 NONE（机制推导，未实测）；背压在高负载下的真实表现细节 |
@@ -43,7 +42,6 @@ SpringApplication.run | 启动事件序列 | refresh 12 步 | WebApplicationType
 - 版本勘误表
 - 生产决策卡（3 张）
 - 跨语言视角
-- 系列索引
 
 ---
 
@@ -965,35 +963,3 @@ Validation: DB 停机状态下发版：应用起来、readiness DOWN、探针不
 - **Go net/http**：`http.ListenAndServe` 采用多 goroutine 并发模型——每个连接由独立的 goroutine 处理，没有"线程池耗尽"的线程占用问题，但**资源耗尽的表现**（连接积压、超时、内存上涨）与 Tomcat 线程池耗尽是同族问题；readiness 摘流是通用解法。
 - **Python/Django**：WSGI 服务器（gunicorn/uwsgi）= 连接器层，与 Django 应用解耦——内嵌/外置的取舍本质上就是"服务器进程与应用进程是否同生命周期"。
 - **通用方法论**：**启动序列显式化 + 事件化 + 探针化**是服务化框架的共同演进方向（Spring 的事件链、Node 的 listen 回调、K8s 的探针协议）；"进程存活 ≠ 服务就绪"是所有语言的生产铁律。
-
----
-
-# 系列索引
-
-```
-00 容器如何创建对象（已重写：四层创建链 + 15 个实测 demo）
-01 框架整合 + 配置体系（已重写：6 Level，配置体系独立 Level 4，6 个实测 demo）
-02 事件机制与容器通信（已重写：6 Level，5 个实测 demo + 启动事件全景）
-03 自动装配深挖（已重写：6 Level，6 个实测 demo：demo10×6）
-04 Web 请求链路与运行时刻（本篇：6 Level，4 个实测 demo：demo11.RunTraceApp / WebTraceApp / ActuatorApp / WebFluxApp（双跑法））
-05 事务与数据层（已完成：6 Level，4 个实测 demo：demo12.ds.DataSourceApp / tx.TxBasicsApp / tx.PropagationApp / tx.SelfInvocationApp）
-06 横切面与 AOP（已完成：6 Level，6 个实测 demo：demo13.aspect.ProxyKindApp / AdviceOrderApp / PointcutApp / AspectOrderApp / ProxyInternalsApp / UnwrapApp / VisibilityApp / TxVisibilityApp）
-07 生产实践（已完成：急诊室比喻 + 检查单 7 项 + Level 7 慢发布（指纹测量/三层优化/AOT 选型 + 24 章交叉补充）+ Level 8 优雅停机（demo16 实测 immediate/graceful）+ 决策卡 5 张；实测 demo14×2 + demo15×2 + demo16；与 Boot 4.1 对照线交叉校验）
-```
-
----
-
-# 实验复现
-
-```
-cd knowledge/springboot/experiments/code
-./build.sh
-./run.sh demo11.RunTraceApp              # 启动时刻：事件/回调五类打点
-./run.sh demo11.web.WebTraceApp          # 运行时刻：Filter→Interceptor→Controller 链路
-./run.sh demo11.actuator.ActuatorApp     # 可观测：health/readiness/liveness/conditions
-# WebFlux 双跑法（同代码、两组 classpath 实测 classpath 决定请求栈）：
-java -cp "out:$(find lib -name '*.jar' | tr '\n' ':')" demo11.webflux.WebFluxApp                        # 跑法 1：SERVLET 分支（MVC 优先）
-java -cp "out:$(find lib -name '*.jar' ! -name 'spring-webmvc*' ! -name 'tomcat-embed*' | tr '\n' ':')" demo11.webflux.WebFluxApp   # 跑法 2：REACTIVE 分支
-```
-
-四个 App 的关键输出都已固化在各自源文件头部注释，与本文引用一致。

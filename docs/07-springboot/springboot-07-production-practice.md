@@ -16,7 +16,6 @@
 | 事故性质 | **教学推演场景**：本文的"线上事故"是教学构建（因果链每一环都锚定 00-06 已实测机制），**不是真实事故记录**；不包含任何编造的数字、时间线、benchmark。排查过程与结论可直接复现 |
 | 代码实证 | `knowledge/springboot/experiments/code/` 下 demo14×2（triage.TriageApp 复现事故 + 内置急诊检查单 6 项输出；publish.StartupTimerApp 启动计时/懒初始化/timeline 三跑法）+ demo15×2（BootCircularApp Boot 默认禁环 / RefreshFailApp refresh 失败自清理）+ demo16.GracefulShutdownApp（immediate/graceful 停机对照）+ demo18.AotGenerationApp（Spring AOT 引擎端到端：生成 5 个源码文件 + CGLIB 代理字节码 + 170 个 RuntimeHints）+ demo19×2（buffered.StartupProfilerApp 启动端点四方法：actuator startup 端点 + BufferingApplicationStartup + /actuator/startup 耗时快照 353 步 / jfr.JfrStartupApp JFR 深度剖析 6138 事件），本机实测输出原样引用；回看 00-06 全部实验（demo01–demo19，共 58 个含 main 的可运行入口文件） |
 | 实测环境 | macOS + JDK 21.0.11（Azul Zulu）+ spring-boot **3.3.5** + spring-tx **6.1.14** + H2 内存库 |
-| 运行方式 | `cd knowledge/springboot/experiments/code && ./build.sh && ./run.sh demo14.triage.TriageApp`（lib/ 43 个 jar） |
 | Specification | 回滚规则（只回滚 RuntimeException/Error）、传播语义、@Transactional 语义（05 篇）、AspectJ 表达式语义、@EnableTransactionManagement 语义（06 篇） |
 | Implementation | 本机 6.1.14 实测：JdbcTransactionManager bean 类名 `org.springframework.jdbc.support.JdbcTransactionManager`、事务 advisor 数=3（demo14 包）、bean 为 CGLIB 代理 `$$SpringCGLIB$$0`、bad 路径事务激活=false 且 count=1 残留、good 路径激活=true 且回滚（TriageApp 输出）；启动计时与 lazy 差异、ApplicationStartup 步骤树大头（config-classes.parse=376ms、beandef-registry.post-process=382ms）（StartupTimerApp 三跑法，本机仅机制演示）；StartupEndpoint 类存在于 spring-boot-actuator-3.3.5 jar（jar 实证）；Boot 3.3.5 默认禁循环依赖（demo15.BootCircularApp 实测）；refresh 失败自动销毁已创建单例 + getBean 拒绝 + 不支持二次 refresh（demo15.RefreshFailApp 实测）；优雅停机 immediate 中断在途请求 / graceful 排空完成后才退出（demo16 实测，本机时序数字仅机制演示）；3.3.5 无 server.shutdown-timeout（Shutdown 枚举仅 GRACEFUL/IMMEDIATE + CountDownLatch.await() 无参等待，javap/字节码实证） |
 | 待验证 | 无 @Order 时多切面顺序不确定性（06 篇）；AspectJ LTW 真实表现（06 篇文档语义）；不同版本 JDK 代理类名格式；线程上下文在异步线程丢失的具体行为（04 篇未实测该点，本篇不展开）；GraalVM Native Image 构建/运行表现、AOT 启动加速数字、AppCDS/懒初始化全局开关等生产效果（Spring AOT 引擎"生成什么"已实测 demo18；启动步骤树已实测 demo19（端点/JFR 两通道），**加速数字与 native 行为需按业务测量**，未编造 benchmark） |
@@ -45,7 +44,6 @@
 - 面试自查表
 - 版本勘误表
 - 生产决策卡（5 张）
-- 系列索引
 
 ---
 
@@ -802,59 +800,3 @@ SIGTERM
 - **Alternative**：immediate + 强依赖客户端重试/幂等（能接受中断的业务）；4.1 的 shutdown-timeout（升级路线，文档语义）。
 - **Trade-off**：graceful 牺牲停机时长（等排空）换在途一致性；有界兜底要自己在应用层实现（停机预算必须 [固定环境实测]）。
 - **Validation**：8.6 检查单 8 项 + demo16 复现脚本（immediate/graceful 两场景输出对照）。
-
----
-
-# 系列索引
-
-```
-00 容器如何创建对象（已重写：四层创建链 + 15 个实测 demo）
-01 框架整合 + 配置体系（已重写：6 Level，配置体系独立 Level 4，6 个实测 demo：demo01.ServiceLoaderApp + demo05×3 + demo06 + demo07）
-02 事件机制与容器通信（已重写：6 Level，5 个实测 demo：demo08×5 + demo09 启动事件全景）
-03 自动装配深挖（已重写：6 Level，6 个实测 demo：demo10×6：类条件 ASM/评估报告代码访问/排除/排序/覆盖/属性条件）
-04 Web 请求链路与运行时刻（已重写：6 Level，4 个实测 demo：demo11.RunTraceApp/WebTraceApp/ActuatorApp/WebFluxApp（双跑法），run 反编译 16 条序列 + refresh 12 步 + 内嵌容器 + 请求链路 + Servlet/WebFlux 双栈实测 + 探针 404→200 实测）
-05 事务与数据层（已完成：6 Level，4 个实测 demo：demo12.ds.DataSourceApp / tx.TxBasicsApp / tx.PropagationApp / tx.SelfInvocationApp）
-06 横切面与 AOP（已完成：6 Level，8 个实测 demo：demo13.aspect.ProxyKindApp（JDK/CGLIB 双分支 + creator 双分支行为差异）/ AdviceOrderApp / PointcutApp / AspectOrderApp / ProxyInternalsApp / UnwrapApp / VisibilityApp / TxVisibilityApp；重大发现：无 aspectjweaver 时用户切面被 InfrastructureAdvisorAutoProxyCreator 的 role 过滤静默失效）
-07 生产实践（本篇：急诊室比喻，一次静默失效事故的排查全程，检查单 7 项 + 00-06 机制收束总图；Level 7 慢发布：指纹测量 + 三层优化 + AOT 选型（22 章交叉补充：AOT/Native/CDS 三技术区分 + 构建期 Condition + 生成物审计）；Level 8 优雅停机协议：demo16 实测 immediate/graceful 对照 + 3.3.5 无 shutdown-timeout 字节码实证 + 停机检查单 8 项 + 决策卡 5；实测 demo14.triage.TriageApp + demo14.publish.StartupTimerApp + demo15×2（Boot 循环依赖/refresh 失败）+ demo16.GracefulShutdownApp）
-```
-
-# 实验复现
-
-```bash
-cd knowledge/springboot/experiments/code
-./build.sh && ./run.sh demo14.triage.TriageApp   # 事故复现：检查单 6 项输出 + 双重失效残留对比
-./run.sh demo12.tx.SelfInvocationApp            # 回看：自调用失效与 @Lazy 修复（05 篇）
-./run.sh demo12.tx.TxBasicsApp                  # 回看：回滚规则与事务激活打点（05 篇）
-./run.sh demo13.aspect.TxVisibilityApp          # 回看：@Transactional 可见性实测（06 篇）
-./run.sh demo13.aspect.ProxyKindApp             # 回看：三跑法 + advisor 收集（06 篇）
-./run.sh demo14.publish.StartupTimerApp          # 启动计时（跑法1 默认）
-java -Dspring.main.lazy-initialization=true -cp "out:$(find lib -name '*.jar' | tr '\n' ':')" demo14.publish.StartupTimerApp   # 跑法2 lazy 对比
-java -Dspring.main.startup=timeline -cp "out:$(find lib -name '*.jar' | tr '\n' ':')" demo14.publish.StartupTimerApp          # 跑法3 步骤树
-./run.sh demo15.BootCircularApp             # Boot 3.3.5 默认禁循环依赖（与 demo04 对照）
-./run.sh demo15.RefreshFailApp              # refresh 失败：自清理 + 容器拒绝继续使用
-./run.sh demo16.GracefulShutdownApp --server.port=18080                         # 停机模式1 immediate
-./run.sh demo16.GracefulShutdownApp --server.port=18080 --server.shutdown=graceful   # 停机模式2 graceful（排空完成才退）
-./run.sh demo18.AotGenerationApp          # Spring AOT 引擎端到端：生成 5 个源码文件 + CGLIB 代理字节码 + 170 个 RuntimeHints
-./run.sh demo19.buffered.StartupProfilerApp   # 启动慢排查 1-3：actuator startup 端点 + BufferingApplicationStartup + /actuator/startup 耗时快照（353 步，慢 bean 精确定位）
-./run.sh demo19.jfr.JfrStartupApp             # 启动慢排查 4：FlightRecorderApplicationStartup 深度剖析 → out/startup-recording.jfr
-export JAVA_HOME=.../azul-21.0.11/Contents/Home && export PATH="$JAVA_HOME/bin:$PATH"
-jfr print --events org.springframework.core.metrics.jfr.FlightRecorderStartupEvent out/startup-recording.jfr   # JFR 步骤事件转文本（含 stackTrace/tags）
-```
-
-TriageApp 的检查单输出已固化在源文件头部注释，与本文引用一致。
-
----
-
-# ✅ Final Review Checklist
-
-- [ ] 是否解释了为什么存在？（机制知识是正向的，故障排查是反向的；静默失效没有报错可依赖，只有机制指纹可用——需要"翻译层"）
-- [ ] 是否说明旧方案为什么失败？（值班同学的"看日志/加日志重发"验证的是业务代码不是机制；分诊-检查-手术流程保证生产环境零试错）
-- [ ] 是否形成完整因果链？（症状 S1-S5 → 分诊收敛候选 A-D → 检查单 7 项逐项排除 → 检查 4 分水岭锁定"拦截器没介入" → 检查 6 双重失效根因 → 方案决策 → ICU 验证 → 预防医学；Level 7：慢发布三个放大器 → 指纹测量 → 三层优化 → AOT 选型）
-- [ ] 是否区分规范和实现？（回滚规则/事务语义为 Specification；JdbcTransactionManager 类名、advisor 数=3、CGLIB 类名、激活打点结果为本机 6.1.14 Implementation）
-- [ ] 是否区分语义变化与代码组织变化？（本事故的"重构"= 代码组织变化，但注解位置变化导致行为变化——正是"组织变化引发语义变化"的实例）
-- [ ] 代码实例是否全部实测？（demo14×2 输出原样引用、可复跑：TriageApp 检查单 6 项 + StartupTimerApp 三跑法计时；AOT/GraalVM/AppCDS/K8s 探针为官方文档语义，已标注待实测；回看实验全部锚定 00-06 已实测输出）
-- [ ] 是否包含 Trade-off？（修复方案 A/B/C/D 对比；排查手段选择；预防投入分配；慢发布三路线对比；停机模式选型——5 张决策卡）
-- [ ] 是否能指导生产决策？（检查单可执行、决策卡 5 张、评审检查点 4 条、测试/可观测性/演练落地、慢发布优化路线、停机协议检查单 8 项）
-- [ ] 是否存在未经证明的数字？（无编造 benchmark/时间线/事故细节；事故场景显式标注"教学推演"；StartupTimerApp 计时明确标注"本机机制演示非生产 benchmark"；AOT/GraalVM/AppCDS 效果全部标注官方文档语义待实测；demo16 停机时序同样仅本机机制演示）
-- [ ] 是否只有一个比喻？（急诊室：分诊/检查单/手术/ICU/预防医学）是否只有一个主线角色？（一次线上故障）
-- [ ] 随机抽查断言：bad 路径事务激活=false 且 count=1 残留（TriageApp 实测）、good 路径回滚（实测）、事务管理器类名 org.springframework.jdbc.support.JdbcTransactionManager（实测）、advisor 数=3（反射实测）、bean 为 CGLIB 代理（类名实测）、registerSynchronization 无事务抛 IllegalStateException（demo14 开发过程实测）、lazy 开关启动 2.2s→1.6s 且首次 getBean +507ms（StartupTimerApp 实测）、步骤树大头 config-classes.parse=376ms（实测）、StartupEndpoint 类存在于 3.3.5 jar（jar 实证）、Boot 3.3.5 默认禁循环依赖（demo15.BootCircularApp 实测）、refresh 失败自动销毁已创建单例且 getBean 抛 has not been refreshed yet（demo15.RefreshFailApp 实测）、immediate 中断在途请求 curl 52 / graceful 排空完成 +5010ms（demo16 实测）、3.3.5 Shutdown 枚举无 timeout（javap 实证）、doClose 顺序 ContextClosedEvent→LifecycleProcessor.onClose→destroyBeans（字节码实证）、@MockitoBean 6.2+ 引入（6.1.14 无 / 6.2.8 有 jar 实证）、probes 默认 404 且 startup 开启 probes 后仍 404（实测）、AOT/Native/AppCDS 效果为文档语义（未实测，已标注）——均有证据来源。

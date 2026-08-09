@@ -15,7 +15,6 @@
 | ---- | ---- |
 | 代码实证 | `knowledge/springboot/experiments/code/` 下 demo12×4（ds.DataSourceApp / tx.TxBasicsApp / tx.PropagationApp / tx.SelfInvocationApp），本机实测输出原样引用 |
 | 实测环境 | macOS + JDK 21.0.11（Azul Zulu）+ spring-boot **3.3.5** + spring-jdbc / spring-tx **6.1.14** + H2 **2.2.224** + HikariCP **5.1.0** + slf4j-api 2.0.16（版本均出自 spring-boot-dependencies-3.3.5.pom BOM） |
-| 运行方式 | `cd knowledge/springboot/experiments/code && ./build.sh && ./run.sh demo12.XXX`（lib/ 41 个 jar，全部本地下载；DataSource 双跑法见实验复现节） |
 | Specification | `javax.sql.DataSource` 契约（getConnection）、`PlatformTransactionManager` 契约（getTransaction/commit/rollback）、`@Transactional` 语义（回滚规则、传播、隔离级别的规范语义，来自 Javadoc 与 Spring 参考文档）、`@EnableTransactionManagement` 语义、JDBC Connection 事务语义（autocommit） |
 | Implementation | DataSourceAutoConfiguration 条件链分支（3.3.5 实测：Hikari 分支 vs 内嵌分支）、TransactionAutoConfiguration 嵌套 @Configuration 提供 @EnableTransactionManagement（3.3.5 反编译 javap 实证）、JdbcTransactionManager bean（实测）、AccountService 为 CGLIB 代理（实测 isAopProxy=true）、事务内 isActualTransactionActive=true + afterCompletion 回调（实测）、CGLIB 代理字段注入行为（实测：代理实例上注入字段为 null） |
 | 待验证 | 四个隔离级别的真实锁行为（本实验只用默认隔离级别，未实测脏读/不可重复读/幻读）；悲观锁/乐观锁；多数据源（AbstractRoutingDataSource）；XA 分布式事务；`@Transactional` 加在 private 方法/非 public 方法上的真实行为（规范要求 public，未实测破坏性场景） |
@@ -44,7 +43,6 @@ DataSource | 连接池 | HikariCP | H2 内嵌库 | JdbcTemplate | PlatformTransa
 - 版本勘误表
 - 生产决策卡（3 张）
 - 跨语言视角
-- 系列索引
 
 ---
 
@@ -871,52 +869,3 @@ Validation: 事务失效排查清单（Level 6.1）过一遍
 - **Go**：没有框架级声明式事务（无动态代理语言特性）；`database/sql` 的 `Begin/Commit/Rollback` 是纯编程式——Go 社区"函数式事务"（`WithTx(ctx, fn)`）本质是**手工封装代理**。语言没有代理，就自己造回调。
 - **Node.js/Prisma**：`prisma.$transaction(async tx => ...)` 回调式事务——把事务边界收敛成**一个回调函数**，从语言层面杜绝"事务控制散落"，是比注解更严格的边界声明（但也失去了"方法级透明"）。
 - **通用方法论**：**"透明拦截"（声明式）vs "显式回调"（编程式）** 是所有语言处理横切关注点的两条路；Spring 的代理是隐式拦截，代价就是"绕过代理=失效"——**任何声明式方案，都必须问"拦截点在哪，绕过它的后果是什么"**。
-
----
-
-# 系列索引
-
-```
-00 容器如何创建对象（已重写：四层创建链 + 15 个实测 demo）
-01 框架整合 + 配置体系（已重写：6 Level，配置体系独立 Level 4，6 个实测 demo）
-02 事件机制与容器通信（已重写：6 Level，5 个实测 demo + 启动事件全景）
-03 自动装配深挖（已重写：6 Level，6 个实测 demo：demo10×6）
-04 Web 请求链路与运行时刻（已重写：6 Level，4 个实测 demo：demo11.RunTraceApp / WebTraceApp / ActuatorApp / WebFluxApp（双跑法））
-05 事务与数据层（本篇：6 Level，4 个实测 demo：demo12.ds.DataSourceApp / tx.TxBasicsApp / tx.PropagationApp / tx.SelfInvocationApp）
-06 横切面与 AOP（已完成：6 Level，6 个实测 demo：demo13.aspect.ProxyKindApp / AdviceOrderApp / PointcutApp / AspectOrderApp / ProxyInternalsApp / UnwrapApp / VisibilityApp / TxVisibilityApp）
-07 生产实践（已完成：急诊室比喻 + 检查单 7 项 + Level 7 慢发布（指纹测量/三层优化/AOT 选型 + 24 章交叉补充）+ Level 8 优雅停机（demo16 实测 immediate/graceful）+ 决策卡 5 张；实测 demo14×2 + demo15×2 + demo16；与 Boot 4.1 对照线交叉校验）
-```
-
----
-
-# 实验复现
-
-```
-cd knowledge/springboot/experiments/code
-./build.sh
-./run.sh demo12.ds.DataSourceApp            # 数据源分支（默认全 lib → Hikari）
-./run.sh demo12.tx.TxBasicsApp              # 回滚规则 4 场景 + afterCompletion 打点
-./run.sh demo12.tx.PropagationApp           # REQUIRED vs REQUIRES_NEW
-./run.sh demo12.tx.SelfInvocationApp        # 自调用失效 + @Lazy 修复
-# DataSource 双跑法（同代码、两组 classpath 实测 classpath 决定数据源类型）：
-java -cp "out:$(find lib -name '*.jar' | tr '\n' ':')" demo12.ds.DataSourceApp                        # 跑法 1：Hikari 分支
-java -cp "out:$(find lib -name '*.jar' ! -name 'HikariCP*' | tr '\n' ':')" demo12.ds.DataSourceApp   # 跑法 2：内嵌数据源分支
-```
-
-四个 App 的关键输出都已固化在各自源文件头部注释，与本文引用一致。
-
----
-
-# ✅ Final Review Checklist
-
-- [ ] 是否解释了为什么存在？（连接昂贵 + 控制散落 → DataSource；原子性需求 + 多资源 → PlatformTransactionManager；不想写样板 → 声明式代理）
-- [ ] 是否说明旧方案为什么失败？（DriverManager 每次新建连接 = 连接风暴；编程式 try/catch 散落业务代码）
-- [ ] 是否形成完整因果链？（DataSource → 事务管理器 → @Transactional 语义 → 代理机制 → 自调用失效 → 生产排查，总图在文中）
-- [ ] 是否区分规范和实现？（回滚规则/传播语义/DataSource 契约为 Specification；自动配置条件链、JdbcTransactionManager、CGLIB 行为、afterCompletion 为 3.3.5 Implementation）
-- [ ] 是否区分语义变化与代码组织变化？（DataSourceTransactionManager → JdbcTransactionManager = 命名变化行为兼容，明确标注非语义变化）
-- [ ] 代码实例是否全部实测？（demo12×4 输出原样引用，可复跑；@EnableTransactionManagement 嵌套结构 javap 实证；代理实例字段为 null 的 NPE 实测）
-- [ ] 是否包含 Trade-off？（声明式 vs 编程式；REQUIRED vs REQUIRES_NEW 代价；REQUIRES_NEW 解耦 vs 局部原子性丢失）
-- [ ] 是否能指导生产决策？（3 张决策卡：回滚规则 / 传播选择 / 声明式边界 + 失效排查清单）
-- [ ] 是否存在未经证明的数字？（无编造 benchmark；隔离级别锁行为、setRollbackOnly、UnexpectedRollbackException 路径、非 public 事务方法均标注待验证）
-- [ ] 是否只有一个比喻？（记账员）是否只有一个主线角色？（一笔数据库事务的一生）
-- [ ] 随机抽查断言：默认回滚仅运行时异常（TxBasicsApp 场景 2/3 实测）、检查异常 rollbackFor 生效（场景 4）、REQUIRES_NEW 独立提交（PropagationApp 场景 B count=1）、自调用事务激活=false + 修复后 true（SelfInvocationApp 打点：@Lazy 自注入 / context.getBean / exposeProxy+AopContext 三种代理通道实测 + 链外 IllegalStateException 实测）、Hikari vs 内嵌双分支（DataSourceApp 双跑法）、JdbcTransactionManager bean + 代理=true（TxBasicsApp 诊断）、代理实例字段 null（NPE 实测）——均有证据来源。
