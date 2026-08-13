@@ -81,15 +81,10 @@ docs/
 │   └── 🐬MySQL-InnoDB-深度解析.md
 ├── 06-redis/                       # ⚡ Redis 与缓存系统
 │   └── ⚡Redis深度解析.md
-└── 07-springboot/                  # 🚀 Spring 与 SpringBoot（8 篇系列）
-    ├── springboot-00-backbone.md
-    ├── springboot-01-framework-integration.md
-    ├── springboot-02-events.md
-    ├── springboot-03-auto-configuration.md
-    ├── springboot-04-web-request-and-runtime.md
-    ├── springboot-05-transaction-and-data-layer.md
-    ├── springboot-06-aop.md
-    └── springboot-07-production-practice.md
+├── 07-springboot/                  # 🚀 Spring 与 SpringBoot（8 篇系列）
+│   └── README.md                   # 系列导航（8 篇清单见子 README）
+└── 08-dubbo/                       # 🧭 Dubbo 全链路（9 篇系列）
+    └── README.md                   # 系列导航（9 篇清单见子 README）
 ```
 
 ### 已完成 · Completed
@@ -107,11 +102,13 @@ docs/
 | 🐬 **MySQL InnoDB** | [MySQL-InnoDB-深度解析](./docs/05-database/) **[NEW]** | 9层递进：Page/Extent 行格式与行溢出、Buffer Pool 改良LRU、B+ 树容量与最左前缀、事务隔离矩阵、Record/Gap/Next-Key 锁、Read View 版本可见性、Redo/Undo/Binlog 两阶段提交、一条 UPDATE 全链路、EXPLAIN 调优实战；18 坑 + 勘误表 + 5 张生产决策卡 | 被"RR 为什么能防幻读 / UPDATE 加什么锁 / COUNT(*) 为什么慢"问住的 |
 | ⚡ **Redis** | [Redis 深度解析](./docs/06-redis/⚡Redis深度解析.md) **[NEW]** | 9层递进：内存与事件循环、type×encoding、过期与淘汰、RDB/AOF、复制与 Sentinel、Cluster 槽位与自治协议、Stream/HLL 场景总装；分布式锁、缓存治理、跨机房与 10 张生产决策卡 | 被“Redis 单线程为什么快 / 主从为什么丢写 / Cluster 为什么 CROSSSLOT / 锁为什么还要 fencing”问住的 |
 | 🚀 **SpringBoot** | [SpringBoot 全链路 8 篇系列](./docs/07-springboot/) **[NEW]** | IoC 创建链→框架整合→事件→自动配置→Web 运行时→事务→AOP→生产实践（启动慢排查/AOT/优雅停机）；全部结论由 demo01–demo19 本机实测背书（actuator startup 端点 353 步、JFR 6138 事件、AOT 引擎生成 170 hints）；实验代码存于本地知识库未随仓发布 | 被"事务为什么没回滚 / 启动为什么慢 / kill 为什么丢请求"问住的 |
+| 🧭 **Dubbo** | [Dubbo 全链路 9 篇系列](./docs/08-dubbo/) **[NEW]** | 一次 RPC 的一生：Proxy→Filter→服务发现→Router/LB/Cluster→序列化/协议/Netty→线程池→优雅停机与选型总装；全部结论由 E00~E08 九轮本机实测背书（注册三态条目数据、杀 Nacos 派单窗口 ≥68s、ZK 锁释放 13.1s vs Nacos 剔除 1.1s、kill 实例重试边界、250 并发线程池饱和拒绝、triple"送完在途"不可靠）；每篇含坑表/勘误表/决策卡，实验记录后续随仓发布 | 被"No provider / 线程池 EXHAUSTED / mock 不生效 / 停机丢请求"问住的 |
 
 ### 🔥 最近更新
 
 | 日期 | 内容 |
 | --- | --- |
+| **2026-08-13** | **新增《🧭 Dubbo 全链路》系列 9 篇** — 从"订单 O 的一生"总图出发，逐站打穿协议/序列化/服务发现/注册中心协议/负载均衡容错/治理与泛化/线程模型与质量保障/生产实践；全部结论由 E00~E08 九轮本机实测背书：注册三态条目数据、杀 Nacos 派单窗口 ≥68s、ZK 锁释放 13.1s vs Nacos 剔除 1.1s、kill 实例重试边界、250 并发线程池饱和拒绝（SynchronousQueue 快速失败）、triple 优雅停机"送完在途"不可靠（PING ack 即断连）；含 2.7.x hessian2 ThreadLocal OOM 源码 tag 逐版本核验与修复路径 |
 | **2026-08-09** | **新增《🚀 SpringBoot 全链路》系列 8 篇** — 从 IoC 创建链（ConfigurationClassPostProcessor→BeanDefinition→实例化→销毁）到事件/自动配置/Web 运行时/事务/AOP/生产实践（慢发布与 AOT 实测、优雅停机）；每个机制结论均由 demo01–demo19 可运行实验背书：事务失效双案例、AOT 引擎端到端（生成 5 源码 + CGLIB 代理字节码 + 170 RuntimeHints）、启动慢排查四方法（actuator startup 端点 353 步 / JFR 6138 事件）、immediate vs graceful 停机对照 |
 | **2026-08-03** | **新增《🌐 高性能网络编程原理》** — 从 I/O 的等待分类出发，经 BIO 陪等、NIO 空转、多路复用/AIO 的事件语义，推导 Reactor 的状态所有权；覆盖背压、业务 ack、drain 与 4 张生产决策卡。 |
 | **2026-08-03** | **新增《⚡ Redis 深度解析》** — 9层递进(L1-L9)，从事件循环、内存编码一路推导到过期淘汰、持久化、高可用、Cluster、Stream/HLL 与生产架构评审；含分布式锁、缓存治理、勘误表、合书自测与 10 张生产决策卡 |
@@ -149,6 +146,9 @@ docs/
 - Redis 为什么单线程却能支撑高并发？→ [⚡ Redis · Level 2：事件循环与线性化点](./docs/06-redis/⚡Redis深度解析.md)
 - Redis 的 `TTL` 为什么不是业务定时器？大 key / 热 key 怎么治理？→ [⚡ Redis · Level 4：过期、淘汰与生产治理](./docs/06-redis/⚡Redis深度解析.md)
 - `SET NX PX + Lua` 为什么仍需要 fencing token？→ [⚡ Redis · 分布式锁与生产决策卡](./docs/06-redis/⚡Redis深度解析.md)
+- 为什么服务发现倾向 AP，而分布式锁/配置必须 CP？→ [🧭 Dubbo · 04 注册中心协议篇](./docs/08-dubbo/dubbo-04-registry-protocol.md)
+- failover 重试为什么兜不住"在途被切断"？业务异常为什么不重试？→ [🧭 Dubbo · 05 负载均衡与集群容错篇](./docs/08-dubbo/dubbo-05-loadbalance-cluster.md)
+- 一次 RPC 调用从 @DubboReference 到业务方法返回经过哪些站？→ [🧭 Dubbo · 00 骨干篇](./docs/08-dubbo/dubbo-00-backbone.md)
 
 #### 🔧 我在排查线上问题
 
@@ -171,6 +171,10 @@ docs/
 | 启动慢 / 发布回滚 10 分钟 / 想上 AOT | [🚀 SpringBoot · 07 生产篇 7.2/7.4：指纹先行 + AOT 实测](./docs/07-springboot/springboot-07-production-practice.md) |
 | 停机丢请求 / SIGTERM 后流量中断 | [🚀 SpringBoot · 07 生产篇 Level 8：先拒新、再排空、后关资源](./docs/07-springboot/springboot-07-production-practice.md) |
 | 代理失效 / 切面没生效 / CGLIB vs JDK | [🚀 SpringBoot · 06 AOP 篇：代理机制与决策卡](./docs/07-springboot/springboot-06-aop.md) |
+| `No provider available` / 空地址 / 注册后仍调不到 | [🧭 Dubbo · 03 注册中心篇](./docs/08-dubbo/dubbo-03-registry.md) |
+| 线程池 EXHAUSTED / Consumer 收到 CANCELLED | [🧭 Dubbo · 07 线程模型篇：饱和行为与故障读图](./docs/08-dubbo/dubbo-07-threadmodel-quality.md) |
+| mock 不生效 / 优雅停机丢请求 / 停机瞬间 CANCELLED | [🧭 Dubbo · 08 生产实践篇：打烊与回访](./docs/08-dubbo/dubbo-08-production.md) |
+| 2.7.x 大响应 OOM / ThreadLocal 泄漏 | [🧭 Dubbo · 02 序列化篇：ThreadLocal 泄漏机制与修复路径](./docs/08-dubbo/dubbo-02-serialization.md) |
 
 #### 🏗️ 我在做架构评审
 
@@ -182,6 +186,8 @@ docs/
 - 🔐 **AQS**：5 张决策卡（分片锁 / Semaphore 限流 / 生产者消费者 / P99 决策树 / Virtual Threads 迁移）
 - 🐬 **InnoDB**：5 张决策卡（隔离级别选型 / Buffer Pool 容量规划 / 索引设计 / 日志与持久性配置 / 慢查询排查 SOP）
 - ⚡ **Redis**：10 张决策卡（Cache-Aside / 淘汰与容量 / RDB-AOF / Sentinel / Cluster / 分布式锁 / Lua 与 Function / Cluster 配置 / 跨机房容灾 / RESP3 Tracking）
+- 🚀 **SpringBoot**：每篇决策卡（框架整合选型 / 事件异步化 / 自动装配自研 / 探针与停机 / 事务传播与回滚规则 / AOP 选型 / 启动优化 / 停机模式选型）
+- 🧭 **Dubbo**：9 篇每篇决策卡（协议与序列化 / 注册中心选型与 register-mode 迁移 / 语义选型 CP-AP / 负载均衡与重试预算 / 治理与泛化边界 / 线程预算表 / 优雅停机与验收）
 
 每张卡都包含「**不能做的错误决策**」与「**验收指标/埋点**」两栏，可直接贴到 RFC 里。
 
@@ -195,6 +201,7 @@ docs/
 - **AQS** 实验：Condition `await/signal` 时 `firstWaiter` 到 `lastWaiter` 的节点迁移、共享锁传播的 `setHeadAndPropagate` 边界
 - **Collection** 实验：HashMap 扰动函数碰撞率对比、树化阈值8在不同负载因子下的实测、Fail-Fast 的 `modCount` 竞态窗口、ConcurrentHashMap 扩容 `helpTransfer` 加速效果
 - **Redis** 验证边界：事件循环线性化点、编码阈值、过期/淘汰、RDB/AOF、复制切换、Cluster 重定向、Stream PEL 与 HLL 误差；性能数字始终绑定版本、硬件与压测方法
+- **Dubbo** 九轮实测（E00~E08，Dubbo 3.3.4 + Nacos 2.4.3 + ZK 3.9.5）：一次调用全链路打印、协议/序列化方向性压测、注册三态条目数据、杀 Nacos 派单窗口 ≥68s、ZK 锁释放 13.1s vs Nacos 剔除 1.1s、kill 实例重试边界、泛化调用、250 并发线程池饱和拒绝、triple 优雅停机"送完在途"不可靠；2.7.x hessian2 ThreadLocal 泄漏经源码 tag 逐版本核验（实验记录后续随仓发布）
 
 > 文档中引用的所有实验输出 **均为真实运行结果**，非手写示意。以 OpenJDK 21 LTS `jdk21u` 为基线。
 
