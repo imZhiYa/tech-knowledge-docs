@@ -169,7 +169,7 @@ MockClusterInvoker（mock=true / mock=force:return xxx / mock=fail:return xxx）
 
 GenericService 契约签名（2.x/3.x 一致）：
     Object $invoke(String method, String[] parameterTypes, Object[] args)
-    // parameterTypes: 如 {"org.example.api.Param"}
+    // parameterTypes: 如 {"com.zhiya.api.Param"}
     // args:           Map 结构，键 class 描述类型，value 承载值
 ```
 

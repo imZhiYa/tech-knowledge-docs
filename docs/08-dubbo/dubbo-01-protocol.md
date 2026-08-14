@@ -255,7 +255,7 @@ E01 关键实验（原样引用）：
 ```text
 $ curl --http2-prior-knowledge -X POST -H "content-type: application/json" \
     -d '{"name":"O","sequence":1}' \
-    "http://192.xxx.x.xxx:50052/org.example.dubbo.demo.api.GreetingService/greet"
+    "http://192.xxx.x.xxx:50052/com.zhiya.dubbo.demo.api.GreetingService/greet"
 
 HTTP/2 200
 content-type: application/json

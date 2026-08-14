@@ -212,8 +212,8 @@ P1/P2/P3 生命周期变化
 **interface 模式——目录按菜品登记，每行是完整菜单：**
 
 ```json
-service: providers:org.example.dubbo.demo.api.GreetingService::
-实例 metadata: { side, release, methods: "greet", interface: "org.example.dubbo.demo.api.GreetingService",
+service: providers:com.zhiya.dubbo.demo.api.GreetingService::
+实例 metadata: { side, release, methods: "greet", interface: "com.zhiya.dubbo.demo.api.GreetingService",
                  protocol, application, path, revision: "1.0.0", category, timestamp, ... }
 → 14 个字段 / 约 270 字节（实测）
 ```

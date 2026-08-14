@@ -256,7 +256,7 @@ Filter 链（提供者侧）：Echo → ClassLoader → ... → 你的业务 Fil
 
 ```text
 Consumer 端：
-  proxy class = org.example.dubbo.demo.api.GreetingServiceDubboProxy0
+  proxy class = com.zhiya.dubbo.demo.api.GreetingServiceDubboProxy0
   [CONSUMER TraceFilter] enter, thread=ConsumerApp.main(),
       invoker=org.apache.dubbo.rpc.listener.ListenerInvokerWrapper, method=greet, ...
 Provider 端：
