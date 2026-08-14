@@ -31,7 +31,7 @@
 | Dubbo Java | **Apache Dubbo 3.3.4** | 所有 Implementation 结论均指该版本；上一代对照 2.7.x（2.7.23 终版） |
 | 运行环境 | macOS（arm64）+ JDK 21.0.11 + Maven 3.9.16 + 纯 API（无 Spring） | E00~E08 实测环境 |
 | 注册中心 | Nacos 2.4.3（standalone）；对照 ZooKeeper 3.9.5 | 03/04 篇实测环境 |
-| 本机实测 | E00~E08（共 9 轮） | 实验记录见下"实验证据" |
+| 本机实测 | E00~E10（共 11 项实验） | 实验代码见下"实验证据" |
 | 性能声明 | 本机单机串行压测仅作**方向性参考**，不可外推 | 不承诺任何生产 benchmark |
 | 证据纪律 | 所有断言分三层标注：Specification（官方文档口径）/ Implementation（源码实测，标版本）/ 待验证 | 未实测项一律显式标注，不写死数字 |
 
@@ -47,26 +47,29 @@
 | 05 | E05：派单分布、kill 重试边界、retries 对比 | 条件路由下发受阻（纯 API 级联未打通） |
 | 06 | E06：泛化调用 demo 跑通（3/3） | OOM 机制以 issue 锚点证锚，未本机复现 |
 | 07 | E07：线程池默认参数、250 并发饱和拒绝、dispatcher 边界 | 内核是否内置半开熔断器 |
-| 08 | 复用 E00~E08 | 优雅停机 PING 无 ack 场景、QoS 注册中心 offline |
+| 08 | 复用 E00~E10 | 优雅停机 PING 无 ack 场景、QoS 注册中心 offline |
 
 ---
 
 ## 🧪 实验证据
 
-每篇文章的关键结论都有对应实验记录支撑（源码 + 日志原样引用）。实验记录将随仓库一并发布。
+每篇文章的关键结论都有对应实验代码支撑（源码结论标注 Dubbo 3.3.4 版本，实验输出以实际运行日志为准）。实验代码与运行方式见 [dev-lab/dubbo-demo](https://github.com/imZhiYa/dev-lab/tree/main/dubbo-demo)：
 
-| 实验 | 主题 | 实验记录文件 | 对应篇 |
+| 实验 | 主题 | 代码入口（dev-lab/dubbo-demo） | 对应篇 |
 | ---- | ---- | ---- | ---- |
-| E00 | 一次调用完整链路打印 | `experiment-000-callchain.md` | 00 |
-| E01 | 协议/序列化方向性压测、curl 互通 | `experiment-001-protocol.md` | 01 / 02 |
-| E03 | 注册三态数据、残留、订阅通知 | `experiment-002-registry.md` | 03 |
-| E04 | 注册中心故障窗口（杀 Nacos / ZK 锁） | `experiment-004-registry-protocol.md` | 04 |
-| E05 | 派单分布、kill 重试边界、条件路由受阻 | `experiment-005-loadbalance-cluster.md` | 05 |
-| E06 | 泛化调用、治理规则下发 | `experiment-006-service-governance-generic.md` | 06 |
-| E07 | 线程池参数、饱和行为、dispatcher、QoS | `experiment-007-threadmodel.md` | 07 |
-| E08 | 优雅停机实测（"送完在途"不可靠） | `experiment-008-graceful-shutdown.md` | 08 |
+| E00 | 一次调用完整链路打印 | [demo00-callchain](https://github.com/imZhiYa/dev-lab/tree/main/dubbo-demo/demo00-callchain)：`ProviderApp` / `ConsumerApp` | 00 |
+| E01 | 协议/序列化方向性压测、curl 互通 | [demo01-protocol](https://github.com/imZhiYa/dev-lab/tree/main/dubbo-demo/demo01-protocol)：`ConsumerBench` / `SerializeDump` | 01 / 02 |
+| E03 | 注册三态数据、残留、订阅通知 | [demo02-registry](https://github.com/imZhiYa/dev-lab/tree/main/dubbo-demo/demo02-registry) + `scripts/run-e03.sh` | 03 |
+| E04 | 注册中心故障窗口（杀 Nacos 派单 ≥68s） | [demo04-registry-protocol](https://github.com/imZhiYa/dev-lab/tree/main/dubbo-demo/demo04-registry-protocol) + `scripts/run-e04.sh` | 04 |
+| E04b | ZK 分布式锁互斥与 session 语义（释放 13.1s） | [demo05-zk-lock](https://github.com/imZhiYa/dev-lab/tree/main/dubbo-demo/demo05-zk-lock) + `scripts/run-e04b.sh` | 04 |
+| E05 | 派单分布、kill 重试边界、条件路由受阻 | [demo04-registry-protocol](https://github.com/imZhiYa/dev-lab/tree/main/dubbo-demo/demo04-registry-protocol) + `scripts/run-e05.sh` | 05 |
+| E06 | 泛化调用、治理规则下发 | [demo04-registry-protocol](https://github.com/imZhiYa/dev-lab/tree/main/dubbo-demo/demo04-registry-protocol)：`GenericCallApp` | 06 |
+| E07 | 线程池参数、饱和行为、dispatcher、QoS | [demo07-threadpool](https://github.com/imZhiYa/dev-lab/tree/main/dubbo-demo/demo07-threadpool)：`ProviderApp` / `ConsumerApp` | 07 |
+| E08 | 优雅停机实测（"送完在途"不可靠） | [demo07-threadpool](https://github.com/imZhiYa/dev-lab/tree/main/dubbo-demo/demo07-threadpool)：`ProviderApp` / `ConsumerApp` | 08 |
+| E09 | SPI 机制（@SPI/@Adaptive/@Activate/Wrapper、点对点 LoadBalance 捷径） | [demo08-spi](https://github.com/imZhiYa/dev-lab/tree/main/dubbo-demo/demo08-spi)：`SpiBasicsApp` / `AdaptiveApp` / `ActivateApp` / `WrapperApp` | 05 |
+| E10 | mock 降级边界（Cluster 层特性、值语义、直连失效） | [demo08-spi](https://github.com/imZhiYa/dev-lab/tree/main/dubbo-demo/demo08-spi)：`MockApp` | 05 / 06 / 08 |
 
-> 正文中的"E0X 实测""3.3.4 源码实证"等标注即指向上述实验记录；GitHub issue 编号（如 #7770）可按编号在 apache/dubbo 仓库检索。
+> 正文中的"E0X 实测""3.3.4 源码实证"等标注即指向上述实验代码；GitHub issue 编号（如 #7770）可按编号在 apache/dubbo 仓库检索。
 
 ---
 
