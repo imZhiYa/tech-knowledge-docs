@@ -83,8 +83,10 @@ docs/
 │   └── ⚡Redis深度解析.md
 ├── 07-springboot/                  # 🚀 Spring 与 SpringBoot（8 篇系列）
 │   └── README.md                   # 系列导航（8 篇清单见子 README）
-└── 08-dubbo/                       # 🧭 Dubbo 全链路（9 篇系列）
-    └── README.md                   # 系列导航（9 篇清单见子 README）
+├── 08-dubbo/                       # 🧭 Dubbo 全链路（9 篇系列）
+│   └── README.md                   # 系列导航（9 篇清单见子 README）
+└── 09-mq/                          # 📨 MQ 全链路（11 篇系列）
+    └── README.md                   # 系列导航（11 篇清单见子 README）
 ```
 
 ### 已完成 · Completed
@@ -103,11 +105,13 @@ docs/
 | ⚡ **Redis** | [Redis 深度解析](./docs/06-redis/⚡Redis深度解析.md) **[NEW]** | 9层递进：内存与事件循环、type×encoding、过期与淘汰、RDB/AOF、复制与 Sentinel、Cluster 槽位与自治协议、Stream/HLL 场景总装；分布式锁、缓存治理、跨机房与 10 张生产决策卡 | 被“Redis 单线程为什么快 / 主从为什么丢写 / Cluster 为什么 CROSSSLOT / 锁为什么还要 fencing”问住的 |
 | 🚀 **SpringBoot** | [SpringBoot 全链路 8 篇系列](./docs/07-springboot/) **[NEW]** | IoC 创建链→框架整合→事件→自动配置→Web 运行时→事务→AOP→生产实践（启动慢排查/AOT/优雅停机）；全部结论由 demo01–demo19 本机实测背书（actuator startup 端点 353 步、JFR 6138 事件、AOT 引擎生成 170 hints）；实验代码存于本地知识库未随仓发布 | 被"事务为什么没回滚 / 启动为什么慢 / kill 为什么丢请求"问住的 |
 | 🧭 **Dubbo** | [Dubbo 全链路 9 篇系列](./docs/08-dubbo/) **[NEW]** | 一次 RPC 的一生：Proxy→Filter→服务发现→Router/LB/Cluster→序列化/协议/Netty→线程池→优雅停机与选型总装；全部结论由 E00~E08 九轮本机实测背书（注册三态条目数据、杀 Nacos 派单窗口 ≥68s、ZK 锁释放 13.1s vs Nacos 剔除 1.1s、kill 实例重试边界、250 并发线程池饱和拒绝、triple"送完在途"不可靠）；每篇含坑表/勘误表/决策卡，实验记录后续随仓发布 | 被"No provider / 线程池 EXHAUSTED / mock 不生效 / 停机丢请求"问住的 |
+| 📨 **MQ** | [MQ 全链路 11 篇系列](./docs/09-mq/) **[NEW]** | 消息 E 的一生：为什么存在（同步调用三笔账）→ 队列 vs 日志模型 → 存储引擎（顺序写/page cache/稀疏索引/零拷贝）→ 投递语义三道防线 → 顺序重复与幂等 → 消费模型推拉与集群广播 → 再平衡与扩容（分区数 = 并行度上限）→ 事务/延迟/死信 → 副本与高可用（ISR/选举/脑裂）→ 生产选型总控 → 生产问题急诊（DB 有单消息没了 / 千万 Lag / 订单链路乱序重复补偿）；RocketMQ 5.x / Kafka 3.5.x KRaft / RabbitMQ 3.13.x / Pulsar 3.x 四产品机制对照，含故障→文章反向索引与 12 神话核对 | 被"Kafka 为什么能扛堆积 / 重复消费怎么幂等 / 事务消息为什么救不了分布式事务"问住的 |
 
 ### 🔥 最近更新
 
 | 日期 | 内容 |
 | --- | --- |
+| **2026-08-16** | **新增《📨 MQ 全链路》系列 11 篇** — 消息 E 的一生（城市货运中转站）：从"为什么存在"（同步调用三笔账：耦合/雪崩/无削峰）出发，经队列 vs 日志模型、存储引擎（顺序写 + page cache + 稀疏索引 + 零拷贝）、投递语义三道防线、顺序重复与幂等、消费模型推拉与集群广播、再平衡与扩容、事务/延迟/死信、副本与高可用（ISR/选举/脑裂）、生产选型总控，收于生产问题急诊（DB 有单 Kafka 无消息 / 千万 Lag / 订单链路乱序·重复·补偿）；RocketMQ 5.x / Kafka 3.5.x KRaft / RabbitMQ 3.13.x / Pulsar 3.x 四产品机制对照，附故障→文章反向索引与 12 神话核对 |
 | **2026-08-13** | **新增《🧭 Dubbo 全链路》系列 9 篇** — 从"订单 O 的一生"总图出发，逐站打穿协议/序列化/服务发现/注册中心协议/负载均衡容错/治理与泛化/线程模型与质量保障/生产实践；全部结论由 E00~E08 九轮本机实测背书：注册三态条目数据、杀 Nacos 派单窗口 ≥68s、ZK 锁释放 13.1s vs Nacos 剔除 1.1s、kill 实例重试边界、250 并发线程池饱和拒绝（SynchronousQueue 快速失败）、triple 优雅停机"送完在途"不可靠（PING ack 即断连）；含 2.7.x hessian2 ThreadLocal OOM 源码 tag 逐版本核验与修复路径 |
 | **2026-08-09** | **新增《🚀 SpringBoot 全链路》系列 8 篇** — 从 IoC 创建链（ConfigurationClassPostProcessor→BeanDefinition→实例化→销毁）到事件/自动配置/Web 运行时/事务/AOP/生产实践（慢发布与 AOT 实测、优雅停机）；每个机制结论均由 demo01–demo19 可运行实验背书：事务失效双案例、AOT 引擎端到端（生成 5 源码 + CGLIB 代理字节码 + 170 RuntimeHints）、启动慢排查四方法（actuator startup 端点 353 步 / JFR 6138 事件）、immediate vs graceful 停机对照 |
 | **2026-08-03** | **新增《🌐 高性能网络编程原理》** — 从 I/O 的等待分类出发，经 BIO 陪等、NIO 空转、多路复用/AIO 的事件语义，推导 Reactor 的状态所有权；覆盖背压、业务 ack、drain 与 4 张生产决策卡。 |
@@ -149,6 +153,8 @@ docs/
 - 为什么服务发现倾向 AP，而分布式锁/配置必须 CP？→ [🧭 Dubbo · 04 注册中心协议篇](./docs/08-dubbo/dubbo-04-registry-protocol.md)
 - failover 重试为什么兜不住"在途被切断"？业务异常为什么不重试？→ [🧭 Dubbo · 05 负载均衡与集群容错篇](./docs/08-dubbo/dubbo-05-loadbalance-cluster.md)
 - 一次 RPC 调用从 @DubboReference 到业务方法返回经过哪些站？→ [🧭 Dubbo · 00 骨干篇](./docs/08-dubbo/dubbo-00-backbone.md)
+- 为什么说"send 返回 ≠ 已持久化"？重复消费为什么靠幂等而非"不重发"？→ [📨 MQ · 03 投递语义篇](./docs/09-mq/mq-03-投递语义与可靠性.md)
+- 消费堆积为什么"加机器"不一定解决？→ [📨 MQ · 06 再平衡与扩容篇](./docs/09-mq/mq-06-再平衡与扩容.md)
 
 #### 🔧 我在排查线上问题
 
@@ -175,6 +181,10 @@ docs/
 | 线程池 EXHAUSTED / Consumer 收到 CANCELLED | [🧭 Dubbo · 07 线程模型篇：饱和行为与故障读图](./docs/08-dubbo/dubbo-07-threadmodel-quality.md) |
 | mock 不生效 / 优雅停机丢请求 / 停机瞬间 CANCELLED | [🧭 Dubbo · 08 生产实践篇：打烊与回访](./docs/08-dubbo/dubbo-08-production.md) |
 | 2.7.x 大响应 OOM / ThreadLocal 泄漏 | [🧭 Dubbo · 02 序列化篇：ThreadLocal 泄漏机制与修复路径](./docs/08-dubbo/dubbo-02-serialization.md) |
+| 消息丢失 / 发送成功却不落盘 / DB 有单、MQ 无消息 | [📨 MQ · 03 投递语义与可靠性篇](./docs/09-mq/mq-03-投递语义与可靠性.md) |
+| 重复消费 / 乱序 / 幂等失效 | [📨 MQ · 04 顺序重复与幂等篇](./docs/09-mq/mq-04-顺序重复与幂等.md) |
+| 消费堆积 / Lag 只增不减 / 再平衡风暴 | [📨 MQ · 06 再平衡与扩容篇](./docs/09-mq/mq-06-再平衡与扩容.md) |
+| 事务消息失效 / 延迟不准 / 死信堆积 | [📨 MQ · 07 事务延迟死信篇](./docs/09-mq/mq-07-事务延迟死信.md) |
 
 #### 🏗️ 我在做架构评审
 
@@ -188,6 +198,7 @@ docs/
 - ⚡ **Redis**：10 张决策卡（Cache-Aside / 淘汰与容量 / RDB-AOF / Sentinel / Cluster / 分布式锁 / Lua 与 Function / Cluster 配置 / 跨机房容灾 / RESP3 Tracking）
 - 🚀 **SpringBoot**：每篇决策卡（框架整合选型 / 事件异步化 / 自动装配自研 / 探针与停机 / 事务传播与回滚规则 / AOP 选型 / 启动优化 / 停机模式选型）
 - 🧭 **Dubbo**：9 篇每篇决策卡（协议与序列化 / 注册中心选型与 register-mode 迁移 / 语义选型 CP-AP / 负载均衡与重试预算 / 治理与泛化边界 / 线程预算表 / 优雅停机与验收）
+- 📨 **MQ**：11 篇每篇决策卡（MQ 选型矩阵与模型分野 / 存储与刷盘窗口 / 投递语义与确认级别 / 幂等与顺序边界 / 消费模型与背压 / 分区扩容规划 / 事务与死信治理 / 副本 ISR 与脑裂防线 / 生产验收指标 / 故障诊断 SOP）
 
 每张卡都包含「**不能做的错误决策**」与「**验收指标/埋点**」两栏，可直接贴到 RFC 里。
 
@@ -202,6 +213,7 @@ docs/
 - **Collection** 实验：HashMap 扰动函数碰撞率对比、树化阈值8在不同负载因子下的实测、Fail-Fast 的 `modCount` 竞态窗口、ConcurrentHashMap 扩容 `helpTransfer` 加速效果
 - **Redis** 验证边界：事件循环线性化点、编码阈值、过期/淘汰、RDB/AOF、复制切换、Cluster 重定向、Stream PEL 与 HLL 误差；性能数字始终绑定版本、硬件与压测方法
 - **Dubbo** 九轮实测（E00~E08，Dubbo 3.3.4 + Nacos 2.4.3 + ZK 3.9.5）：一次调用全链路打印、协议/序列化方向性压测、注册三态条目数据、杀 Nacos 派单窗口 ≥68s、ZK 锁释放 13.1s vs Nacos 剔除 1.1s、kill 实例重试边界、泛化调用、250 并发线程池饱和拒绝、triple 优雅停机"送完在途"不可靠；2.7.x hessian2 ThreadLocal 泄漏经源码 tag 逐版本核验（实验记录后续随仓发布）
+- **MQ** 六轮机制验证已跑（EX-01~06，macOS arm64 + colima 跨 VM，Kafka 3.5.2 / RabbitMQ 3.13 / Redis 7 / MySQL 8.4，教学量级 FAST 档）：单副本 acks=1 vs all 确认差异 6.1%（ISR=1 退化机制）、批量拉取 100 vs 10 次 poll 往返、poll 间隔超时确定性被踢 + rebalance 循环、Redis 淘汰后幂等方案漏 100% vs DB 唯一索引 0（正确性必须落 DB）、Lag 推算偏差 10.9%、RabbitMQ CQv1 vs v2 堆积形态差异、乱序注入状态机拦截 + 无上限重试活锁；EX-07 参数敏感性全矩阵未跑（需多 broker 拓扑）；实验代码与结果表见 [dev-lab/mq-demo](https://github.com/imZhiYa/dev-lab/tree/main/mq-demo)（run-all.sh ~10min 可复跑）
 
 > 文档中引用的所有实验输出 **均为真实运行结果**，非手写示意。以 OpenJDK 21 LTS `jdk21u` 为基线。
 
