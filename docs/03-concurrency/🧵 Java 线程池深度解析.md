@@ -51,9 +51,9 @@
 
 > 🔬 **配套可运行实验（两个）**
 >
-> 1. [`demo/ThreadPoolLabs.java`](../../demo/ThreadPoolLabs.java) —— 五个最反直觉的论断（幽灵 Worker、无界队列废掉 max、submit 吞异常、守护线程静默丢任务、五种提交方式差异）都配了可复现代码。
+> 1. [`demo/ThreadPoolLabs.java`](https://github.com/imZhiYa/dev-lab/blob/main/thread-demo/src/main/java/com/zhiya/ThreadPoolLabs.java) —— 五个最反直觉的论断（幽灵 Worker、无界队列废掉 max、submit 吞异常、守护线程静默丢任务、五种提交方式差异）都配了可复现代码。
 >    `javac -encoding UTF-8 ThreadPoolLabs.java && java ThreadPoolLabs`，JDK 8+ 均可运行（这些语义 JDK 8→21 未变）。
-> 2. [`demo/CountMaskEquivalenceLab.java`](../../demo/CountMaskEquivalenceLab.java) —— 验证 `CAPACITY`→`COUNT_MASK` 那次重构**到底等不等价**：穷举状态判断（等价）+ 找出人数上限的分歧取值（不等价）+ 真实线程池复现。
+> 2. [`demo/CountMaskEquivalenceLab.java`](https://github.com/imZhiYa/dev-lab/tree/main/thread-demo)（代码未随仓，待补齐） —— 验证 `CAPACITY`→`COUNT_MASK` 那次重构**到底等不等价**：穷举状态判断（等价）+ 找出人数上限的分歧取值（不等价）+ 真实线程池复现。
 >    **需分别用 JDK 8 与 JDK 21 各跑一次，对比 Lab 3 的输出。** 详见 [Level 2](#level-2)。
 >
 > 文中引用的输出均为真实运行结果。
@@ -79,7 +79,7 @@
 | `submit` / `invokeAll` 该用哪个 | [📮 提交方式对比](#submission) |
 | 想上动态线程池 / 舱壁隔离框架 | [决策卡 7](#production-decisions)、[决策卡 8](#production-decisions) |
 | 面试要讲原理 | Level 1→7 顺序读，每层末尾的 🔴 口诀是复述稿 |
-| 只想验证某个结论是真的 | [`demo/ThreadPoolLabs.java`](../../demo/ThreadPoolLabs.java) 五个可运行实验 |
+| 只想验证某个结论是真的 | [`demo/ThreadPoolLabs.java`](https://github.com/imZhiYa/dev-lab/blob/main/thread-demo/src/main/java/com/zhiya/ThreadPoolLabs.java) 五个可运行实验 |
 
 ### 七级能力地图
 
@@ -482,7 +482,7 @@ JDK 11        → task executed within 3s? false   poolSize=0  queued=1   ❌ �
 JDK 21.0.12   → task executed within 3s? false   poolSize=0  queued=1   ❌ 永久滞留
 ```
 
-> 🔬 **可复现**：[`demo/CountMaskEquivalenceLab.java`](../../demo/CountMaskEquivalenceLab.java) —— Lab 1 穷举证明状态判断改写**完全等价**（245 组零不一致），Lab 2 列出人数上限的分歧取值，Lab 3 在真实线程池上复现。`javac -encoding UTF-8 CountMaskEquivalenceLab.java && java CountMaskEquivalenceLab`，**分别用 JDK 8 和 JDK 21 跑一遍，Lab 3 的输出不同**。上面三行数据即为该程序的真实输出。
+> 🔬 **可复现**：[`demo/CountMaskEquivalenceLab.java`](https://github.com/imZhiYa/dev-lab/tree/main/thread-demo)（代码未随仓，待补齐） —— Lab 1 穷举证明状态判断改写**完全等价**（245 组零不一致），Lab 2 列出人数上限的分歧取值，Lab 3 在真实线程池上复现。`javac -encoding UTF-8 CountMaskEquivalenceLab.java && java CountMaskEquivalenceLab`，**分别用 JDK 8 和 JDK 21 跑一遍，Lab 3 的输出不同**。上面三行数据即为该程序的真实输出。
 >
 > 📌 **怎么定性这件事**：这是一个**实践中几乎不可能触发**的边界（没人会把线程数设成 5.36 亿），JDK 也在 `corePoolSize`/`maximumPoolSize` 的字段注释里明确写了 *"the effective limit is `corePoolSize & COUNT_MASK`"*——**它是被文档化的行为，不是 bug**。
 >
@@ -670,7 +670,7 @@ public void execute(Runnable command) {
 
 #### 🔬 亲手验证：让幽灵状态在你的机器上真实出现
 
-这是全文最反直觉的洞察，所以它值得一个能跑的实验。配套代码见 [`demo/ThreadPoolLabs.java`](../../demo/ThreadPoolLabs.java)，`java ThreadPoolLabs 1` 即可运行。
+这是全文最反直觉的洞察，所以它值得一个能跑的实验。配套代码见 [`demo/ThreadPoolLabs.java`](https://github.com/imZhiYa/dev-lab/blob/main/thread-demo/src/main/java/com/zhiya/ThreadPoolLabs.java)，`java ThreadPoolLabs 1` 即可运行。
 
 实验设计的关键在于：**先绕过 `execute()` 直接 `getQueue().offer()`，人为制造一个"补丁不存在"的世界**，证明这个缺口是真实的；再走正常 `execute()`，证明补丁确实生效。
 
@@ -2494,7 +2494,7 @@ if (!lock.tryLock(100, MILLISECONDS)) { return fallback(); }
 
 > 📌 五种提交方式的差别**不在语法，在三件事**：任务被包装成了什么、异常去了哪、在哪一步阻塞。选错的代价通常不是报错，而是**静默失败**或**莫名其妙的延迟**。
 >
-> ⚠️ 本节所有行为结论均有 [`demo/ThreadPoolLabs.java`](../../demo/ThreadPoolLabs.java) Lab 5 实测支撑（`java ThreadPoolLabs 5`），输出为真实运行结果。
+> ⚠️ 本节所有行为结论均有 [`demo/ThreadPoolLabs.java`](https://github.com/imZhiYa/dev-lab/blob/main/thread-demo/src/main/java/com/zhiya/ThreadPoolLabs.java) Lab 5 实测支撑（`java ThreadPoolLabs 5`），输出为真实运行结果。
 
 ### 1. 一切差异的源头：`submit` 比 `execute` 多套了一层
 
