@@ -21,7 +21,7 @@
 
 ## 🧪 配套实验
 
-可运行代码实验位于 [dev-lab/sharding-demo](https://github.com/anomalyco/dev-lab)（EX-01~07 + SmokeApp，与每篇文章对应，CI 公审通过）：
+可运行代码实验位于 [dev-lab/sharding-demo](https://github.com/imZhiYa/dev-lab)（EX-01~07 + SmokeApp，与每篇文章对应，CI 公审通过）：
 
 - **EX-01 分片键分布**（shard-01 L3）：连续键取模 8 片均匀 vs 雪花低速率键集中 2 片（最大片 66.7%）
 - **EX-02 路由与广播**（shard-02 L3）：带分片键 1 条物理 SQL 路由单片；无键广播 8 片（5.4.1 实测同库两片合并 UNION ALL 下推，共 4 条）
