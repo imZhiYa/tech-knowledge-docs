@@ -9,7 +9,7 @@ _Deconstructing the fundamental building blocks of computing from the kernel up,
 [![Stars](https://img.shields.io/github/stars/imZhiYa/tech-knowledge-docs?style=for-the-badge&logo=github&color=yellow)](https://github.com/imZhiYa/tech-knowledge-docs/stargazers)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](./LICENSE)
 ![Active Development](https://img.shields.io/badge/status-🛠_Active_Development-yellow?style=for-the-badge)
-![Docs](https://img.shields.io/badge/docs-59_篇-success?style=for-the-badge)
+![Docs](https://img.shields.io/badge/docs-63_篇-success?style=for-the-badge)
 ![Java](https://img.shields.io/badge/JDK-8%20%7C%2021%20LTS-orange?style=for-the-badge&logo=openjdk)
 ![Last Commit](https://img.shields.io/github/last-commit/imZhiYa/tech-knowledge-docs?style=for-the-badge)
 
@@ -91,8 +91,10 @@ docs/
 │   └── README.md                   # 系列导航（8 篇清单见子 README）
 ├── 11-ddd/                         # 🏛️ DDD 全链路（7 篇系列）
 │   └── README.md                   # 系列导航（7 篇清单见子 README）
-└── 12-sharding/                    # 🔀 分库分表全链路（6 篇系列）
-    └── README.md                   # 系列导航（6 篇清单见子 README）
+├── 12-sharding/                    # 🔀 分库分表全链路（6 篇系列）
+│   └── README.md                   # 系列导航（6 篇清单见子 README）
+└── 13-distributed-tx/              # 🧾 分布式事务全链路（4 篇系列）
+    └── README.md                   # 系列导航（4 篇清单见子 README）
 ```
 
 ### 已完成 · Completed
@@ -115,11 +117,13 @@ docs/
 | 🔎 **ES** | [ES 全链路 8 篇系列](./docs/10-elasticsearch/) **[NEW]** | Doc D 的一生：为什么存在（三铁律 + 12 神话总表）→ 落盘（近实时/更新=删+写/段合并）→ 高可用（副本复制/选举 quorum/脑裂防线）→ 检索聚合（倒排/BM25/近似聚合）→ 失效实战（深分页/429/409/wildcard 代价）→ 工程治理（mapping 锁死/reindex/ILM/snapshot）→ 调优进阶（指标先行/瓶颈分层/容量边界）→ 场景选型（四问框架/何时离开 ES）；ES 8.15.3 本机实测背书，唯一比喻"新书进馆"，配套 dev-lab/es-demo EX-01~06 可复跑 | 被"写入成功为什么搜不到 / 深分页为什么越来越慢 / 副本为什么是写性能税 / 什么时候不该用 ES"问住的 |
 | 🏛️ **DDD** | [DDD 全链路 7 篇系列](./docs/11-ddd/) **[NEW]** | 请求 R 的一生：为什么需要领域边界（大泥球三笔账）→ 统一语言与业务边界（六上下文划分）→ 上下文映射与协作（8+1 关系/防腐层/发布语言）→ 实体值对象与聚合（不变量/状态机/集合封装）→ 一次推荐请求如何落到代码（端口适配/降级链）→ 事件 Outbox 与最终一致性（同事务登记/幂等重试）→ 生产决策与选择性 DDD（选型矩阵/决策卡）；业务场景电商"千人千面"推荐，唯一比喻"专业窗口办理业务"，配套 dev-lab/ddd-demo EX-01~07 可复跑 | 被"Service 为什么越改越大 / 为什么不能所有模块都上 DDD / 事件到底可靠不可靠"问住的 |
 | 🔀 **Sharding** | [分库分表全链路 6 篇系列](./docs/12-sharding/) **[NEW]** | 订单表 T 的一生：为什么存在（容量墙/性能墙两堵墙 + 三板斧为什么治标）→ 分片键与分片策略（MOD/RANGE/HASH/一致性哈希、三类倾斜机制、ID 可路由）→ 中间件架构与一次 SQL 的生命（解析→路由→改写→执行→归并）→ 分布式查询的代价（广播/深翻页 LIMIT 下推/跨片 JOIN 静默丢数据/全局唯一失效）→ 扩容迁移与生产治理（搬迁比例 gcd 公式、双写+校验+切流+回滚四件套）→ 选型与边界（拆 vs NewSQL vs 不拆）；唯一比喻"图书馆体系"，配套 dev-lab/sharding-demo EX-01~07 可复跑（ShardingSphere-JDBC 5.4.1 实测背书） | 被"取模为什么会有热点 / 深翻页为什么越来越慢 / 跨片 JOIN 为什么数据对不上 / 扩容为什么搬一半"问住的 |
+| 🧾 **分布式事务** | [分布式事务全链路 4 篇系列](./docs/13-distributed-tx/) **[NEW]** | 下单请求 B 的一生（跨部门联合办理）：为什么存在（本地事务边界/两军问题与原子提交不可能）→ 2PC/XA 为什么悬挂（prepare 后阻塞死因/协调者崩溃与分区同样冻结/3PC 降概率不解决）→ TCC 三难题（空回滚/悬挂/幂等，事务控制表 globalTxId+branchId 靠"写"防御）→ Saga 与消息方案（补偿对偶/无隔离性/Outbox 单条原子性、事件链=协同 Saga 无补偿语义）→ Seata AT 机制穿透（undo_log 镜像回放/全局锁/脏写检测/回滚失败兜底）→ TCC/Saga 落地代码（冻结表/控制表/编排器状态机/语义锁/悬挂扫描）→ 生产演练与验证（协调者 kill/参与者宕机/网络分区/重复乱序/指标与对账）；配套实验设计 EX-01~08 就绪待执行（见 knowledge/distributed-tx/experiments），全部性能断言保持"待实测" | 被"@Transactional 为什么跨不了库 / 2PC 为什么悬挂 / TCC 三难题怎么防 / 事务消息为什么救不了分布式事务"问住的 |
 
 ### 🔥 最近更新
 
 | 日期 | 内容 |
 | --- | --- |
+| **2026-08-19** | **新增《🧾 分布式事务全链路》系列 4 篇** — 下单请求 B 的一生（跨部门联合办理）：从"为什么存在"（本地事务边界 + 两军问题与崩溃容错下非阻塞原子提交不可能）出发，经 2PC/XA 悬挂死因（prepare 后阻塞、协调者崩溃与分区同样冻结、3PC 只降概率）、TCC 三难题（空回滚/悬挂/幂等，事务控制表 globalTxId+branchId 靠"写"防御——Cancel 无记录写"已回滚"标记拦截迟到 Try）、Saga 与消息方案（补偿对偶/无隔离性/Outbox 单条"一个本地事务+一次投递"原子性、事件链串联=协同 Saga 无补偿语义）、Seata AT 机制穿透（undo_log 镜像回放/全局锁/脏写检测/回滚失败待确认与对账兜底）、TCC/Saga 落地代码（冻结表/事务控制表/编排器状态机/语义锁/悬挂扫描阈值），收于生产演练与验证（协调者 kill/参与者宕机/网络分区/重复乱序/指标与对账）；唯一比喻"跨部门联合办理"，配套实验设计 EX-01~08 就绪待执行（见 knowledge/distributed-tx/experiments），性能断言一律"待实测"不编造 |
 | **2026-08-19** | **新增《🔀 分库分表全链路》系列 6 篇** — 订单表 T 的一生（图书馆体系）：从"为什么存在"（容量墙/性能墙两堵墙 + 三板斧为什么治标）出发，经分片键与分片策略（MOD/RANGE/HASH/一致性哈希四算法、连续键 vs 块状键三类倾斜、ID 可路由基因法）、中间件架构与一次 SQL 的生命（解析→路由→改写→执行→归并）、分布式查询的代价（广播线性放大/深翻页 LIMIT 下推/跨片 JOIN/全局唯一失效）、扩容迁移与生产治理（搬迁比例 gcd 公式、双写+校验+切流+回滚四件套），收于选型与边界（拆 vs NewSQL vs 不拆）；全部结论由 dev-lab/sharding-demo EX-01~07 实测背书（ShardingSphere-JDBC 5.4.1 + MySQL 8.0.36：雪花低速率键集中 66.7%、同库分片 UNION ALL 合并下推、无绑定 JOIN 静默丢数据 260/1000 行、迁移比例 0.5000、连接按库不按片），verify-sharding-demos.sh 可复跑 |
 | **2026-08-18** | **新增《🏛️ DDD 全链路》系列 7 篇** — 请求 R 的一生（专业窗口办理业务）：从"为什么需要领域边界"（大泥球三笔账）出发，经统一语言与业务边界（画像/商品/策略/实验/在线决策/反馈六上下文）、上下文映射与协作（8+1 关系/防腐层/发布语言）、实体值对象与聚合（不变量/状态机/集合封装）、一次推荐请求如何落到代码（端口适配/降级链）、事件 Outbox 与最终一致性（同事务登记/幂等重试），收于生产决策与选择性 DDD（选型矩阵/决策卡）；业务场景电商"千人千面"推荐，配套 dev-lab/ddd-demo EX-01~07（聚合规则 13 断言/ACL 翻译/ArchUnit 边界/全链路降级/Outbox 幂等/契约演进/选型矩阵），verify-ddd-demos.sh 可复跑 |
 | **2026-08-17** | **新增《🔎 ES 全链路》系列 8 篇** — Doc D 的一生（新书进馆）：从"为什么存在"（三铁律 + 12 神话总表）出发，经落盘（近实时/更新=删+写/段合并）、高可用（副本复制/选举 quorum/脑裂防线）、检索聚合（倒排/BM25/近似聚合）、失效实战（深分页/429/409/wildcard 代价）、工程治理（mapping 锁死/reindex/ILM/snapshot）、调优进阶（指标先行/瓶颈分层/容量边界），收于场景选型（四问框架/何时离开 ES）；全部结论由 ES 8.15.3 本机实验背书，配套 dev-lab/es-demo EX-01~06（批量摊薄 50 倍/可见性 1s 拍/副本代价/深分页候选放大/filter vs query/cardinality 精度），run-all.sh 可复跑 |
@@ -176,6 +180,11 @@ docs/
 - Service 为什么越改越大？为什么不能所有模块都上 DDD？→ [🏛️ DDD · 00 为什么需要领域边界篇](./docs/11-ddd/ddd-00-为什么需要领域边界.md)
 - 事件到底可靠不可靠？Outbox 为什么能救最终一致性？→ [🏛️ DDD · 05 事件Outbox与最终一致性篇](./docs/11-ddd/ddd-05-事件Outbox与最终一致性.md)
 - 什么时候该用 DDD、什么时候不该？→ [🏛️ DDD · 06 生产决策与选择性DDD篇](./docs/11-ddd/ddd-06-生产决策与选择性DDD.md)
+- `@Transactional` 为什么跨不了库？双写为什么必然有中间态？→ [🧾 分布式事务 · 00 方案谱系篇](./docs/13-distributed-tx/dtx-00-从本地事务到最终一致的方案谱系.md)
+- 2PC 为什么悬挂？协调者没崩但分区了会怎样？→ [🧾 分布式事务 · 00 方案谱系篇 L2：两阶段为何会悬挂](./docs/13-distributed-tx/dtx-00-从本地事务到最终一致的方案谱系.md)
+- TCC 三难题怎么防？幂等为什么不能靠"先查再写"？→ [🧾 分布式事务 · 02 TCC/Saga 落地篇](./docs/13-distributed-tx/dtx-02-TCC与Saga落地细节.md)
+- Seata AT 的"自动回滚"为什么不是零成本？→ [🧾 分布式事务 · 01 Seata AT 机制篇](./docs/13-distributed-tx/dtx-01-Seata-AT机制穿透.md)
+- 事务消息为什么救不了分布式事务？→ [🧾 分布式事务 · 00 方案谱系篇 L4：消息边界与无补偿语义](./docs/13-distributed-tx/dtx-00-从本地事务到最终一致的方案谱系.md)
 
 #### 🔧 我在排查线上问题
 
@@ -215,6 +224,9 @@ docs/
 | 深翻页越来越慢 / 跨片 JOIN 数据对不上 / 唯一约束失效 | [🔀 Sharding · 03 分布式查询的代价篇](./docs/12-sharding/shard-03-分布式查询的代价.md) |
 | 扩容搬迁 / 迁移期数据不一致 / 双写怎么切 | [🔀 Sharding · 04 扩容迁移与生产治理篇](./docs/12-sharding/shard-04-扩容迁移与生产治理.md) |
 | 事件没落库消息就发了 / 重复消费不幂等 / 跨服务最终一致性失控 | [🏛️ DDD · 05 事件Outbox与最终一致性篇](./docs/11-ddd/ddd-05-事件Outbox与最终一致性.md) |
+| 协调者崩溃后资源被锁 / 业务冻结 / in-doubt 事务 | [🧾 分布式事务 · 00 方案谱系篇 L2 + 03 演练篇](./docs/13-distributed-tx/dtx-03-生产演练与验证.md) |
+| TCC 预留记录堆积 / 悬挂扫描告警 / 冻结解不开 | [🧾 分布式事务 · 02 TCC/Saga 落地篇 L3 悬挂检测](./docs/13-distributed-tx/dtx-02-TCC与Saga落地细节.md) |
+| 跨服务数据不一致 / 补偿失败 / 对账差异持续不为零 | [🧾 分布式事务 · 03 演练篇：指标与对账收口](./docs/13-distributed-tx/dtx-03-生产演练与验证.md) |
 
 #### 🏗️ 我在做架构评审
 
@@ -231,6 +243,7 @@ docs/
 - 📨 **MQ**：11 篇每篇决策卡（MQ 选型矩阵与模型分野 / 存储与刷盘窗口 / 投递语义与确认级别 / 幂等与顺序边界 / 消费模型与背压 / 分区扩容规划 / 事务与死信治理 / 副本 ISR 与脑裂防线 / 生产验收指标 / 故障诊断 SOP）
 - 🔎 **ES**：8 篇每篇决策卡（场景四问 / 索引与 mapping 规划 / 副本容错预算 / 检索选型与深分页 / 失效排查 SOP / mapping 治理与 ILM / 调优验收指标 / 选型终局）
 - 🔀 **Sharding**：6 篇每篇决策卡（拆不拆四问 / 分片键四合一选型 / 中间件形态 JDBC-Proxy-Cluster / 跨片查询治理 / 扩容四件套与验收 / 四维选型矩阵）
+- 🧾 **分布式事务**：4 篇每篇决策卡（跨库强一致 XA 用不用 / 写热点与 AT 适用边界 / 冻结表与事务控制表设计 / 悬挂扫描阈值 / Saga 编排器与语义锁 / 演练与上线门槛）
 - 🏛️ **DDD**：7 篇每篇决策卡（是否引入 DDD 四问 / 统一语言与限界上下文划分 / 防腐层与上下文映射选型 / 聚合边界与不变量设计 / Outbox 与幂等重试 / 选择性 DDD 与治理成本 / 六上下文选型矩阵）
 
 每张卡都包含「**不能做的错误决策**」与「**验收指标/埋点**」两栏，可直接贴到 RFC 里。
@@ -249,6 +262,7 @@ docs/
 - **MQ** 六轮机制验证已跑（EX-01~06，macOS arm64 + colima 跨 VM，Kafka 3.5.2 / RabbitMQ 3.13 / Redis 7 / MySQL 8.4，教学量级 FAST 档）：单副本 acks=1 vs all 确认差异 6.1%（ISR=1 退化机制）、批量拉取 100 vs 10 次 poll 往返、poll 间隔超时确定性被踢 + rebalance 循环、Redis 淘汰后幂等方案漏 100% vs DB 唯一索引 0（正确性必须落 DB）、Lag 推算偏差 10.9%、RabbitMQ CQv1 vs v2 堆积形态差异、乱序注入状态机拦截 + 无上限重试活锁；EX-07 参数敏感性全矩阵未跑（需多 broker 拓扑）；实验代码与结果表见 [dev-lab/mq-demo](https://github.com/imZhiYa/dev-lab/tree/main/mq-demo)（run-all.sh ~10min 可复跑）
 - **ES** 六轮机制验证已跑（EX-01~06，macOS arm64 + colima 跨 VM，ES 8.15.3 × 3 节点各 512m 堆，教学量级 FAST 档）：批量摊薄单条 363 → bulk 5000 达 18,038 docs/s（约 50 倍）、可见性延迟 P50=989ms（1s 拍）且 refresh_interval=-1 不可见持续、副本代价单 VM 仅 -3.7%（loopback 拓扑边界：跨机网络才是副本税主战场）、深分页候选 900 倍只换 2 倍延迟 + 10000 窗口 400 拒绝实录、filter vs query 首次 8 倍差 + query cache 段级边界、cardinality threshold 100→3.73% 误差 vs 40000→0%；实验代码与结果表见 [dev-lab/es-demo](https://github.com/imZhiYa/dev-lab/tree/main/es-demo)（run-all.sh ~10min 可复跑）
 - **Sharding** 八轮验证已跑（SmokeApp + EX-01~07，macOS arm64 + colima 跨 VM，ShardingSphere-JDBC 5.4.1 + MySQL 8.0.36 单容器 4 database，教学量级 FAST 档）：连续键 1 万行 8 片各 1250 均匀 vs 雪花低速率键 1.5 万行集中片 0/1（最大片 66.7%）、带键路由 1 条物理 SQL vs 无键广播（5.4.1 实测同库两片合并 UNION ALL 下推共 4 条）、AVG 改写 SUM+COUNT、IN 按数据源拆分（同片 1 条/跨库 2 条）、offset=9000 每片下推 LIMIT 0, 9020（41ms）vs keyset LIMIT 20（4ms）、**无绑定 JOIN 静默丢数据**（期望 1000 行只回 260 行，比报错更危险）、8→16 搬迁比例 SQL 实测 0.5000 与 gcd 公式一致、广播 8 片后仅 4 连接（连接按库不按片，上限 = 4 库 × 池大小 4 = 16）；实验代码与结果表见 [dev-lab/sharding-demo](https://github.com/imZhiYa/dev-lab/tree/main/sharding-demo)（run-all.sh ~5min 可复跑）
+- **分布式事务** 实验设计 EX-01~08 已就绪（协调者 kill / 参与者宕机 / 网络分区 / TCC 悬挂阈值 / XA RECOVER 人工裁决 / Confirm-Cancel 重复注入 / Seata AT 写放大与全局锁压测 / Saga 超时查询确认，见 `knowledge/distributed-tx/experiments`），待本机执行后回填——文中所有性能断言保持"待实测"标注，不编造 benchmark
 
 > 文档中引用的所有实验输出 **均为真实运行结果**，非手写示意。以 OpenJDK 21 LTS `jdk21u` 为基线。
 
