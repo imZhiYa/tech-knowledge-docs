@@ -9,7 +9,7 @@ _Deconstructing the fundamental building blocks of computing from the kernel up,
 [![Stars](https://img.shields.io/github/stars/imZhiYa/tech-knowledge-docs?style=for-the-badge&logo=github&color=yellow)](https://github.com/imZhiYa/tech-knowledge-docs/stargazers)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](./LICENSE)
 ![Active Development](https://img.shields.io/badge/status-🛠_Active_Development-yellow?style=for-the-badge)
-![Docs](https://img.shields.io/badge/docs-58_篇-success?style=for-the-badge)
+![Docs](https://img.shields.io/badge/docs-59_篇-success?style=for-the-badge)
 ![Java](https://img.shields.io/badge/JDK-8%20%7C%2021%20LTS-orange?style=for-the-badge&logo=openjdk)
 ![Last Commit](https://img.shields.io/github/last-commit/imZhiYa/tech-knowledge-docs?style=for-the-badge)
 
@@ -49,8 +49,8 @@ Transfer → 能迁移到哪些别的设计问题？
 🔴 口诀   → 全层只需记住的一句话，面试/故障时直接复述
 ```
 
-- **全文一个比喻**：线程池是「中央厨房」，Collection 是「智能图书馆」，InnoDB 是「24 小时无人图书馆」
-- **全文一条主线**：只跟踪一个角色走完全程（线程池跟踪订单 T，Collection 跟踪查询请求 Q，分库分表跟踪订单表 T 的一生）
+- **全文一个比喻**：AQS 是「只有一个工位的工厂」，线程池是「中央厨房」，Collection 是「智能图书馆」
+- **全文一条主线**：只跟踪一个角色走完全程（AQS 跟踪线程 B，线程池跟踪订单 T，Collection 跟踪查询请求 Q，分库分表跟踪订单表 T 的一生）
 - **每层留一笔账**：上一层解决不了的问题，正是下一层存在的理由
 
 ---
@@ -73,6 +73,7 @@ docs/
 ├── 02-jvm/                         # ☕ JVM 运行时
 │   └── ☕ JVM 运行时机制深度解析.md
 ├── 03-concurrency/                 # 🔐 并发与执行引擎
+│   ├── 🔐 AQS 核心机制深度解析.md
 │   └── 🧵 Java 线程池深度解析.md
 ├── 04-collections/                 # 🗄️ 集合框架
 │   └── 🗄️ Java Collection.md
@@ -103,6 +104,7 @@ docs/
 | 🧠 **虚拟内存** | [虚拟内存](./docs/01-cs-foundation/os-memory/) | 分页/多级页表/TLB/缺页中断/页面置换/MMU 全流程地址翻译 | 被问到“为什么 mmap 快”的 |
 | 🌐 **网络编程** | [高性能网络编程原理](./docs/01-cs-foundation/networking/🌐%20高性能网络编程原理.md) **[NEW]** | 从 I/O、BIO、NIO、多路复用、AIO 一路推导到 Reactor 的状态所有权；覆盖 framing、TLS、backlog、半开连接、部分写、背压、ack、drain 与模型选择 | 被“Selector 为什么不等于 Reactor / `write()` 成功算不算完成 / Netty 为什么不能阻塞”问住的 |
 | ☕ **JVM** | [JVM 运行时机制](./docs/02-jvm/) | 类加载双亲委派的破与立、对象布局、GC 算法与收集器、JMM Happens-Before | 排查 OOM/GC 问题的 |
+| 🔐 **AQS** | [AQS 核心机制](./docs/03-concurrency/) | CLH 隐形队列/前驱接力/dummy head、Condition 双队列、共享传播、与 ObjectMonitor 对照表 | 吃透 ReentrantLock/CountDownLatch 的 |
 | 🧵 **线程池** | [Java 线程池](./docs/03-concurrency/) | ctl 位打包、execute 三道门、Worker 与 AQS 的关系、打烊协议、虚拟线程与响应式对比 | 线上线程池告警/堆积的 |
 | 🗄️ **集合框架** | [Java Collection](./docs/04-collections/) **[NEW]** | HashMap 寻址/扰动/树化阈值8与64推导、TreeMap 为何选红黑树不选AVL、LinkedHashMap LRU、ConcurrentHashMap JDK7->8 演进与 helpTransfer、Fail-Fast/Fail-Safe 本质 | 被 ConcurrentModificationException / HashMap 死循环问住的 |
 | 🐬 **MySQL InnoDB** | [MySQL-InnoDB-深度解析](./docs/05-database/) **[NEW]** | 9层递进：Page/Extent 行格式与行溢出、Buffer Pool 改良LRU、B+ 树容量与最左前缀、事务隔离矩阵、Record/Gap/Next-Key 锁、Read View 版本可见性、Redo/Undo/Binlog 两阶段提交、一条 UPDATE 全链路、EXPLAIN 调优实战；18 坑 + 勘误表 + 5 张生产决策卡 | 被"RR 为什么能防幻读 / UPDATE 加什么锁 / COUNT(*) 为什么慢"问住的 |
@@ -141,7 +143,7 @@ docs/
 #### 🎯 我要准备面试（60分钟速通版）
 
 ```text
-📐 二进制 → 🌳 数据结构 → 🧠 虚拟内存 → 🌐 高性能网络编程 → ☕ JVM → 🧵 线程池 → 🗄️ Collection → 🐬 MySQL InnoDB → ⚡ Redis
+📐 二进制 → 🌳 数据结构 → 🧠 虚拟内存 → 🌐 高性能网络编程 → ☕ JVM → 🔐 AQS → 🧵 线程池 → 🗄️ Collection → 🐬 MySQL InnoDB → ⚡ Redis
 ```
 
 每篇末尾的 🔴 **口诀** 串起来就是电梯版复述稿；每篇的「合书自测」是面试官视角的灵魂拷问。
@@ -178,6 +180,7 @@ docs/
 | --- | --- |
 | `ConcurrentModificationException` / 遍历时删除报错 | [🗄️ Collection · Fail-Fast vs Fail-Safe](./docs/04-collections/) |
 | `HashMap` 扩容死链 / CPU 100% | [🗄️ Collection · Level 4 扩容时序 + 坑位](./docs/04-collections/) |
+| 锁竞争、P99 突刺、死锁 | [🔐 AQS · 生产决策卡 & P99 决策树](./docs/03-concurrency/) |
 | 线程池队列堆积 / 大量 BLOCKED / 任务被丢弃 | [🧵 线程池 · 线上排查工具箱](./docs/03-concurrency/) |
 | GC 频繁 / 内存溢出 / Metaspace 飙升 | [☕ JVM 运行时](./docs/02-jvm/) |
 | 缺页、SWAP、内存映射异常 | [🧠 虚拟内存](./docs/01-cs-foundation/os-memory/) |
@@ -214,6 +217,7 @@ docs/
 直接跳到每篇末尾的 **生产决策卡** 与 **设计记录清单**：
 
 - 🗄️ **Collection**：4 张决策卡（用户会话缓存 / 订单列表分页 / 分布式锁 / 事件监听器列表）
+- 🔐 **AQS**：5 张决策卡（分片锁 / Semaphore 限流 / 生产者消费者 / P99 决策树 / Virtual Threads 迁移）
 - 🧵 **线程池**：8 张决策卡（核心链路 / 埋点 / 批处理 / P99 排障 / @Async 避坑 / 虚拟线程迁移 / 动态线程池 / 舱壁隔离）
 - 🌐 **网络编程**：4 张决策卡（长连接事件循环 / 慢下游隔离 / 慢客户端与大响应 / 低并发或虚拟线程模型）；覆盖连接准入、背压、ack、drain 验收指标
 - 🐬 **InnoDB**：5 张决策卡（隔离级别选型 / Buffer Pool 容量规划 / 索引设计 / 日志与持久性配置 / 慢查询排查 SOP）
@@ -232,6 +236,7 @@ docs/
 
 本库坚持「**结论必须可复现**」。
 
+- **AQS** 实验：Condition `await/signal` 时 `firstWaiter` 到 `lastWaiter` 的节点迁移、共享锁传播的 `setHeadAndPropagate` 边界
 - **线程池** 6 大反直觉实验：幽灵 Worker(`poolSize=0`) / 无界队列废掉 `max` / `submit` 吞异常 / `workStealingPool` 守护线程导致任务丢失 / 五种提交方式阻塞点对比 / `InheritableThreadLocal` 在池化场景天然失效
 - **Collection** 实验：HashMap 扰动函数碰撞率对比、树化阈值8在不同负载因子下的实测、Fail-Fast 的 `modCount` 竞态窗口、ConcurrentHashMap 扩容 `helpTransfer` 加速效果
 - **Redis** 验证边界：事件循环线性化点、编码阈值、过期/淘汰、RDB/AOF、复制切换、Cluster 重定向、Stream PEL 与 HLL 误差；性能数字始终绑定版本、硬件与压测方法
