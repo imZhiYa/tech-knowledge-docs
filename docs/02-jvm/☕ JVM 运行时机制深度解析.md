@@ -2957,7 +2957,7 @@ OSR / 去优化 必须在 Safepoint 交接（L3 插页）
 | 7 | **final 字段规则** | 质检员盖章出厂 → 客户拿到的肯定是盖过章的 | 构造函数写 `final` HB 读取该字段 |
 | 8 | **线程中断规则** | 主管喊"停" → 工人听到 | `interrupt()` HB 检测到中断状态 |
 
-> ⚠️ **JDK 版本适用说明**：早期资料常列"七大规则"，JDK 5 后增加 **final 字段规则**（[JSR 133](https://www.cs.umd.edu/~pugh/java/memoryModel/jsr133.html)），JDK 8 后明确**线程中断规则**独立。八大规则是当前主流面试与生产的共识表述。
+> ⚠️ **JDK 版本适用说明**：早期资料常列"七大规则"，JDK 5 后增加 **final 字段规则**（[JSR 133](https://www.cs.umd.edu/~pugh/java/memoryModel/jsr133.pdf)），JDK 8 后明确**线程中断规则**独立。八大规则是当前主流面试与生产的共识表述。
 
 #### 4. 实现层：从 JMM 到 MemBarNode 的完整链路
 

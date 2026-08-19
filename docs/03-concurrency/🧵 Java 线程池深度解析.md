@@ -2707,7 +2707,7 @@ for (Future<R> f : pool.invokeAll(tasks, 3, TimeUnit.SECONDS)) {
   - [JEP 491: Synchronize Virtual Threads without Pinning](https://openjdk.org/jeps/491)（JDK 24 正式）
   - [JEP 453: Structured Concurrency](https://openjdk.org/jeps/453)（预览，API 后续有演进）
 - **书籍**：Brian Goetz《Java Concurrency in Practice》第 6、8 章——虽写于 Java 5 时代，但"任务与执行策略解耦""饥饿死锁"等论述至今未过时
-- **Reactor**：[Schedulers Javadoc](https://projectreactor.io/docs/core/release/api/reactor/core/scheduler/Schedulers.html) —— 默认值随版本变化，以你的依赖版本为准
+- **Reactor**：[Schedulers Javadoc](https://javadoc.io/doc/io.projectreactor/reactor-core/latest/reactor/core/scheduler/Schedulers.html) —— 默认值随版本变化，以你的依赖版本为准
 
 > **最后只留一个问题**：订单 T 此刻在厨房的哪个位置？`ctl` 是多少？谁有责任执行它？如果此刻进程被 `kill -9`，T 会怎样？能稳定回答这四句，线程池的主干才算真正长进脑子里。
 

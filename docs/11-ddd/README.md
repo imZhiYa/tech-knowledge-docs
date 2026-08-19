@@ -22,7 +22,7 @@
 
 ## 🧪 配套实验
 
-可运行代码实验位于 [dev-lab/ddd-demo](https://github.com/anomalyco/dev-lab)（EX-01~07，与每篇文章对应，CI 公审通过）。
+可运行代码实验位于 [dev-lab/ddd-demo](https://github.com/imZhiYa/dev-lab)（EX-01~07，与每篇文章对应，CI 公审通过）。
 
 ---
 
