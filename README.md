@@ -77,8 +77,8 @@ docs/
 │   └── 🧵 Java 线程池深度解析.md
 ├── 04-collections/                 # 🗄️ 集合框架
 │   └── 🗄️ Java Collection.md
-├── 05-database/                    # 🐬 数据库与存储引擎
-│   └── 🐬MySQL-InnoDB-深度解析.md
+├── 05-database/                    # 🐬 数据库全链路（系列）
+│   └── README.md                   # 系列导航（清单见子 README）
 ├── 06-redis/                       # ⚡ Redis 与缓存系统
 │   └── ⚡Redis深度解析.md
 ├── 07-springboot/                  # 🚀 Spring 与 SpringBoot（8 篇系列）
@@ -109,7 +109,7 @@ docs/
 | 🔐 **AQS** | [AQS 核心机制](./docs/03-concurrency/) | CLH 隐形队列/前驱接力/dummy head、Condition 双队列、共享传播、与 ObjectMonitor 对照表 | 吃透 ReentrantLock/CountDownLatch 的 |
 | 🧵 **线程池** | [Java 线程池](./docs/03-concurrency/) | ctl 位打包、execute 三道门、Worker 与 AQS 的关系、打烊协议、虚拟线程与响应式对比 | 线上线程池告警/堆积的 |
 | 🗄️ **集合框架** | [Java Collection](./docs/04-collections/) **[NEW]** | HashMap 寻址/扰动/树化阈值8与64推导、TreeMap 为何选红黑树不选AVL、LinkedHashMap LRU、ConcurrentHashMap JDK7->8 演进与 helpTransfer、Fail-Fast/Fail-Safe 本质 | 被 ConcurrentModificationException / HashMap 死循环问住的 |
-| 🐬 **MySQL InnoDB** | [MySQL-InnoDB-深度解析](./docs/05-database/) **[NEW]** | 9层递进：Page/Extent 行格式与行溢出、Buffer Pool 改良LRU、B+ 树容量与最左前缀、事务隔离矩阵、Record/Gap/Next-Key 锁、Read View 版本可见性、Redo/Undo/Binlog 两阶段提交、一条 UPDATE 全链路、EXPLAIN 调优实战；18 坑 + 勘误表 + 5 张生产决策卡 | 被"RR 为什么能防幻读 / UPDATE 加什么锁 / COUNT(*) 为什么慢"问住的 |
+| 🐬 **MySQL** | [数据库全链路系列](./docs/05-database/)（01 已发布） **[NEW]** | 9层递进：Page/Extent 行格式与行溢出、Buffer Pool 改良LRU、B+ 树容量与最左前缀、事务隔离矩阵、Record/Gap/Next-Key 锁、Read View 版本可见性、Redo/Undo/Binlog 两阶段提交、一条 UPDATE 全链路、EXPLAIN 调优实战；18 坑 + 勘误表 + 5 张生产决策卡 | 被"RR 为什么能防幻读 / UPDATE 加什么锁 / COUNT(*) 为什么慢"问住的 |
 | ⚡ **Redis** | [Redis 深度解析](./docs/06-redis/⚡Redis深度解析.md) **[NEW]** | 9层递进：内存与事件循环、type×encoding、过期与淘汰、RDB/AOF、复制与 Sentinel、Cluster 槽位与自治协议、Stream/HLL 场景总装；分布式锁、缓存治理、跨机房与 10 张生产决策卡 | 被“Redis 单线程为什么快 / 主从为什么丢写 / Cluster 为什么 CROSSSLOT / 锁为什么还要 fencing”问住的 |
 | 🚀 **SpringBoot** | [SpringBoot 全链路 8 篇系列](./docs/07-springboot/) **[NEW]** | IoC 创建链→框架整合→事件→自动配置→Web 运行时→事务→AOP→生产实践（启动慢排查/AOT/优雅停机）；全部结论由 demo01–demo19 本机实测背书（actuator startup 端点 360 步、JFR 6138 事件、AOT 引擎生成 170 hints）；实验代码见 dev-lab/springboot-demo（demo01–demo19 全量随仓） | 被"事务为什么没回滚 / 启动为什么慢 / kill 为什么丢请求"问住的 |
 | 🧭 **Dubbo** | [Dubbo 全链路 9 篇系列](./docs/08-dubbo/) **[NEW]** | 一次 RPC 的一生：Proxy→Filter→服务发现→Router/LB/Cluster→序列化/协议/Netty→线程池→优雅停机与选型总装；全部结论由 E00~E10 + E04b 十二组本机实测背书（注册三态条目数据、杀 Nacos 派单窗口 ≥68s、ZK 锁释放 13.1s vs Nacos 剔除 1.1s、kill 实例重试边界、250 并发线程池饱和拒绝、triple"送完在途"不可靠）；每篇含坑表/勘误表/决策卡，实验代码见 dev-lab/dubbo-demo（E00~E10 + E04b 随仓） | 被"No provider / 线程池 EXHAUSTED / mock 不生效 / 停机丢请求"问住的 |
