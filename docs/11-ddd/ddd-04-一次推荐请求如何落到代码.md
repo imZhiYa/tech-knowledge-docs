@@ -1544,3 +1544,326 @@ ArchUnit 与 Java Module 如何守边界
 但 `ExposurePublisher` 和 `StrategyPublished` 仍然面对可靠性问题：数据库提交了，事件是否一定发布？事件重复如何处理？消费者失败后如何补偿？
 
 这就是 `ddd-05-事件Outbox与最终一致性.md` 的入口。
+
+
+---
+
+# 补充专题：统一数据模型与多存储适配
+
+一句话认知墙：**上游提供数据，下游定义存储能力，中间通过稳定的数据契约隔离双方变化。**
+
+## Why：为什么需要统一数据模型？
+
+假设上游有 MySQL CDC、Kafka、HTTP 等不同数据源，下游又需要写入 MySQL、ES、MongoDB。如果每个数据源的处理逻辑都直接调用具体数据库，数据接入和数据存储就耦合在一起：
+
+- 新增一个数据源，可能需要修改多个存储实现。
+- 新增一个存储目标，可能需要修改所有数据源处理逻辑。
+- 不同来源的字段、类型和语义容易渗透到下游。
+
+我们真正需要隔离的是两端的变化：上游怎么产生数据，由输入适配器处理；下游怎么存储，由存储适配器处理；中间只传递双方约定的稳定模型。
+
+## What：整体架构
+
+```text
+                  Data Sources
+                       |
+          +------------+------------+
+          |            |            |
+       MySQL CDC   Kafka Source   HTTP API
+          |            |            |
+          +------------+------------+
+                       |
+                       v
+                Inbound Adapter
+                       |
+                       v
+              Normalizer / ACL
+                       |
+                       v
+               Canonical Model
+                       |
+                       v
+                Application
+                       |
+                       v
+             Storage-specific Ports
+                       |
+          +------------+------------+
+          |            |            |
+          v            v            v
+      MySQL Adapter  ES Adapter  Mongo Adapter
+          |            |            |
+          v            v            v
+        MySQL          ES         MongoDB
+```
+
+这里需要明确职责：
+
+| 组件 | 主要职责 |
+| --- | --- |
+| Inbound Adapter | 接收不同数据源的协议和数据格式 |
+| Normalizer | 数据结构、类型和格式标准化 |
+| ACL | 必要时转换外部业务语义，保护本地模型 |
+| Canonical Model | 表达跨边界约定的稳定语义 |
+| Storage Port | 定义应用需要的存储能力 |
+| Storage Adapter | 转换目标存储模型并完成具体写入 |
+
+Normalizer 不一定是 DDD 意义上的 ACL。如果只是字段和类型归一化，更准确的名称是 Data Normalizer。
+
+## What：设计规范数据模型
+
+先定义一个跨边界数据契约：
+
+```java
+public record CanonicalRecord(
+        String recordId,
+        String source,
+        String entityType,
+        int schemaVersion,
+        Map<String, Object> payload,
+        Instant occurredAt
+) {
+    public CanonicalRecord {
+        Objects.requireNonNull(recordId);
+        Objects.requireNonNull(source);
+        Objects.requireNonNull(entityType);
+        Objects.requireNonNull(payload);
+        Objects.requireNonNull(occurredAt);
+        payload = Map.copyOf(payload);
+    }
+}
+```
+
+字段含义：
+
+| 字段 | 含义 |
+| --- | --- |
+| recordId | 数据记录唯一标识 |
+| source | 数据来源 |
+| entityType | 数据所属业务类型 |
+| schemaVersion | 数据契约版本 |
+| payload | 业务数据 |
+| occurredAt | 业务事件发生时间 |
+
+这里的 `schemaVersion` 表示数据契约版本，不代表数据新鲜度，也不代表数据库版本。
+
+生产环境还需要根据实际场景补充租户标识、幂等键、数据血缘、分区信息、删除语义等字段。对于强类型业务模型，优先使用明确的类型定义；不要让 `Map<String, Object>` 演变成全系统万能 DTO。Canonical Model 只应该包含跨边界真正需要共享的稳定语义。
+
+## How：上游数据标准化
+
+假设 MySQL CDC 返回：
+
+```java
+public record MysqlCdcEvent(
+        String database,
+        String table,
+        String primaryKey,
+        Map<String, Object> after
+) {}
+```
+
+输入适配器把 CDC 事件转换为规范模型：
+
+```java
+public final class MysqlCdcNormalizer {
+
+    public CanonicalRecord normalize(
+            MysqlCdcEvent event,
+            Instant sourceOccurredAt) {
+
+        return new CanonicalRecord(
+                event.primaryKey(),
+                event.database(),
+                event.table(),
+                1,
+                event.after(),
+                sourceOccurredAt
+        );
+    }
+}
+```
+
+这里仅展示结构归一化。真实 CDC 场景中的 `occurredAt` 应优先使用源事件时间或可靠的变更时间，而不是消费时的 `Instant.now()`。还应区分事件发生时间、采集时间和处理时间。
+
+如果涉及业务语义，例如把外部订单状态转换成内部订单状态，应进入相应的业务翻译逻辑，而不是简单地放进通用字段转换器。
+
+## How：定义下游存储端口
+
+不要为了统一而强行设计一个掩盖所有存储差异的万能接口。端口应该表达应用需要的能力，并根据业务语义进行拆分。
+
+例如：
+
+```java
+public interface OrderWritePort {
+    void save(OrderWriteModel order);
+    void batchSave(List<OrderWriteModel> orders);
+}
+
+public interface OrderSearchIndexPort {
+    void index(OrderSearchDocument document);
+    void batchIndex(List<OrderSearchDocument> documents);
+}
+```
+
+MySQL 的事务写入与 ES 的索引更新语义不同，因此可以使用不同端口。若多个目标确实拥有一致的写入语义，也可以抽取更通用的端口，但不能牺牲类型安全和能力表达。
+
+| 方案 | 优点 | 缺点 |
+| --- | --- | --- |
+| 统一写入端口 | 简单、接入方便 | 容易掩盖不同存储能力差异 |
+| 按存储能力拆分端口 | 职责清晰、类型安全 | 接口和适配器数量增加 |
+
+## How：不同存储使用不同模型
+
+**统一数据语义，不代表统一物理存储结构。**
+
+例如，同一份订单规范模型可以派生出不同的持久化模型：
+
+```text
+Canonical Order
+       |
+       +----> MySQLMapper
+       |          |
+       |          v
+       |      OrderRecord
+       |
+       +----> ElasticsearchMapper
+       |          |
+       |          v
+       |      OrderSearchDocument
+       |
+       +----> MongoMapper
+                  |
+                  v
+              OrderDocument
+```
+
+MySQL 可能更关注事务和关系约束；ES 更关注搜索字段、分词和索引结构；MongoDB 更关注文档聚合和查询模式。它们不需要使用相同字段结构，但必须保持必要的业务语义一致。
+
+## How：存储适配器的职责
+
+存储适配器负责：
+
+1. 将规范模型或应用写入模型转换为目标存储模型。
+2. 调用具体数据库或搜索引擎 SDK。
+3. 将技术异常转换为应用可理解的失败。
+4. 实现批量写入、幂等、超时和重试等技术策略。
+5. 暴露必要的写入结果和可观测性指标。
+
+上游不应该知道 `OrderSearchDocument`、`OrderRecord` 或 ES Bulk API 等下游细节。
+
+## What：多存储写入不等于原子写入
+
+假设一个订单需要同时写入 MySQL 和 ES：
+
+```text
+Canonical Order
+       |
+       +------> MySQL
+       |
+       +------> ES
+```
+
+不能认为两个 Adapter 都执行成功就具备分布式事务一致性。如果 MySQL 成功、ES 失败，就会出现数据不一致。
+
+对于 MySQL 作为权威数据源、ES 作为查询投影的场景，推荐：
+
+```text
+Application Command
+       |
+       v
+Local Transaction
+  +-- Update MySQL
+  +-- Insert Outbox
+       |
+       v
+Transaction Commit
+       |
+       v
+Outbox Publisher
+       |
+       v
+Integration Event
+       |
+       v
+ES Consumer
+       |
+       v
+ES Document
+```
+
+这样：
+
+- MySQL 负责权威业务状态。
+- Outbox 保障本地状态与待发布事件的一致性。
+- ES 消费者维护自己的查询模型。
+- 消费者通过幂等、重试和必要的对账处理重复、失败和恢复。
+
+具体可靠性实现详见 `ddd-05-事件Outbox与最终一致性.md`。
+
+## 生产决策卡：统一模型与存储解耦
+
+| 场景 | 推荐设计 |
+| --- | --- |
+| 多数据源、相同业务语义 | Canonical Model |
+| 多数据源、不同业务语义 | 独立领域模型 + ACL |
+| 同一业务事实需要多个存储投影 | 存储 Adapter + 明确的一致性策略 |
+| MySQL 与 ES 双写 | Outbox + 异步投影 |
+| 存储技术替换 | Port + Adapter |
+| 不同存储查询模型不同 | 独立 Read Model |
+
+## 坑与细节
+
+### 坑 1：把 Canonical Model 做成万能 DTO
+
+错误理解：所有业务都使用一个包含任意字段的 `Map<String, Object>`。
+
+原因：统一了结构，却丢失了类型和业务语义。
+
+修正：明确数据契约，复杂业务使用独立模型；只共享跨边界真正稳定的部分。
+
+### 坑 2：把 ACL 当成 Mapper
+
+错误理解：字段复制完成就是防腐。
+
+原因：结构映射不等于语义转换。
+
+修正：明确哪些字段需要业务解释、状态映射和约束校验。
+
+### 坑 3：让上游直接感知下游数据库
+
+错误理解：上游根据 MySQL、ES 的需求组织数据。
+
+原因：数据源与存储目标形成双向耦合。
+
+修正：通过稳定契约隔离双方。
+
+### 坑 4：一个 Repository 同时写多个存储
+
+错误理解：一次 `save()` 就能保证 MySQL 和 ES 一致。
+
+原因：本地事务不能自动覆盖多个独立存储。
+
+修正：明确权威数据源，通过 Outbox、事件和投影维护最终一致性。
+
+### 坑 5：忽略批量写入的部分失败
+
+错误理解：批量接口返回成功或失败两个结果就够了。
+
+原因：ES Bulk、分批数据库写入等操作可能部分成功。
+
+修正：定义逐条结果、失败重试范围、幂等键和死信/补偿策略，避免整批无差别重放造成重复副作用。
+
+### 本节总结
+
+```text
+Inbound Adapter：适配数据来源。
+Normalizer：标准化数据结构。
+ACL：转换外部业务语义。
+Canonical Model：提供稳定的数据契约。
+Storage Port：定义应用需要的存储能力。
+Storage Adapter：实现具体存储。
+Repository：保护聚合的持久化边界。
+Outbox：解决本地事务与事件发布的一致性。
+```
+
+**口诀：上游不关心存储，下游不理解上游，双方只依赖明确的契约。**

@@ -1240,3 +1240,153 @@ ACL 如何保护本地模型
 > **本地模型中的哪些对象有身份？哪些只是值？哪些规则必须在同一个一致性边界内保护？**
 
 这就是 `ddd-03-实体值对象与聚合.md` 的入口。
+
+
+---
+
+# 补充专题：统一语义、模型转换与防腐层的边界
+
+本节补充一个容易在架构讨论中混淆的问题：上游数据经过转换后交给下游，下游只依赖约定模型，不关心上游系统的内部结构，也不关心具体存储技术。这类设计可能同时涉及 ACL、规范数据模型和 Port/Adapter，但三者不是同一个概念。
+
+## 1. 统一语义不等于统一字段
+
+**统一语义不是统一字段名称或数值，而是让跨边界交换的数据拥有明确、一致、可理解的业务含义。**
+
+例如，三个外部系统都有 `status` 字段：
+
+| 系统 | 字段 | 值 | 实际含义 |
+| --- | --- | --- | --- |
+| 订单系统 | `order_status` | `10` | 待支付 |
+| ERP | `audit_status` | `10` | 待审核 |
+| 物流系统 | `delivery_status` | `10` | 待揽收 |
+
+字段值相同不代表业务含义相同。不能因为它们都叫 `status`，就映射成同一个领域状态。
+
+正确做法是先识别外部业务含义，再映射到本地明确的业务概念：
+
+```text
+外部模型
+   |
+   v
+识别外部业务含义
+   |
+   v
+映射到本地业务概念
+   |
+   v
+内部领域模型
+```
+
+例如，不同限界上下文可以分别拥有 `OrderStatus`、`AuditStatus` 和 `DeliveryStatus`。不要为了统一数据结构而强行合并它们。
+
+## 2. 协议转换、结构转换与语义转换
+
+| 转换类型 | 解决的问题 | 示例 |
+| --- | --- | --- |
+| 协议转换 | 如何通信 | HTTP JSON、RPC、MQ |
+| 结构转换 | 数据如何组织 | 字段名称、类型、嵌套结构 |
+| 语义转换 | 数据究竟意味着什么 | 外部状态转换为内部业务状态 |
+
+它们可能同时发生在一个 ACL 中，但并不等价。
+
+例如：
+
+```text
+ExternalOrderDTO
+  order_status = "SUCCESS"
+          |
+          v
+OrderTranslator
+  解释外部状态的业务含义
+          |
+          v
+Order
+  status = PAID
+```
+
+这不只是字段复制，还包含业务语义解释。真实项目中必须确认外部状态与内部状态是否真正等价；无法映射时，应明确拒绝、隔离或采取经过业务确认的降级策略，而不是猜测映射。
+
+## 3. ACL 与 Mapper 的区别
+
+防腐层的核心是保护本地模型，Mapper 只是可能使用的实现手段。
+
+| 对比 | ACL | Mapper |
+| --- | --- | --- |
+| 目标 | 保护本地领域语义 | 转换对象结构 |
+| 处理内容 | 业务语义、状态、约束、兼容性 | 字段、类型、嵌套对象 |
+| 是否涉及业务判断 | 可能涉及 | 通常不涉及 |
+| 是否必须独立成组件 | 视复杂度而定 | 视复杂度而定 |
+
+示例：
+
+```java
+public final class PaymentChannelTranslator {
+
+    public PaymentStatus translate(String externalStatus) {
+        return switch (externalStatus) {
+            case "SUCCESS" -> PaymentStatus.PAID;
+            case "PROCESSING" -> PaymentStatus.PENDING;
+            case "CANCELLED" -> PaymentStatus.CLOSED;
+            default -> throw new UnsupportedPaymentStatus(externalStatus);
+        };
+    }
+}
+```
+
+这里的价值不是转换字符串，而是防止第三方支付渠道的状态定义进入内部支付领域。示例中的状态映射仅作说明，真实映射必须经过业务确认。
+
+## 4. ACL 应该放在哪一侧？
+
+判断原则：
+
+> **谁要保护自己的模型，翻译层就靠近谁。**
+
+如果目标是保护在线决策上下文，ACL 通常由决策侧的输入适配模块负责：
+
+```text
+画像上下文
+  -> FeatureSnapshotContract
+  -> DecisionInboundAdapter
+  -> ProfileToDecisionTranslator（ACL）
+  -> RecommendationFeatures
+  -> Decision Domain
+```
+
+ACL 的逻辑归属通常靠近消费者，但不意味着它必须独立部署，也不意味着必须放在 Domain 层。它可以由消费者侧的 Application 或 Infrastructure 输入适配模块实现，具体取决于模块边界和复用需求。
+
+## 5. ACL 不等于统一数据接入平台
+
+如果系统接入 MySQL CDC、Kafka、HTTP 等不同数据源，再把数据转换为规范格式并写入 MySQL、ES、MongoDB，这种场景不一定属于严格意义上的 DDD ACL。
+
+它可能涉及：
+
+- **Canonical Data Model**：规范数据模型，约定跨数据源交换的稳定语义。
+- **Data Normalization**：数据标准化，统一结构、类型和格式。
+- **ACL**：当外部业务语义与本地语义不同时，保护本地模型。
+- **Port & Adapter**：隔离存储能力与具体技术实现。
+
+如果转换过程中还涉及不同业务上下文之间的语义映射，可以使用 ACL；如果只是字段、类型和格式归一化，则不必把所有转换器都称为防腐层。
+
+## 6. 生产决策卡：什么时候使用什么？
+
+| 场景 | 推荐方案 |
+| --- | --- |
+| 外部模型语义与本地语义不同 | ACL |
+| 外部模型变化频繁，需要保护本地模型 | ACL + 稳定契约 |
+| 双方业务语义相同且契约稳定 | 可以直接遵循契约 |
+| 仅字段名称和结构不同 | Mapper / Adapter |
+| 多数据源统一接入 | Normalizer + Canonical Data Model |
+| 仅数据库技术变化 | Repository / Persistence Adapter |
+| 多个上下文之间交换业务事实 | Published Language + Integration Event |
+
+### 本节总结
+
+```text
+统一语义：明确数据的业务含义。
+统一结构：约定数据的组织方式。
+协议适配：解决通信方式差异。
+ACL：保护本地领域模型。
+Mapper：执行具体对象转换。
+```
+
+**口诀：结构可以转换，语义必须明确，领域边界不能被外部模型决定。**
